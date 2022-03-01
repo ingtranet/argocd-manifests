@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kinesis-to-kafka
+spec:
+  selector:
+    matchLabels:
+      app: kinesis-to-kafka
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: kinesis-to-kafka
+    spec:
+      containers:
+        - name: kinesis-to-kafka
+          image: harbor.ingtra.net/dockerhub/cookieshake/pyrami
+          env:
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: aws-creds
+                  key: access-key
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: aws-creds
+                  key: secret-key
+            - name: PYRAMI_APP
+              value: kinesis_to_kafka
+            - name: PYRAMI_STREAM_NAME
+              value: mirror-to-mdc-kafka
+            - name: PYRAMI_REDIS_URL
+              value: redis.mdc.ingtra.net:6379
+            - name: PYRAMI_KAFKA_BOOTSTRAP_SERVERS
+              value: redpanda.mdc.ingtra.net:9092
+            - name: PYRAMI_CONSUMER_NAME
+              value: test2
