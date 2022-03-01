@@ -20,6 +20,7 @@ spec:
           address-pools:
             - name: default
               protocol: bgp
+              avoid-buggy-ips: true
               addresses:
                 - 172.23.20.0/24
   destination:
