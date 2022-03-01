@@ -10,7 +10,7 @@ spec:
     repoURL: https://metallb.github.io/metallb
     targetRevision: 0.12.1
     helm:
-      releaseName: cert-manager
+      releaseName: metallb
       values: |
         peers:
           - peer-address: 172.23.10.1
