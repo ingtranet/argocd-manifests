@@ -16,11 +16,11 @@ spec:
           - peer-address: 172.23.10.1
             peer-asn: 64521
             my-asn: 64523
-          address-pools:
+        address-pools:
           - name: default
             protocol: bgp
             addresses:
-            - 172.23.20.0/24
+              - 172.23.20.0/24
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb
