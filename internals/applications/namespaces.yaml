@@ -6,10 +6,10 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: 'https://github.com/ingtranet/argocd-manifests.git'
+    repoURL: https://github.com/ingtranet/argocd-manifests.git
     path: internals/namespaces
     targetRevision: HEAD
     directory:
       recurse: true
   destination:
-    server: 'https://kubernetes.default.svc'
+    server: https://kubernetes.default.svc
