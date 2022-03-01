@@ -26,6 +26,8 @@ spec:
                 secretKeyRef:
                   name: aws-creds
                   key: secret-key
+            - name: AWS_DEFAULT_REGION
+              value: ap-northeast-2
             - name: PYRAMI_APP
               value: kinesis_to_kafka
             - name: PYRAMI_STREAM_NAME
