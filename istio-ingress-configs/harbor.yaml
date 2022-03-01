@@ -45,4 +45,4 @@ spec:
         - destination:
             host: harbor.mdc.ingtra.net
   gateways:
-    - internal-gateway
+    - harbor-gateway
