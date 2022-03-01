@@ -18,9 +18,9 @@ spec:
             my-asn: 64523
         address-pools:
           - name: default
-            protocol: bgp
+            protocol: layer2
             addresses:
-              - 172.23.20.0/24
+              - 198.51.100.0/24
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb
