@@ -54,7 +54,7 @@ spec:
       releaseName: istio-ingress
       values: |
         autoscaling:
-          enabled: true
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-ingress
