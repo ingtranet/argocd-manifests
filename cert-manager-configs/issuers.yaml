@@ -1,0 +1,17 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: letsencrypt
+spec:
+  acme:
+    email: mail@ingtra.net
+    server: https://acme-v02.api.letsencrypt.org/directory
+    privateKeySecretRef:
+      name: letsencrypt-private-key
+    solvers:
+    - dns01:
+        cloudflare:
+          email: cookieshake.dev@gmail.com
+          apiTokenSecretRef:
+            name: cloudflare-api-token
+            key: api-token
