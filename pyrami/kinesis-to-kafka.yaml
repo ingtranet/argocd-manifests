@@ -15,6 +15,7 @@ spec:
       containers:
         - name: kinesis-to-kafka
           image: harbor.ingtra.net/dockerhub/cookieshake/pyrami
+          imagePullPolicy: Always
           env:
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
