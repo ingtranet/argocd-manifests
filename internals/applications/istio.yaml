@@ -42,7 +42,7 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: istio-ingress
+  name: istio-internal-ingress
   namespace: argocd
 spec:
   project: default
@@ -51,7 +51,28 @@ spec:
     repoURL: https://istio-release.storage.googleapis.com/charts
     targetRevision: 1.13.1
     helm:
-      releaseName: istio-ingress
+      releaseName: istio-internal-ingress
+      values: |
+        autoscaling:
+          enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: istio-ingress
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: istio-external-ingress
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: gateway
+    repoURL: https://istio-release.storage.googleapis.com/charts
+    targetRevision: 1.13.1
+    helm:
+      releaseName: istio-external-ingress
       values: |
         autoscaling:
           enabled: false
