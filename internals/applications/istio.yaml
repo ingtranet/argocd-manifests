@@ -31,6 +31,9 @@ spec:
     targetRevision: 1.13.1
     helm:
       releaseName: istiod
+      values: |
+        pilot:
+          autoscaleEnabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
