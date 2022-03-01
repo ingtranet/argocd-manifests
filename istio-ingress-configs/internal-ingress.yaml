@@ -1,0 +1,49 @@
+---
+kind: Gateway
+apiVersion: networking.istio.io/v1beta1
+metadata:
+  name: default-http-to-https
+spec:
+  servers:
+    - hosts:
+        - '*'
+      port:
+        name: http
+        number: 80
+        protocol: HTTP
+      tls:
+        httpsRedirect: true
+  selector: {}
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: gateway
+spec:
+  selector:
+    istio: internal-ingress
+  servers:
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - "*.ig.ingtra.net"
+      tls:
+        credentialName: ig-ingtra-net-tls
+        mode: SIMPLE
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: argocd
+spec:
+  hosts:
+    - argocd.ig.ingtra.net
+  http:
+    - name: argocd-server
+      route:
+      - destination:
+          host: argocd-server.argocd.svc.cluster.local
