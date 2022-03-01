@@ -12,7 +12,7 @@ spec:
     helm:
       releaseName: cert-manager
       values: |
-        installCRDs=true
+        installCRDs: true
   destination:
     server: https://kubernetes.default.svc
     namespace: vault-secrets-operator
