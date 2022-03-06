@@ -32,9 +32,8 @@ spec:
             }
             root = this.data
     output:
-      kafka:
-        addresses: ["redpanda.mdc.ingtra.net:9092"]
-        client_id: benthos_split_twitter_stream
+      kafka_franz:
+        seed_brokers: ["redpanda.mdc.ingtra.net:9092"]
         topic: ${! meta("output_topic") }
         compression: gzip
 
