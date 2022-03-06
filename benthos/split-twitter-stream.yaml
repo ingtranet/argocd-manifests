@@ -1,0 +1,38 @@
+apiVersion: ingtra.net/v1alpha1
+kind: BenthosPipeline
+metadata:
+  name: split-twitter-stream
+spec:
+  inlineConfig:
+    input:
+      kafka:
+        addresses: ["redpanda.mdc.ingtra.net:9092"]
+        topics: ["data.twitter.sampled-stream.0"]
+        consumer_group: benthos_test
+        client_id: benthos_split_twitter_stream
+    pipeline:
+      processors:
+        - bloblang: |
+            root = this.includes.catch({}).key_values().map_each(item -> {"type": "included_" + item.key, "data": item.value}).explode("data")
+            root = root.append({"type": "tweets", "data": this.data})
+        - unarchive:
+            format: json_array
+        - bloblang: |
+            meta output_topic = match this.type {
+              "tweets" => "data.twitter.sampled-tweet.0"
+              "included_tweets" => "data.twitter.included-tweet.0"
+              "included_users" => "data.twitter.included-users.0"
+              "included_places" => "data.twitter.included-places.0"
+              "included_media" => "data.twitter.included-media.0"
+              "included_polls" => "data.twitter.included-polls.0"
+            }
+            root = this.data
+    output:
+      kafka:
+        addresses: ["redpanda.mdc.ingtra.net:9092"]
+        client_id: benthos_split_twitter_stream
+        topic: ${! meta("output_topic") }
+        compression: gzip
+
+
+
