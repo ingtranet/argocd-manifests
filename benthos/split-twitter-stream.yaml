@@ -4,6 +4,10 @@ metadata:
   name: split-twitter-stream
 spec:
   inlineConfig:
+    logger:
+      level: INFO
+      format: json
+      add_timestamp: true
     input:
       kafka:
         addresses: ["redpanda.mdc.ingtra.net:9092"]
