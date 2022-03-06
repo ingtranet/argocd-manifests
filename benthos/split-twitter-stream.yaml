@@ -3,17 +3,24 @@ kind: BenthosPipeline
 metadata:
   name: split-twitter-stream
 spec:
+  image: harbor.ingtra.net/dockerhub/jeffail/benthos:3.64
+  replicas: 1
   inlineConfig:
     logger:
       level: ALL
       format: json
       add_timestamp: true
     input:
-      kafka:
-        addresses: ["redpanda.mdc.ingtra.net:9092"]
-        topics: ["data.twitter.sampled-stream.0"]
-        consumer_group: benthos_test
-        client_id: benthos_split_twitter_stream
+      broker:
+        inputs:
+          - kafka_franz:
+              seed_brokers: ["redpanda.mdc.ingtra.net:9092"]
+              topics: ["data.twitter.sampled-stream.0"]
+              consumer_group: benthos_test
+        batching:
+          count: 128
+          period: 1s
+
     pipeline:
       processors:
         - bloblang: |
