@@ -11,7 +11,7 @@ spec:
     targetRevision: HEAD
     kustomize:
       images:
-        - controller=ghcr.io/ingtranet/benthos-operator:1.0.0
+        - controller=ghcr.io/ingtranet/benthos-operator:main
 
   destination:
     server: https://kubernetes.default.svc
