@@ -5,7 +5,7 @@ metadata:
 spec:
   inlineConfig:
     logger:
-      level: INFO
+      level: ALL
       format: json
       add_timestamp: true
     input:
