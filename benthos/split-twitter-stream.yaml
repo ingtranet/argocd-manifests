@@ -23,7 +23,7 @@ spec:
       processors:
         - bloblang: |
             let data = this.includes.catch({}).key_values().map_each(item -> {"type": "included_" + item.key, "data": item.value})
-            let data = $data.map_each(item -> item.explode("data")).flatten()
+            let data = $data.map_each(item -> item.explode("data")).flatten("data")
             let data = $data.map_each(item -> item.merge({"included_by": this.data.id}))
             root = $data.append({"type": "tweets", "data": this.data})
         - unarchive:
