@@ -15,7 +15,7 @@ spec:
         opensearchHosts: http://opensearch.mdc.ingtra.net:9200
         extraEnvs:
           - name: DISABLE_SECURITY_DASHBOARDS_PLUGIN
-            value: true
+            value: "true"
   destination:
     server: https://kubernetes.default.svc
     namespace: opensearch-dashboards
