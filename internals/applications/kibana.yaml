@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kibana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: kibana
+    repoURL: https://helm.elastic.co
+    targetRevision: 8.1.0
+    helm:
+      releaseName: kibana
+      values: |
+        elasticsearchHosts:
+          - http://elasticsearch.mdc.ingtra.net:9200
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kibana
