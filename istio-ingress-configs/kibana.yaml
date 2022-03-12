@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: kibana
+spec:
+  hosts:
+    - kibana.ig.ingtra.net
+  http:
+    - name: kibana
+      route:
+      - destination:
+          host: kibana.argocd.svc.cluster.local
+          port: 
+            number: 5601
+  gateways:
+    - internal-gateway
