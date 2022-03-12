@@ -13,12 +13,11 @@ spec:
     input:
       kafka:
         addresses: ["redpanda.mdc.ingtra.net:9092"]
-        topics: ["data.twitter.sampled-stream.0"]
-        consumer_group: benthos_test
+        topics: ["data.twitter.sampled-stream.1"]
+        consumer_group: benthos-split-twitter-stream
         batching:
           count: 128
           period: 1s
-
     pipeline:
       processors:
         - bloblang: |
@@ -30,19 +29,19 @@ spec:
             format: json_array
         - bloblang: |
             meta output_topic = match this.type {
-              "tweets" => "data.twitter.sampled-tweets.0"
-              "included_tweets" => "data.twitter.included-tweets.0"
-              "included_users" => "data.twitter.included-users.0"
-              "included_places" => "data.twitter.included-places.0"
-              "included_media" => "data.twitter.included-media.0"
-              "included_polls" => "data.twitter.included-polls.0"
+              "tweets" => "data.twitter.sampled-tweets.1"
+              "included_tweets" => "data.twitter.included-tweets.1"
+              "included_users" => "data.twitter.included-users.1"
+              "included_places" => "data.twitter.included-places.1"
+              "included_media" => "data.twitter.included-media.1"
+              "included_polls" => "data.twitter.included-polls.1"
             }
             root = this.data
     output:
-      kafka_franz:
-        seed_brokers: ["redpanda.mdc.ingtra.net:9092"]
+      kafka:
+        addresses: ["redpanda.mdc.ingtra.net:9092"]
         topic: ${! meta("output_topic") }
-        compression: gzip
+        compression: zstd
 
 
 
