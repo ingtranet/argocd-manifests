@@ -12,8 +12,7 @@ spec:
     helm:
       releaseName: kibana
       values: |
-        elasticsearchHosts:
-          - http://elasticsearch.mdc.ingtra.net:9200
+        elasticsearchHosts: http://elasticsearch.mdc.ingtra.net:9200
         extraEnvs:
           - name: "NODE_OPTIONS"
             value: "--max-old-space-size=1800"
