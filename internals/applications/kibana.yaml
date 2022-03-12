@@ -6,10 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    chart: kibana
     repoURL: https://github.com/elastic/helm-charts.git
-    path: kibana
     targetRevision: main
+    path: kibana
     helm:
       releaseName: kibana
       values: |
