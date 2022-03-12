@@ -20,7 +20,6 @@ spec:
           - data.twitter.included-polls.1
           - data.twitter.included-tweets.1
           - data.twitter.included-users.1
-          - data.twitter.sampled-stream.1
           - data.twitter.sampled-tweets.1
         consumer_group: benthos-kafka-to-elasticsearch
         batching:
