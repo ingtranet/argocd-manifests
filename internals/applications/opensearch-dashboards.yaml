@@ -1,18 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: opensearch-dashboard
+  name: opensearch-dashboards
   namespace: argocd
 spec:
   project: default
   source:
-    chart: opensearch-dashboard
+    chart: opensearch-dashboards
     repoURL: https://opensearch-project.github.io/helm-charts
     targetRevision: 1.2.2
     helm:
-      releaseName: opensearch-dashboard
+      releaseName: opensearch-dashboards
       values: |
         opensearchHosts: https://opensearch.mdc.ingtra.net:9200
   destination:
     server: https://kubernetes.default.svc
-    namespace: opensearch-dashboard
+    namespace: opensearch-dashboards
