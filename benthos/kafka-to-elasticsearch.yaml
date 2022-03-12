@@ -1,0 +1,36 @@
+apiVersion: ingtra.net/v1alpha1
+kind: BenthosPipeline
+metadata:
+  name: kafka-to-elasticsearch
+spec:
+  image: harbor.ingtra.net/dockerhub/jeffail/benthos:3.64-cgo
+  replicas: 1
+  inlineConfig:
+    logger:
+      level: ALL
+      format: json
+      add_timestamp: true
+    input:
+      kafka:
+        addresses: ["redpanda.mdc.ingtra.net:9092"]
+        target_version: 2.8.1
+        topics:
+          - data.twitter.included-media.1
+          - data.twitter.included-places.1
+          - data.twitter.included-polls.1
+          - data.twitter.included-tweets.1
+          - data.twitter.included-users.1
+          - data.twitter.sampled-stream.1
+          - data.twitter.sampled-tweets.1
+        consumer_group: benthos-kafka-to-elasticsearch
+        batching:
+          count: 128
+          period: 1s
+    output:
+      elasticsearch:
+        urls: ["http://elasticsearch.mdc.ingtra.net:9200"]
+        index: ${! meta("kafka_topic") }-${! timestamp_unix().format_timestamp_strftime("%Y-%m-%d") }
+        id: ${! meta("kafka_topic") }-${! meta("kafka_partition") }-${! meta("kafka_offset") }
+
+
+
