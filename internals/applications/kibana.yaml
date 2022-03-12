@@ -9,7 +9,7 @@ spec:
     chart: kibana
     repoURL: https://github.com/elastic/helm-charts.git
     path: kibana
-    targetRevision: HEAD
+    targetRevision: main
     helm:
       releaseName: kibana
       values: |
