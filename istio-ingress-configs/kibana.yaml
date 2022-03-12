@@ -9,7 +9,7 @@ spec:
     - name: kibana
       route:
       - destination:
-          host: kibana.argocd.svc.cluster.local
+          host: kibana-kibana.argocd.svc.cluster.local
           port: 
             number: 5601
   gateways:
