@@ -7,8 +7,9 @@ spec:
   project: default
   source:
     chart: kibana
-    repoURL: https://helm.elastic.co
-    targetRevision: 8.1.0
+    repoURL: https://github.com/elastic/helm-charts.git
+    path: kibana
+    targetRevision: HEAD
     helm:
       releaseName: kibana
       values: |
