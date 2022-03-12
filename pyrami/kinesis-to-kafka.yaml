@@ -29,6 +29,8 @@ spec:
                   key: secret-key
             - name: AWS_DEFAULT_REGION
               value: ap-northeast-2
+            - name: PYRAMI_LOG_LEVEL
+              value: DEBUG
             - name: PYRAMI_APP
               value: kinesis_to_kafka
             - name: PYRAMI_STREAM_NAME
