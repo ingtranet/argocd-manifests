@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: opensearch-dashboards
+spec:
+  hosts:
+    - opensearch-dashboards.ig.ingtra.net
+  http:
+    - name: opensearch-dashboards
+      route:
+      - destination:
+          host: opensearch-dashboards.opensearch-dashboards.svc.cluster.local
+          port: 
+            number: 5601
+  gateways:
+    - internal-gateway
