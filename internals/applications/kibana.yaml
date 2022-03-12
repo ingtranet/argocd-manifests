@@ -14,7 +14,9 @@ spec:
       values: |
         elasticsearchHosts:
           - http://elasticsearch.mdc.ingtra.net:9200
-        resources: {}
+        extraEnvs:
+          - name: "NODE_OPTIONS"
+            value: "--max-old-space-size=1800"
   destination:
     server: https://kubernetes.default.svc
     namespace: kibana
