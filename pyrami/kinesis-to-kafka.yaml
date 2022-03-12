@@ -38,6 +38,6 @@ spec:
             - name: PYRAMI_KAFKA_BOOTSTRAP_SERVERS
               value: redpanda.mdc.ingtra.net:9092
             - name: PYRAMI_CONSUMER_NAME
-              value: test3
+              value: kinesis-to-kafka
             - name: PYRAMI_FROM_EARLIEST
-              value: "false"
+              value: "true"
