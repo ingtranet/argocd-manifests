@@ -12,12 +12,8 @@ spec:
     helm:
       releaseName: opensearch-dashboards
       values: |
-        opensearchHosts: https://opensearch.mdc.ingtra.net:9200
-        config:
-          opensearch_dashboards.yml:
-            opensearch:
-              ssl:
-                verificationMode: none
+        opensearchHosts: http://opensearch.mdc.ingtra.net:9200
+
   destination:
     server: https://kubernetes.default.svc
     namespace: opensearch-dashboards
