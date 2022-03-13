@@ -15,7 +15,7 @@ spec:
         addresses: ["redpanda.mdc.ingtra.net:9092"]
         target_version: 2.8.1
         topics: ["data.twitter.sampled-stream.1"]
-        consumer_group: benthos-twitter-split-stream
+        consumer_group: benthos-twitter-split-stream-2
         batching:
           count: 128
           period: 1s
