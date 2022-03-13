@@ -27,6 +27,6 @@ spec:
           period: 1s
     output:
       elasticsearch:
-        urls: ["http://opensearch.mdc.ingtra.net:9200"]
+        urls: ["http://elasticsearch.mdc.ingtra.net:9200"]
         index: ${! meta("kafka_topic") }-${! timestamp_unix().format_timestamp_strftime("%Y-%m-%d") }
         id: ${! meta("kafka_topic") }-${! meta("kafka_partition") }-${! meta("kafka_offset") }
