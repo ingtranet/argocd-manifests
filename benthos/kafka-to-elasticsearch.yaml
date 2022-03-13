@@ -15,11 +15,11 @@ spec:
         addresses: ["redpanda.mdc.ingtra.net:9092"]
         target_version: 2.8.1
         topics:
-          - data.twitter.included-media.1
-          - data.twitter.included-places.1
-          - data.twitter.included-polls.1
-          - data.twitter.included-tweets.1
-          - data.twitter.included-users.1
+          - data.twitter.referenced-media.1
+          - data.twitter.referenced-places.1
+          - data.twitter.referenced-polls.1
+          - data.twitter.referenced-tweets.1
+          - data.twitter.referenced-users.1
           - data.twitter.sampled-tweets.1
         consumer_group: benthos-kafka-to-elasticsearch
         batching:
