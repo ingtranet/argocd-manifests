@@ -1,0 +1,33 @@
+apiVersion: ingtra.net/v1alpha1
+kind: BenthosPipeline
+metadata:
+  name: twitter-referenced-places-to-cassandra
+spec:
+  image: harbor.ingtra.net/dockerhub/jeffail/benthos:3.64-cgo
+  replicas: 1
+  inlineConfig:
+    logger:
+      level: DEBUG
+      format: json
+      add_timestamp: true
+    input:
+      kafka:
+        addresses: ["redpanda.mdc.ingtra.net:9092"]
+        target_version: 2.8.1
+        topics:
+          - data.twitter.referenced-places.1
+        consumer_group: benthos-twitter-referenced-places-to-cassandra
+        batching:
+          count: 128
+          period: 10s
+    pipeline:
+      processors:
+        - split:
+            size: 1
+    output:
+      cassandra:
+        addresses:
+          - scylla-1.mdc.ingtra.net:9042
+          - scylla-2.mdc.ingtra.net:9042
+        query: INSERT INTO twitter.referenced_places JSON ?
+        args_mapping: root = [ this ]
