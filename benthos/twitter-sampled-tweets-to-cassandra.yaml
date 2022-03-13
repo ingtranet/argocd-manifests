@@ -28,4 +28,4 @@ spec:
         query: INSERT INTO twitter.sampled_tweets JSON ?
         args_mapping: root = [ this ]
         batching:
-          size: 1
+          count: 1
