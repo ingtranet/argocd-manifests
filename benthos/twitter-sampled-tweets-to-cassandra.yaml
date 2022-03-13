@@ -20,6 +20,10 @@ spec:
         batching:
           count: 128
           period: 10s
+    pipeline:
+      processors:
+        - split:
+          size: 1
     output:
       cassandra:
         addresses:
@@ -27,5 +31,3 @@ spec:
           - scylla-2.mdc.ingtra.net:9042
         query: INSERT INTO twitter.sampled_tweets JSON ?
         args_mapping: root = [ this ]
-        batching:
-          count: 1
