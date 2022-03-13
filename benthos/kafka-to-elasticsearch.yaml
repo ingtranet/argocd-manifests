@@ -29,7 +29,7 @@ spec:
       processors:
         - bloblang: |
             root = this
-            root."@timestamp" = timestamp_unix_nano()
+            root."@timestamp" = (timestamp_unix_nano() / 1000).round()
     output:
       elasticsearch:
         urls: ["http://elasticsearch.mdc.ingtra.net:9200"]
