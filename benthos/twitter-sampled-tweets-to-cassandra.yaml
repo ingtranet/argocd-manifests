@@ -23,7 +23,7 @@ spec:
     pipeline:
       processors:
         - split:
-          size: 1
+            size: 1
     output:
       cassandra:
         addresses:
