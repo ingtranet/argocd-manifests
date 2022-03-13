@@ -24,7 +24,7 @@ spec:
         consumer_group: benthos-kafka-to-elasticsearch
         batching:
           count: 128
-          period: 1s
+          period: 10s
     pipeline:
       processors:
         - bloblang: |
