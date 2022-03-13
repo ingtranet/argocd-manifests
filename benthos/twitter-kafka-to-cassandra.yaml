@@ -31,7 +31,5 @@ spec:
         addresses:
           - scylla-1.mdc.ingtra.net:9042
           - scylla-2.mdc.ingtra.net:9042
-        query: 'INSERT INTO ? JSON ?'
-        args_mapping: |
-          root = [ meta("table") ]
-          root.append(this)
+        query: INSERT INTO ? JSON ?
+        args_mapping: root = [ meta("table"), this ]
