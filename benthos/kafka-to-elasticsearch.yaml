@@ -25,6 +25,11 @@ spec:
         batching:
           count: 128
           period: 1s
+    pipeline:
+      processors:
+        - bloblang: |
+            root = this
+            root."@timestamp" = timestamp_unix_nano()
     output:
       elasticsearch:
         urls: ["http://elasticsearch.mdc.ingtra.net:9200"]
