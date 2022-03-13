@@ -1,7 +1,7 @@
 apiVersion: ingtra.net/v1alpha1
 kind: BenthosPipeline
 metadata:
-  name: split-twitter-stream
+  name: twitter-split-stream
 spec:
   image: harbor.ingtra.net/dockerhub/jeffail/benthos:3.64-cgo
   replicas: 1
@@ -15,7 +15,7 @@ spec:
         addresses: ["redpanda.mdc.ingtra.net:9092"]
         target_version: 2.8.1
         topics: ["data.twitter.sampled-stream.1"]
-        consumer_group: benthos-split-twitter-stream
+        consumer_group: benthos-twitter-split-stream
         batching:
           count: 128
           period: 1s
