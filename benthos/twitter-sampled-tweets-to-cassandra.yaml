@@ -27,5 +27,5 @@ spec:
           - scylla-2.mdc.ingtra.net:9042
         query: INSERT INTO twitter.sampled_tweets JSON ?
         args_mapping: root = [ this ]
-        batch:
+        batching:
           size: 1
