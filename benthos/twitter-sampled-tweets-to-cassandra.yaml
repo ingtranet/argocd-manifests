@@ -1,7 +1,7 @@
 apiVersion: ingtra.net/v1alpha1
 kind: BenthosPipeline
 metadata:
-  name: kafka-to-cassandra
+  name: twitter-sampled-tweets-to-cassandra
 spec:
   image: harbor.ingtra.net/dockerhub/jeffail/benthos:3.64-cgo
   replicas: 1
@@ -16,20 +16,14 @@ spec:
         target_version: 2.8.1
         topics:
           - data.twitter.sampled-tweets.1
-        consumer_group: benthos-kafka-to-cassandra
+        consumer_group: benthos-twitter-sampled-tweets-to-cassandra
         batching:
           count: 128
           period: 10s
-    pipeline:
-      processors:
-        - bloblang: |
-            meta table = match meta("kafka_topic") {
-              "data.twitter.sampled-tweets.1" => "twitter.sampled_tweets"
-            }
     output:
       cassandra:
         addresses:
           - scylla-1.mdc.ingtra.net:9042
           - scylla-2.mdc.ingtra.net:9042
-        query: INSERT INTO ? JSON ?
-        args_mapping: root = [ meta("table"), this ]
+        query: INSERT INTO twitter.sampled_tweets JSON ?
+        args_mapping: root = [ this ]
