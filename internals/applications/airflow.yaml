@@ -14,7 +14,7 @@ spec:
       values: |
         defaultAirflowRepository: harbor.ingtra.net/dockerhub/apache/airflow
         executor: "KubernetesExecutor"
-        dag:
+        dags:
           gitSync:
             enabled: true
             repo: https://github.com/ingtranet/airflow-dags.git
