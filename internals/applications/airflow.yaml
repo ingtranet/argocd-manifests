@@ -29,6 +29,8 @@ spec:
           useHelmHooks: false
         postgresql:
           enabled: false
+        statsd:
+          enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
