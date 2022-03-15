@@ -43,6 +43,11 @@ spec:
         webserver:
           webserverConfig: |
             AUTH_ROLE_PUBLIC = 'Admin'
+        elasticsearch:
+          enabled: true
+          connection:
+            host: elasticsearch.mdc.ingtra.net
+            port: 9200
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
