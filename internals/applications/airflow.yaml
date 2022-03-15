@@ -31,6 +31,8 @@ spec:
           enabled: false
         statsd:
           enabled: true
+        webserverConfig: |
+          AUTH_ROLE_PUBLIC = 'Admin'
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
