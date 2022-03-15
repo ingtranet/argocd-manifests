@@ -51,6 +51,11 @@ spec:
         config:
           logging:
             logging_level: DEBUG
+          elasticsearch:
+            write_stdout: true
+            end_of_log_mark: end_of_log
+            json_format: true
+            json_fields: asctime, filename, lineno, levelname, message
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
