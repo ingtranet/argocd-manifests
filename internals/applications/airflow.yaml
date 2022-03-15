@@ -8,7 +8,7 @@ spec:
   source:
     chart: airflow
     repoURL: https://airflow.apache.org
-    targetRevision: 2.2.4
+    targetRevision: 1.5.0
     helm:
       releaseName: airflow
       values: |
