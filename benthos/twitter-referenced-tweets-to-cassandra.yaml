@@ -5,7 +5,7 @@ metadata:
 spec:
   image: harbor.ingtra.net/dockerhub/jeffail/benthos:3.64-cgo
   replicas: 1
-  inlineConfig:
+  configInline:
     logger:
       level: DEBUG
       format: json
