@@ -57,7 +57,7 @@ spec:
             write_stdout: 'True'
             json_fields: asctime, filename, lineno, levelname, message
           elasticsearch_configs:
-            use_ssl: 'True'
+            use_ssl: 'False'
             verify_certs: 'False'
             max_retries: 3
             timeout: 30
