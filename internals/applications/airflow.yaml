@@ -49,13 +49,19 @@ spec:
             host: elasticsearch.mdc.ingtra.net
             port: 9200
         config:
-          logging:
-            logging_level: DEBUG
           elasticsearch:
-            write_stdout: "True"
+            frontend: https://kibana.ig.ingtra.net/app/discover#/?_a=(columns:!(message),filters:!(),index:dff5d120-5d3d-11ec-b070-4d64674090d3,interval:auto,query:(language:kuery,query:'log_id:"{log_id}"'),sort:!(log.offset,asc))&amp;_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-1y,to:now))
+            json_format: 'True'
+            log_id_template: "{dag_id}_{task_id}_{execution_date}_{try_number}"
             end_of_log_mark: end_of_log
-            json_format: "True"
+            write_stdout: 'True'
             json_fields: asctime, filename, lineno, levelname, message
+          elasticsearch_configs:
+            use_ssl: 'True'
+            verify_certs: 'False'
+            max_retries: 3
+            timeout: 30
+            retry_timeout: 'True'
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
