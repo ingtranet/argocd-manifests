@@ -42,17 +42,17 @@ spec:
                 providers:
                   - type: kubernetes
                     templates:
-                    - condition:
-                        equals:
-                          kubernetes.namespace: airflow
-                      config:
-                        - type: container
-                          paths:
-                          - /var/log/containers/*${data.kubernetes.container.id}.log
-                          multiline.pattern: '^[[:space:]]'
-                          multiline.negate: false
-                          multiline.match: after
-                          include_lines: ['^{']
+                      - condition:
+                          equals:
+                            kubernetes.namespace: airflow
+                        config:
+                          - type: container
+                            paths:
+                            - /var/log/containers/*${data.kubernetes.container.id}.log
+                            multiline.pattern: '^[[:space:]]'
+                            multiline.negate: false
+                            multiline.match: after
+                            include_lines: ['^{']
               processors:
                 - decode_json_fields:
                     fields: ["message"]
