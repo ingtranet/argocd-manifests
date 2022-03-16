@@ -16,6 +16,10 @@ spec:
           filebeatConfig:
             filebeat.yml: |
               logging.json: true
+              setup.template:
+                name: "airflow-logs"
+                pattern: "airflow-logs-*"
+                enabled: false
               filebeat.config:
                 inputs:
                   # Mounted `filebeat-inputs` configmap:
