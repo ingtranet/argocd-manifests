@@ -50,7 +50,7 @@ spec:
                     add_error_key: true
               output.elasticsearch:
                 hosts: ["http://elasticsearch.mdc.ingtra.net:9200"] 
-                index: "airflow-dags-%{+yyyy.MM.dd}"
+                index: "airflow-logs-%{+yyyy.MM.dd}"
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
