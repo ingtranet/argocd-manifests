@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     chart: filebeat
-    repoURL: https://airflow.apache.org
+    repoURL: https://helm.elastic.co
     targetRevision: 7.17.1
     helm:
       releaseName: airflow-filebeat
