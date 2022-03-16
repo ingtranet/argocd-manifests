@@ -23,6 +23,11 @@ spec:
                   name: "airflow-logs"
                   pattern: "airflow-logs-*"
                   enabled: true
+                  settings:
+                    index.number_of_shards: 1
+                    index.number_of_replicas: 0
+                    index.codec: best_compression
+                    index.lifecycle.name: delete-after-3-days
               filebeat.config:
                 inputs:
                   # Mounted `filebeat-inputs` configmap:
