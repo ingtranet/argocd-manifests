@@ -31,3 +31,6 @@ spec:
           - scylla-2.mdc.ingtra.net:9042
         query: INSERT INTO twitter.referenced_users JSON ?
         args_mapping: root = [ this ]
+        batching:
+          count: 10
+          period: 10s
