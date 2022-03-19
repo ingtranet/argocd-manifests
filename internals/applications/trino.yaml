@@ -51,6 +51,10 @@ spec:
           scylla: |
             connector.name=cassandra
             cassandra.contact-points=scylla-1.mdc.ingtra.net,scylla-2.mdc.ingtra.net
+            cassandra.protocol-version=V4
+            cassandra.fetch-size=10000
+            cassandra.client.read-timeout=10m
+            cassandra.load-policy.use-token-aware=true
 
   destination:
     server: https://kubernetes.default.svc
