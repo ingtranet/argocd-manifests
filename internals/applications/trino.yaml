@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: trino
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: trino
+    repoURL: https://trinodb.github.io/charts
+    targetRevision: 0.5.0
+    helm:
+      releaseName: trino
+      values: |
+        server:
+          workers: 4
+        coordinator:
+          jvm:
+            maxHeapSize: 1G
+        worker:
+          jvm:
+            maxHeapSize: 3G
+        config:
+          query:
+            maxMemory: 4GB
+            maxMemoryPerNode: 1GB
+          memory:
+            heapHeadroomPerNode: 1GB
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - labelSelector:
+                  matchExpressions:
+                  - key: component
+                    operator: In
+                    values: ["worker"]
+                topologyKey: "kubernetes.io/hostname"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: trino
