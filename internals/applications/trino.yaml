@@ -32,11 +32,11 @@ spec:
               - weight: 1
                 podAffinityTerm:
                   labelSelector:
-                      matchExpressions:
+                    matchExpressions:
                       - key: component
                         operator: In
                         values: ["worker"]
-                    topologyKey: "kubernetes.io/hostname"
+                  topologyKey: "kubernetes.io/hostname"
   destination:
     server: https://kubernetes.default.svc
     namespace: trino
