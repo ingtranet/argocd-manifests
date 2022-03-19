@@ -76,8 +76,8 @@ spec:
     - harbor.ingtra.net
   http:
     - match:
-        method:
-          exact: GET
+        - method:
+            exact: GET
       route:
         - destination:
             host: harbor.mdc.ingtra.net
