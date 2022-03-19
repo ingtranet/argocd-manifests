@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: trino
+spec:
+  hosts:
+    - trino.ig.ingtra.net
+  http:
+    - name: trino
+      route:
+      - destination:
+          host: trino.trino.svc.cluster.local
+          port: 
+            number: 8080
+  gateways:
+    - internal-gateway
