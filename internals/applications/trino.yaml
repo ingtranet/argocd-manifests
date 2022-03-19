@@ -13,7 +13,7 @@ spec:
       releaseName: trino
       values: |
         server:
-          workers: 4
+          workers: 3
         coordinator:
           jvm:
             maxHeapSize: 1G
@@ -22,7 +22,7 @@ spec:
             maxHeapSize: 3G
         config:
           query:
-            maxMemory: 4GB
+            maxMemory: 3GB
             maxMemoryPerNode: 1GB
           memory:
             heapHeadroomPerNode: 1GB
