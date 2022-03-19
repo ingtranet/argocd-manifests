@@ -26,7 +26,7 @@ spec:
             web-ui.authentication.type=fixed
         coordinator:
           jvm:
-            maxHeapSize: 1G
+            maxHeapSize: 3G
         worker:
           jvm:
             maxHeapSize: 3G
