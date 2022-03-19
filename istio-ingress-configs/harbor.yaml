@@ -47,39 +47,39 @@ spec:
   gateways:
     - harbor-gateway
 
----
-apiVersion: networking.istio.io/v1beta1
-kind: Gateway
-metadata:
-  name: harbor-gateway-external
-spec:
-  selector:
-    istio: external-ingress
-  servers:
-    - port:
-        number: 443
-        name: https
-        protocol: HTTPS
-      hosts:
-        - harbor.ingtra.net
-      tls:
-        credentialName: ingtra-net-tls
-        mode: SIMPLE
-
----
-apiVersion: networking.istio.io/v1beta1
-kind: VirtualService
-metadata:
-  name: harbor-external
-spec:
-  hosts:
-    - harbor.ingtra.net
-  http:
-    - match:
-        - method:
-            exact: POST
-      route:
-        - destination:
-            host: harbor.mdc.ingtra.net
-  gateways:
-    - harbor-gateway-external
+#---
+#apiVersion: networking.istio.io/v1beta1
+#kind: Gateway
+#metadata:
+#  name: harbor-gateway-external
+#spec:
+#  selector:
+#    istio: external-ingress
+#  servers:
+#    - port:
+#        number: 443
+#        name: https
+#        protocol: HTTPS
+#      hosts:
+#        - harbor.ingtra.net
+#      tls:
+#        credentialName: ingtra-net-tls
+#        mode: SIMPLE
+#
+#---
+#apiVersion: networking.istio.io/v1beta1
+#kind: VirtualService
+#metadata:
+#  name: harbor-external
+#spec:
+#  hosts:
+#    - harbor.ingtra.net
+#  http:
+#    - match:
+#        - method:
+#            exact: POST
+#      route:
+#        - destination:
+#            host: harbor.mdc.ingtra.net
+#  gateways:
+#    - harbor-gateway-external
