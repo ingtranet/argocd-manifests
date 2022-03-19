@@ -28,7 +28,7 @@ spec:
             heapHeadroomPerNode: 1GB
         additionalConfigProperties:
           - web-ui.user=admin
-          - web-ui.authentication.type: fixed
+          - web-ui.authentication.type=fixed
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
