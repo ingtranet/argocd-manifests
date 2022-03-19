@@ -59,7 +59,7 @@ spec:
             cassandra.load-policy.use-token-aware=true
         additionalConfigProperties:
           - spill-enabled=true
-          - spiller-spill-path=/tmp/trino-spill
+          - spiller-spill-path=/tmp
           - spill-compression-enabled=true
           - query-max-spill-per-node=10GB
 
