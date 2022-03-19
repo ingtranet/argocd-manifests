@@ -26,6 +26,10 @@ spec:
             maxMemoryPerNode: 1GB
           memory:
             heapHeadroomPerNode: 1GB
+          web-ui:
+            user: admin
+            authentication:
+              type: fixed
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
