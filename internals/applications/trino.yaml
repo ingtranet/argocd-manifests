@@ -20,22 +20,22 @@ spec:
         - values-worker.yaml  
       values: |
         server:
-          workers: 3
+          workers: 6
           coordinatorExtraConfig: |
             web-ui.user=admin
             web-ui.authentication.type=fixed
         coordinator:
           jvm:
-            maxHeapSize: 3G
+            maxHeapSize: 1G
         worker:
           jvm:
-            maxHeapSize: 3G
+            maxHeapSize: 1G
         config:
           query:
-            maxMemory: 3GB
-            maxMemoryPerNode: 1GB
+            maxMemory: 4GB
+            maxMemoryPerNode: 256MB
           memory:
-            heapHeadroomPerNode: 1GB
+            heapHeadroomPerNode: 256MB
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
