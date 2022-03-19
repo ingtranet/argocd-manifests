@@ -40,6 +40,11 @@ spec:
                         operator: In
                         values: ["worker"]
                   topologyKey: "kubernetes.io/hostname"
+        additionalCatalogs:
+          scylla: |
+            connector.name=cassandra
+            cassandra.contact-points=scylla-1.mdc.ingtra.net,scylla-2.mdc.ingtra.net
+
   destination:
     server: https://kubernetes.default.svc
     namespace: trino
