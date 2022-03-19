@@ -57,6 +57,11 @@ spec:
             cassandra.fetch-size=10000
             cassandra.client.read-timeout=10m
             cassandra.load-policy.use-token-aware=true
+        additionalConfigProperties:
+          - spill-enabled=true
+          - spiller-spill-path=/tmp/trino-spill
+          - spill-compression-enabled=true
+          - query-max-spill-per-node=10GB
 
   destination:
     server: https://kubernetes.default.svc
