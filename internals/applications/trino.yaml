@@ -24,18 +24,18 @@ spec:
           coordinatorExtraConfig: |
             web-ui.user=admin
             web-ui.authentication.type=fixed
+          config:
+            query:
+              maxMemory: 4GB
+              maxMemoryPerNode: 256MB
+            memory:
+              heapHeadroomPerNode: 256MB
         coordinator:
           jvm:
             maxHeapSize: 1G
         worker:
           jvm:
             maxHeapSize: 1G
-        config:
-          query:
-            maxMemory: 4GB
-            maxMemoryPerNode: 256MB
-          memory:
-            heapHeadroomPerNode: 256MB
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
