@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: coupang-partners-proxy
+spec:
+  hosts:
+    - coupang-partners-proxy.ig.ingtra.net
+  http:
+    - name: kibana
+      route:
+      - destination:
+          host: coupang-partners-proxy.coupang-partners-proxy.svc.cluster.local
+          port: 
+            number: 80
+  gateways:
+    - internal-gateway
