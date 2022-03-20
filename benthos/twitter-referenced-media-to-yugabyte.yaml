@@ -30,7 +30,7 @@ spec:
         data_source_name: postgres://yugabyte:yugabyte@yugabyte-1.mdc.ingtra.net:5433/yugabyte?sslmode=disable
         query: |
           INSERT INTO twitter.referenced_media
-          VALUES (json_populate_record(null::twitter.referenced_media, '?'))
+          VALUES (json_populate_record(null::twitter.referenced_media, '$1'))
           ON CONFLICT DO NOTHING
         args_mapping: root = [ this ]
         batching:
