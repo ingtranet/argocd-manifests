@@ -28,14 +28,14 @@ spec:
       fallback:
         - sql:
           driver: postgres
-            data_source_name: postgres://yugabyte:yugabyte@yugabyte-1.mdc.ingtra.net:5433/yugabyte?sslmode=disable
-            query: |
-              INSERT INTO twitter.referenced_media
-              VALUES (json_populate_record(null::twitter.referenced_media, $1::json))
-              ON CONFLICT DO NOTHING
-            args_mapping: root = [ this.string() ]
-            batching:
-              count: 10
-              period: 10s
+          data_source_name: postgres://yugabyte:yugabyte@yugabyte-1.mdc.ingtra.net:5433/yugabyte?sslmode=disable
+          query: |
+            INSERT INTO twitter.referenced_media
+            VALUES (json_populate_record(null::twitter.referenced_media, $1::json))
+            ON CONFLICT DO NOTHING
+          args_mapping: root = [ this.string() ]
+          batching:
+            count: 10
+            period: 10s
         - stdout:
             codec: lines
