@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kinesis-to-kafka
+spec:
+  selector:
+    matchLabels:
+      app: kinesis-to-kafka
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: twitter-stream
+    spec:
+      containers:
+        - name: twitter-stream
+          image: harbor.ingtra.net/dockerhub/cookieshake/pyrami
+          imagePullPolicy: Always
+          env:
+            - name: PYRAMI_BEARER_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: staging
+                  key: twitter-bearer-tokens
+            - name: PYRAMI_LOG_LEVEL
+              value: DEBUG
+            - name: PYRAMI_APP
+              value: twitter_stream
+            - name: PYRAMI_KAFKA_BOOTSTRAP_SERVERS
+              value: redpanda.mdc.ingtra.net:9092
+            - name: PYRAMI_KAFKA_TOPIC
+              value: data.twitter.sampled-stream.1
