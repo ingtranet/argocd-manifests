@@ -1,11 +1,11 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: kinesis-to-kafka
+  name: twitter-stream
 spec:
   selector:
     matchLabels:
-      app: kinesis-to-kafka
+      app: twitter-stream
   replicas: 1
   template:
     metadata:
