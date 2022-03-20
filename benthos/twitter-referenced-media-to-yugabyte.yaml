@@ -1,7 +1,7 @@
 apiVersion: ingtra.net/v1alpha1
 kind: BenthosPipeline
 metadata:
-  name: twitter-referenced-media-to-cassandra
+  name: twitter-referenced-media-to-yugabyte
 spec:
   image: harbor.ingtra.net/dockerhub/jeffail/benthos:3.64-cgo
   replicas: 1
@@ -16,7 +16,7 @@ spec:
         target_version: 2.8.1
         topics:
           - data.twitter.referenced-media.1
-        consumer_group: benthos-twitter-referenced-media-to-cassandra
+        consumer_group: benthos-twitter-referenced-media-to-yugabyte
         batching:
           count: 128
           period: 10s
@@ -25,11 +25,10 @@ spec:
         - split:
             size: 1
     output:
-      cassandra:
-        addresses:
-          - scylla-1.mdc.ingtra.net:9042
-          - scylla-2.mdc.ingtra.net:9042
-        query: INSERT INTO twitter.referenced_media JSON ?
+      sql:
+        driver: postgresql
+        data_source_name: yugabyte:yugabyte@tcp(yugabyte-1.mdc.ingtra.net:5433)/yugabyte
+        query: INSERT INTO twitter.referenced_media VALUE json_populate_record(null::twitter.referenced_media, '?')
         args_mapping: root = [ this ]
         batching:
           count: 10
