@@ -32,7 +32,7 @@ spec:
           INSERT INTO twitter.referenced_media
           VALUES (json_populate_record(null::twitter.referenced_media, $1))
           ON CONFLICT DO NOTHING
-        args_mapping: root = [ json().string() ]
+        args_mapping: root = [ "'" + json().string() + "'" ]
         batching:
           count: 10
           period: 10s
