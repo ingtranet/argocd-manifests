@@ -7,7 +7,7 @@ spec:
   replicas: 1
   configInline:
     logger:
-      level: ALL
+      level: DEBUG
       format: json
       add_timestamp: true
     input:

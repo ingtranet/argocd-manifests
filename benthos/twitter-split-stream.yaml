@@ -7,7 +7,7 @@ spec:
   replicas: 1
   configInline:
     logger:
-      level: ALL
+      level: DEBUG
       format: json
       add_timestamp: true
     input:
@@ -15,7 +15,7 @@ spec:
         addresses: ["redpanda.mdc.ingtra.net:9092"]
         target_version: 2.8.1
         topics: ["data.twitter.sampled-stream.1"]
-        consumer_group: benthos-twitter-split-stream-2
+        consumer_group: benthos-twitter-split-stream-3
         batching:
           count: 128
           period: 1s
