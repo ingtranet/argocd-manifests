@@ -20,8 +20,8 @@ spec:
             - name: PYRAMI_BEARER_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: staging
-                  key: twitter-bearer-tokens
+                  name: twitter-bearer-tokens
+                  key: staging
             - name: PYRAMI_LOG_LEVEL
               value: DEBUG
             - name: PYRAMI_APP
