@@ -29,7 +29,7 @@ spec:
           config:
             query:
               maxMemory: 4GB
-              maxMemoryPerNode: 256MB
+              maxMemoryPerNode: 512MB
             memory:
               heapHeadroomPerNode: 256MB
         coordinator:
