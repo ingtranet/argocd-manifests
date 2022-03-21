@@ -26,6 +26,6 @@ spec:
         data_source_name: postgres://yugabyte:yugabyte@yugabyte-1.mdc.ingtra.net:5433/yugabyte?sslmode=disable
         query: |
           INSERT INTO twitter.sampled_stream
-          VALUES ($1, $2::jsonb)
+          VALUES ($1, regexp_replace($2, '\\u0000', '', 'g')::jsonb)
           ON CONFLICT DO NOTHING
-        args_mapping: root = [ this.data.id, this.string().re_replace("\u0000", "") ]
+        args_mapping: root = [ this.data.id, this.string() ]
