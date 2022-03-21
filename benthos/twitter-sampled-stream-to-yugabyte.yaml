@@ -28,4 +28,4 @@ spec:
           INSERT INTO twitter.sampled_stream
           VALUES ($1, $2::jsonb)
           ON CONFLICT DO NOTHING
-        args_mapping: root = [ this.data.id, this.string().replace_many("\u0000", "") ]
+        args_mapping: root = [ this.data.id, this.string().re_replace("\u0000", "") ]
