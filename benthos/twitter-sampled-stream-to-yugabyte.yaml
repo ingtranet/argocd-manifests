@@ -16,7 +16,7 @@ spec:
         target_version: 2.8.1
         topics:
           - data.twitter.sampled-stream.1
-        consumer_group: benthos-twitter-sampled-stream-to-yugabyte
+        consumer_group: benthos-twitter-sampled-stream-to-yugabyte-2
         batching:
           count: 1024
           period: 10s
