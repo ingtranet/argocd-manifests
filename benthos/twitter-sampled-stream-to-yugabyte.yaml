@@ -31,7 +31,7 @@ spec:
     output:
       sql:
         driver: postgres
-        data_source_name: postgres://yugabyte:yugabyte@yugabyte-1.mdc.ingtra.net:5433/yugabyte?sslmode=disable&connect_timeout=10
+        data_source_name: postgres://yugabyte:yugabyte@yugabyte-3.mdc.ingtra.net:5433/yugabyte?sslmode=disable&connect_timeout=10
         query: |
           INSERT INTO twitter.sampled_stream
           VALUES ($1, regexp_replace($2, '\\u0000', '', 'g')::jsonb)
