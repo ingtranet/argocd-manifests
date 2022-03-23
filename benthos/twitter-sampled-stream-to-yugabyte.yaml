@@ -18,7 +18,7 @@ spec:
           - data.twitter.sampled-stream.1
         consumer_group: benthos-twitter-sampled-stream-to-yugabyte-3
         batching:
-          count: 1024
+          count: 10000
           period: 10s
     pipeline:
       processors:
