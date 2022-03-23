@@ -17,6 +17,7 @@ spec:
         topics:
           - data.twitter.sampled-stream.1
         consumer_group: benthos-twitter-sampled-stream-to-yugabyte-3
+        checkpoint_limit: 3
         batching:
           count: 1000
           period: 10s
