@@ -24,7 +24,7 @@ spec:
     pipeline:
       processors:
         - split:
-            size: 100
+            size: 1000
         - bloblang: |
             root = if this.exists("error") {
               deleted()
