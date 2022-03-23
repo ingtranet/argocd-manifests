@@ -20,6 +20,14 @@ spec:
         batching:
           count: 1024
           period: 10s
+    pipeline:
+      processors:
+        - bloblang: |
+            root = if this.exists("error") {
+              deleted()
+            } else {
+              this
+            }
     output:
       sql:
         driver: postgres
