@@ -17,12 +17,14 @@ spec:
         topics:
           - data.twitter.sampled-stream.1
         consumer_group: benthos-twitter-sampled-stream-to-yugabyte-3
-        checkpoint_limit: 1
+        checkpoint_limit: 2
         batching:
-          count: 1000
+          count: 3000
           period: 10s
     pipeline:
       processors:
+        - split:
+            size: 100
         - bloblang: |
             root = if this.exists("error") {
               deleted()
