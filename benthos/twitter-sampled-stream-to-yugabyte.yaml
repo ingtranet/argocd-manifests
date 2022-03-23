@@ -18,7 +18,7 @@ spec:
           - data.twitter.sampled-stream.1
         consumer_group: benthos-twitter-sampled-stream-to-yugabyte-3
         batching:
-          count: 10000
+          count: 1000
           period: 10s
     pipeline:
       processors:
@@ -37,3 +37,4 @@ spec:
           VALUES ($1, regexp_replace($2, '\\u0000', '', 'g')::jsonb)
           ON CONFLICT DO NOTHING
         args_mapping: root = [ this.data.id, this.string() ]
+        max_in_flight: 5
