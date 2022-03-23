@@ -19,10 +19,12 @@ spec:
         consumer_group: benthos-twitter-sampled-stream-to-yugabyte-3
         checkpoint_limit: 3
         batching:
-          count: 5000
+          count: 3000
           period: 10s
     pipeline:
       processors:
+        - split:
+            size: 300
         - bloblang: |
             root = if this.exists("error") {
               deleted()
@@ -41,7 +43,7 @@ spec:
                 VALUES ($1, regexp_replace($2, '\\u0000', '', 'g')::jsonb)
                 ON CONFLICT DO NOTHING
               args_mapping: root = [ this.data.id, this.string() ]
-              max_in_flight: 1
+              max_in_flight: 3
           - sql:
               driver: postgres
               data_source_name: postgres://yugabyte:yugabyte@yugabyte-2.mdc.ingtra.net:5433/yugabyte?sslmode=disable&connect_timeout=10
@@ -50,7 +52,7 @@ spec:
                 VALUES ($1, regexp_replace($2, '\\u0000', '', 'g')::jsonb)
                 ON CONFLICT DO NOTHING
               args_mapping: root = [ this.data.id, this.string() ]
-              max_in_flight: 1
+              max_in_flight: 3
           - sql:
               driver: postgres
               data_source_name: postgres://yugabyte:yugabyte@yugabyte-3.mdc.ingtra.net:5433/yugabyte?sslmode=disable&connect_timeout=10
@@ -59,4 +61,4 @@ spec:
                 VALUES ($1, regexp_replace($2, '\\u0000', '', 'g')::jsonb)
                 ON CONFLICT DO NOTHING
               args_mapping: root = [ this.data.id, this.string() ]
-              max_in_flight: 1
+              max_in_flight: 3
