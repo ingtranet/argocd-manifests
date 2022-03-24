@@ -19,7 +19,7 @@ spec:
         consumer_group: benthos-twitter-sampled-stream-to-yugabyte-4
         checkpoint_limit: 1
         batching:
-          count: 10000
+          count: 100
           period: 10s
     pipeline:
       processors:
