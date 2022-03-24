@@ -26,10 +26,10 @@ spec:
         - split:
             size: 1
         - bloblang: |
-            root = if not this.exists("data.id") {
-              deleted()
-            } else {
+            root = if this.exists("data.id") {
               this
+            } else {
+              deleted()
             }
     output:
       broker:
