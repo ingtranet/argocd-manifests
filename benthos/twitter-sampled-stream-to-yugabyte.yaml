@@ -23,8 +23,6 @@ spec:
           period: 10s
     pipeline:
       processors:
-        - split:
-            size: 1
         - bloblang: |
             root = if this.exists("data.id") {
               this
