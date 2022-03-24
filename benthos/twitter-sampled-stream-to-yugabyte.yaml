@@ -26,7 +26,7 @@ spec:
         - split:
             size: 1
         - bloblang: |
-            root = if this.exists("error") {
+            root = if not this.exists("data.id") {
               deleted()
             } else {
               this
