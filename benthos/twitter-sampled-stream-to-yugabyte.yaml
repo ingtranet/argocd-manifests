@@ -3,7 +3,7 @@ kind: BenthosPipeline
 metadata:
   name: twitter-sampled-stream-to-yugabyte
 spec:
-  image: harbor.ingtra.net/dockerhub/jeffail/benthos:3.64-cgo
+  image: harbor.ingtra.net/dockerhub/jeffail/benthos:3.65-cgo
   replicas: 1
   configInline:
     logger:
