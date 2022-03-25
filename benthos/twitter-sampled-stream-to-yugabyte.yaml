@@ -17,9 +17,9 @@ spec:
         topics:
           - data.twitter.sampled-stream.1
         consumer_group: benthos-twitter-sampled-stream-to-yugabyte-5
-        checkpoint_limit: 3
+        checkpoint_limit: 5
         batching:
-          count: 100
+          count: 1000
           period: 10s
     pipeline:
       processors:
@@ -29,6 +29,8 @@ spec:
             } else {
               deleted()
             }
+        - split:
+            size: 100
     output:
       broker:
         pattern: greedy
