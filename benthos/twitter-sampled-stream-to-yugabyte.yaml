@@ -37,10 +37,28 @@ spec:
         outputs:
           - sql:
               driver: postgres
-              data_source_name: postgres://crate:crate@yugabyte-1.mdc.ingtra.net:5432/?sslmode=disable&connect_timeout=10
+              data_source_name: postgres://yugabyte:yugabyte@yugabyte-1.mdc.ingtra.net:5433/yugabyte?sslmode=disable&connect_timeout=10
               query: |
                 INSERT INTO twitter.sampled_stream
-                VALUES ($1, $2::object)
+                VALUES ($1, regexp_replace($2, '\\u0000', '', 'g')::jsonb)
+                ON CONFLICT DO NOTHING
+              args_mapping: root = [ this.data.id, this.string() ]
+              max_in_flight: 1
+          - sql:
+              driver: postgres
+              data_source_name: postgres://yugabyte:yugabyte@yugabyte-2.mdc.ingtra.net:5433/yugabyte?sslmode=disable&connect_timeout=10
+              query: |
+                INSERT INTO twitter.sampled_stream
+                VALUES ($1, regexp_replace($2, '\\u0000', '', 'g')::jsonb)
+                ON CONFLICT DO NOTHING
+              args_mapping: root = [ this.data.id, this.string() ]
+              max_in_flight: 1
+          - sql:
+              driver: postgres
+              data_source_name: postgres://yugabyte:yugabyte@yugabyte-3.mdc.ingtra.net:5433/yugabyte?sslmode=disable&connect_timeout=10
+              query: |
+                INSERT INTO twitter.sampled_stream
+                VALUES ($1, regexp_replace($2, '\\u0000', '', 'g')::jsonb)
                 ON CONFLICT DO NOTHING
               args_mapping: root = [ this.data.id, this.string() ]
               max_in_flight: 1
