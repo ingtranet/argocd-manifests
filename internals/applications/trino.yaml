@@ -50,13 +50,11 @@ spec:
                         values: ["worker"]
                   topologyKey: "kubernetes.io/hostname"
         additionalCatalogs:
-          scylla: |
-            connector.name=cassandra
-            cassandra.contact-points=scylla-1.mdc.ingtra.net,scylla-2.mdc.ingtra.net
-            cassandra.protocol-version=V4
-            cassandra.fetch-size=10000
-            cassandra.client.read-timeout=10m
-            cassandra.load-policy.use-token-aware=true
+          yugabyte: |
+            connector.name=postgresql
+            connection-url=jdbc:postgresql://yugabyte-1.mdc.ingtra.net:5433/yugabyte
+            connection-user=yugabyte
+            connection-password=yugabyte
         additionalConfigProperties:
           - spill-enabled=true
           - spiller-spill-path=/tmp
