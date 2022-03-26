@@ -30,7 +30,7 @@ spec:
               deleted()
             }
         - split:
-            size: 1
+            size: 100
     output:
       broker:
         pattern: greedy
