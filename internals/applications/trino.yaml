@@ -57,6 +57,7 @@ spec:
             hive.s3.aws-secret-key=trinouser
             hive.s3.endpoint=http://minio.mdc.ingtra.net
             hive.s3.ssl.enabled=false
+            hive.s3.path-style-access=true
         additionalConfigProperties:
           - spill-enabled=true
           - spiller-spill-path=/tmp
