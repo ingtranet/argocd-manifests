@@ -52,7 +52,7 @@ spec:
         additionalCatalogs:
           yugabyte: |
             connector.name=postgresql
-            connection-url=jdbc:postgresql://yugabyte-1.mdc.ingtra.net:5433/yugabyte
+            connection-url=jdbc:postgresql://yugabyte-t-3.mdc.ingtra.net:5433/yugabyte
             connection-user=yugabyte
             connection-password=yugabyte
         additionalConfigProperties:
