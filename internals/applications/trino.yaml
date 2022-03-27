@@ -53,7 +53,6 @@ spec:
           iceberg: |
             connector.name=iceberg
             hive.metastore.uri=thrift://hive-metastore.mdc.ingtra.net:9083
-            hive.metastore.warehouse.dir=http://helpme
             hive.s3.aws-access-key=trino
             hive.s3.aws-secret-key=trinouser
             hive.s3.endpoint=http://minio.mdc.ingtra.net
