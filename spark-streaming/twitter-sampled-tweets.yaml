@@ -27,4 +27,3 @@ spec:
     memory: "1024m"
     labels:
       version: 3.2.1
-      argocd.argoproj.io/instance: spark-streaming
