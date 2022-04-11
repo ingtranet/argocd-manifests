@@ -14,10 +14,6 @@ spec:
     #targetRevision: main
     helm:
       releaseName: trino
-      valueFiles:
-        - values.yaml
-        - values-coordinator.yaml
-        - values-worker.yaml  
       values: |
         image:
           repository: harbor.ingtra.net/dockerhub/trinodb/trino
