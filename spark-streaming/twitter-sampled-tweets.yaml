@@ -17,7 +17,7 @@ spec:
   driver:
     cores: 1
     coreRequest: 100m
-    memory: "1024m"
+    memory: "2048m"
     labels:
       version: 3.2.1
   executor:
@@ -27,3 +27,4 @@ spec:
     memory: "1024m"
     labels:
       version: 3.2.1
+      argocd.argoproj.io/instance: spark-streaming
