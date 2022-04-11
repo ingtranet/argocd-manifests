@@ -23,6 +23,7 @@ spec:
     memory: "512m"
     labels:
       version: 3.2.1
+    serviceAccount: spark-operator
   executor:
     cores: 1
     coreRequest: 100m
