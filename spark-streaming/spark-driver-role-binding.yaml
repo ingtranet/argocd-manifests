@@ -6,6 +6,7 @@ subjects:
   - kind: ServiceAccount
     name: default
     apiGroup: ""
+roleRef:
   kind: ClusterRole
   name: edit
   apiGroup: rbac.authorization.k8s.io
