@@ -7,16 +7,13 @@ spec:
   mode: cluster
   image: harbor.ingtra.net/library/spark:3.2.1
   imagePullPolicy: Always
-  mainClass: org.apache.spark.examples.SparkPi
-  mainApplicationFile: "local:///opt/spark/examples/jars/spark-examples_2.12-3.2.1.jar"
-  sparkVersion: "3.2.1"
+  mainClass: net.ingtra.sparking.loader.LoaderApp
+  mainApplicationFile: http://minio.mdc.ingtra.net/bins/sparking/jar/sparking-assembly-0.1.0-SNAPSHOT.jar
+  arguments:
+    - http://minio.mdc.ingtra.net/bins/sparking/configs/twitter/streaming_sampled_tweets.yaml
+  sparkVersion: 3.2.1
   restartPolicy:
-    type: Never
-  volumes:
-    - name: "test-volume"
-      hostPath:
-        path: "/tmp"
-        type: Directory
+    type: OnFailure
   driver:
     cores: 1
     coreRequest: 100m
