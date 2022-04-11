@@ -17,13 +17,13 @@ spec:
   driver:
     cores: 1
     coreRequest: 100m
-    memory: "512m"
+    memory: "1024m"
     labels:
       version: 3.2.1
   executor:
     cores: 1
     coreRequest: 100m
-    instances: 1
-    memory: "512m"
+    instances: 3
+    memory: "1024m"
     labels:
       version: 3.2.1
