@@ -24,6 +24,6 @@ spec:
     cores: 1
     coreRequest: 100m
     instances: 3
-    memory: "2048m"
+    memory: "1024m"
     labels:
       version: 3.2.1
