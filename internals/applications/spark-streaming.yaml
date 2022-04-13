@@ -15,4 +15,5 @@ spec:
     server: https://kubernetes.default.svc
     namespace: spark-streaming
   ignoreDifferences:
-    - kind: Pod
+    - group: *
+      kind: Pod
