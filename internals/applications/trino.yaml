@@ -35,6 +35,11 @@ spec:
         worker:
           jvm:
             maxHeapSize: 1G
+          resources:
+            requests:
+              cpu: 0.1
+            limits:
+              cpu: 1
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
