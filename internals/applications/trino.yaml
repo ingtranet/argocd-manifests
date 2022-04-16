@@ -18,7 +18,7 @@ spec:
         image:
           repository: harbor.ingtra.net/dockerhub/trinodb/trino
         server:
-          workers: 3
+          workers: 6
           coordinatorExtraConfig: |
             web-ui.user=admin
             web-ui.authentication.type=fixed
