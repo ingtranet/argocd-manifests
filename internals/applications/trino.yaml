@@ -75,7 +75,7 @@ spec:
           - exchange.s3.aws-access-key=trino
           - exchange.s3.aws-secret-key=trinouser
           - exchange.s3.endpoint=http://minio.mdc.ingtra.net
-          - exchange.s3.region=ap-northeast-2
+          - exchange.s3.region=default
 
   destination:
     server: https://kubernetes.default.svc
