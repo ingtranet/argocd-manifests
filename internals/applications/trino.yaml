@@ -69,6 +69,7 @@ spec:
           - spill-compression-enabled=true
           - query-max-spill-per-node=10GB
           - retry-policy=TASK
+          - enable-dynamic-filtering=false
         additionalExchangeManagerProperties:
           - exchange.encryption-enabled=false
           - exchange.s3.aws-access-key=trino
