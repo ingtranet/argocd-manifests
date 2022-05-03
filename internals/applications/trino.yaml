@@ -25,10 +25,10 @@ spec:
             web-ui.authentication.type=fixed
           config:
             query:
-              maxMemory: 1GB
-              maxMemoryPerNode: 256MB
+              maxMemory: 4GB
+              maxMemoryPerNode: 1GB
             memory:
-              heapHeadroomPerNode: 256MB
+              heapHeadroomPerNode: 1GB
           exchangeManager:
             name: "filesystem"
             baseDir: "s3a://trino/exchange"
@@ -41,7 +41,7 @@ spec:
             - "-XX:ShenandoahGCHeuristics=compact"
         worker:
           jvm:
-            maxHeapSize: 2G
+            maxHeapSize: 4G
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
@@ -50,7 +50,7 @@ spec:
             requests:
               cpu: 0.1
             limits:
-              cpu: 2
+              cpu: 3
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
@@ -75,8 +75,8 @@ spec:
           - spill-enabled=true
           - spiller-spill-path=/tmp
           - spill-compression-enabled=true
-          - query-max-spill-per-node=10GB
-          - query.max-total-memory=10GB
+          - query-max-spill-per-node=30GB
+          - query.max-total-memory=30GB
         additionalExchangeManagerProperties:
           - exchange.encryption-enabled=false
           - exchange.s3.aws-access-key=trino
