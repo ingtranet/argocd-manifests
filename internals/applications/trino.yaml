@@ -76,6 +76,7 @@ spec:
           - spiller-spill-path=/tmp
           - spill-compression-enabled=true
           - query-max-spill-per-node=10GB
+          - query.max-total-memory=10GB
         additionalExchangeManagerProperties:
           - exchange.encryption-enabled=false
           - exchange.s3.aws-access-key=trino
