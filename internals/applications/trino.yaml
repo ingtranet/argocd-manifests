@@ -34,7 +34,7 @@ spec:
             baseDir: "s3a://trino/exchange"
         coordinator:
           jvm:
-            maxHeapSize: 1G
+            maxHeapSize: 2G
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
