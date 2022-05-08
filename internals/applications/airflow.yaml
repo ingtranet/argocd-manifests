@@ -13,6 +13,7 @@ spec:
       releaseName: airflow
       values: |
         defaultAirflowRepository: harbor.ingtra.net/dockerhub/apache/airflow
+        defaultAirflowTag: 2.2.4-python3.9
         executor: "KubernetesExecutor"
         dags:
           gitSync:
