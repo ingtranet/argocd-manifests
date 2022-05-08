@@ -22,7 +22,7 @@ spec:
             rev: HEAD
             depth: 1
             subPath: dags
-            wait: 300
+            wait: 60
         data:
           metadataConnection:
             user: airflow
@@ -43,6 +43,7 @@ spec:
         webserver:
           webserverConfig: |
             AUTH_ROLE_PUBLIC = 'Admin'
+        webserverSecretKey: 9a0216e82ccc2aab070b2fb2af5cc725
         elasticsearch:
           enabled: true
           connection:
