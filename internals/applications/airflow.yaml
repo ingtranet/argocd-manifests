@@ -49,6 +49,8 @@ spec:
             host: elasticsearch.mdc.ingtra.net
             port: 9200
         config:
+          webserver:
+            expose_config: 'True'
           elasticsearch:
             frontend: https://kibana.ig.ingtra.net/app/discover#/?_a=(columns:!(message),filters:!(),index:dff5d120-5d3d-11ec-b070-4d64674090d3,interval:auto,query:(language:kuery,query:'log_id:"{log_id}"'),sort:!(log.offset,asc))&amp;_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-1y,to:now))
             json_format: 'True'
