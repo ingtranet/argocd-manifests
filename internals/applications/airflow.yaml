@@ -18,6 +18,7 @@ spec:
           gitSync:
             enabled: true
             repo: https://github.com/ingtranet/airflow-dags.git
+            subPath: ""
             branch: master
             rev: HEAD
             depth: 1
