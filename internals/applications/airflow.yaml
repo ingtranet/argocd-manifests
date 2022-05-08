@@ -21,7 +21,6 @@ spec:
             branch: master
             rev: HEAD
             depth: 1
-            subPath: dags
             wait: 60
         data:
           metadataConnection:
