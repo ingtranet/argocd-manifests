@@ -19,7 +19,7 @@ spec:
           repository: harbor.ingtra.net/dockerhub/trinodb/trino
           tag: "379"
         server:
-          workers: 6
+          workers: 3
           coordinatorExtraConfig: |
             web-ui.user=admin
             web-ui.authentication.type=fixed
@@ -41,7 +41,7 @@ spec:
             - "-XX:ShenandoahGCHeuristics=compact"
         worker:
           jvm:
-            maxHeapSize: 4G
+            maxHeapSize: 3G
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
@@ -50,7 +50,7 @@ spec:
             requests:
               cpu: 0.1
             limits:
-              cpu: 2
+              cpu: 4
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
