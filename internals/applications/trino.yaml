@@ -74,7 +74,7 @@ spec:
         additionalConfigProperties:
           - spill-enabled=true
           - spiller-spill-path=/tmp
-          - spill-compression-enabled=true
+          - spill-compression-enabled=false
           - query-max-spill-per-node=30GB
           - query.max-total-memory=30GB
         additionalExchangeManagerProperties:
