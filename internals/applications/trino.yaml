@@ -17,7 +17,7 @@ spec:
       values: |
         image:
           repository: harbor.ingtra.net/dockerhub/trinodb/trino
-          tag: "380"
+          tag: "381"
         server:
           workers: 3
           coordinatorExtraConfig: |
