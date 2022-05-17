@@ -26,7 +26,7 @@ spec:
           config:
             query:
               maxMemory: 4GB
-              maxMemoryPerNode: 1GB
+              maxMemoryPerNode: 2GB
             memory:
               heapHeadroomPerNode: 1GB
           exchangeManager:
@@ -34,7 +34,7 @@ spec:
             baseDir: "s3a://trino/exchange"
         coordinator:
           jvm:
-            maxHeapSize: 2G
+            maxHeapSize: 3G
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
