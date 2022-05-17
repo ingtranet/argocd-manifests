@@ -17,7 +17,7 @@ spec:
       values: |
         image:
           repository: harbor.ingtra.net/dockerhub/trinodb/trino
-          tag: "381"
+          tag: "381-amd64"
         server:
           workers: 3
           coordinatorExtraConfig: |
