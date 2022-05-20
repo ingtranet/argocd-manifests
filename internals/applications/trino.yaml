@@ -71,6 +71,11 @@ spec:
             hive.s3.endpoint=http://minio.mdc.ingtra.net
             hive.s3.ssl.enabled=false
             hive.s3.path-style-access=true
+          postgresql: |
+            connector.name=postgresql
+            connection-url=jdbc:postgresql://postgresql.mdc.ingtra.net:5432/postgres
+            connection-user=trino
+            connection-password=trino
         additionalConfigProperties:
           - spill-enabled=true
           - spiller-spill-path=/tmp
