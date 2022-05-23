@@ -77,7 +77,7 @@ spec:
             connection-user=trino
             connection-password=trino
             decimal-mapping=allow_overflow
-            decimal-default-scale=10
+            decimal-default-scale=16
         additionalConfigProperties:
           - spill-enabled=true
           - spiller-spill-path=/tmp
