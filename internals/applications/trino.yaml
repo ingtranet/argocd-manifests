@@ -82,6 +82,7 @@ spec:
           - spill-compression-enabled=false
           - query-max-spill-per-node=30GB
           - query.max-total-memory=30GB
+          - decimal-mapping=allow_overflow
         additionalExchangeManagerProperties:
           - exchange.encryption-enabled=false
           - exchange.s3.aws-access-key=trino
