@@ -76,13 +76,13 @@ spec:
             connection-url=jdbc:postgresql://postgresql.mdc.ingtra.net:5432/postgres
             connection-user=trino
             connection-password=trino
+            decimal-mapping=allow_overflow
         additionalConfigProperties:
           - spill-enabled=true
           - spiller-spill-path=/tmp
           - spill-compression-enabled=false
           - query-max-spill-per-node=30GB
           - query.max-total-memory=30GB
-          - decimal-mapping=allow_overflow
         additionalExchangeManagerProperties:
           - exchange.encryption-enabled=false
           - exchange.s3.aws-access-key=trino
