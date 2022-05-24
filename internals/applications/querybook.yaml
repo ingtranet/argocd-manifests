@@ -10,7 +10,7 @@ spec:
     path: helm
     targetRevision: master
     helm:
-      releaseName: trino
+      releaseName: querybook
       values: |
         worker:
           replicaCount: 1
