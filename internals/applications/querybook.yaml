@@ -16,7 +16,7 @@ spec:
           replicaCount: 1
           name: worker
           image:
-            repository: querybook/querybook
+            repository: harbor.ingtra.net/dockerhub/querybook/querybook
             pullPolicy: Always
             tag: 3.4.0
           resources:
@@ -30,7 +30,7 @@ spec:
           replicaCount: 1
           name: scheduler
           image:
-            repository: querybook/querybook
+            repository: harbor.ingtra.net/dockerhub/querybook/querybook
             pullPolicy: Always
             tag: 3.4.0
           resources:
@@ -44,7 +44,7 @@ spec:
           replicaCount: 1
           name: web
           image:
-            repository: querybook/querybook
+            repository: harbor.ingtra.net/dockerhub/querybook/querybook
             pullPolicy: Always
             tag: 3.4.0
           service:
