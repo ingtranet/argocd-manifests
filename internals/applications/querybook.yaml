@@ -18,7 +18,7 @@ spec:
           image:
             repository: querybook/querybook
             pullPolicy: Always
-            tag: latest
+            tag: 3.4.0
           resources:
             requests:
               memory: 300Mi
@@ -32,7 +32,7 @@ spec:
           image:
             repository: querybook/querybook
             pullPolicy: Always
-            tag: latest
+            tag: 3.4.0
           resources:
             requests:
               memory: 200Mi
@@ -46,7 +46,7 @@ spec:
           image:
             repository: querybook/querybook
             pullPolicy: Always
-            tag: latest
+            tag: 3.4.0
           service:
             serviceType: ClusterIP
             servicePort: 80
