@@ -1,0 +1,73 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: querybook
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/pinterest/querybook.git
+    path: helm
+    targetRevision: master
+    helm:
+      releaseName: trino
+      values: |
+        worker:
+          replicaCount: 1
+          name: worker
+          image:
+            repository: querybook/querybook
+            pullPolicy: Always
+            tag: latest
+          resources:
+            requests:
+              memory: 300Mi
+              cpu: 0.1
+            limits:
+              memory: 1Gi
+              cpu: 1
+        scheduler:
+          replicaCount: 1
+          name: scheduler
+          image:
+            repository: querybook/querybook
+            pullPolicy: Always
+            tag: latest
+          resources:
+            requests:
+              memory: 200Mi
+              cpu: 0.1
+            limits:
+              memory: 200Mi
+              cpu: 0.1
+        web:
+          replicaCount: 1
+          name: web
+          image:
+            repository: querybook/querybook
+            pullPolicy: Always
+            tag: latest
+          service:
+            serviceType: ClusterIP
+            servicePort: 80
+          resources:
+            requests:
+              memory: 500Mi
+              cpu: 0.1
+            limits:
+              memory: 2Gi
+              cpu: 1
+        mysql:
+          enabled: false
+        redis:
+          enabled: false
+        elasticsearch:
+          enabled: false
+        secret:
+          flask_secret_key: SOME_RANDOM_SECRET_KEY
+          database_conn: mysql+pymysql://querybook:querybook@mysql.mdc.ingtra.net:3306/querybook?charset=utf8mb4
+          redis_url:  redis://redis.mdc.ingtra.net:6379/1
+          elasticsearch_host: elasticsearch.mdc.ingtra.net:9200
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: querybook
