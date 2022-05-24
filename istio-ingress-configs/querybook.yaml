@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: querybook
+spec:
+  hosts:
+    - querybook.ig.ingtra.net
+  http:
+    - name: querybook
+      route:
+      - destination:
+          host: web.querybook.svc.cluster.local
+          port: 
+            number: 80
+  gateways:
+    - internal-gateway
