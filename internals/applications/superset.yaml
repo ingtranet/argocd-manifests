@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: superset
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: superset
+    repoURL: https://apache.github.io/superset
+    targetRevision: 0.6.1
+    helm:
+      releaseName: superset
+      values: |
+        image:
+          repository: harbor.ingtra.net/dockerhub/apache/superset
+          tag: 1.5.0
+        initImage:
+          repository: harbor.ingtra.net/dockerhub/library/busybox
+        configOverrides:
+          useCustomConnections: |
+            SQLALCHEMY_DATABASE_URI = 'mysql://superset:superset@mysql.mdc.ingtra.net/superset'
+            BROKER_URL = 'redis://redis.mdc.ingtra.net:6379/2'
+        postgresql:
+          enabled: false
+        redis:
+          enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: superset
+
