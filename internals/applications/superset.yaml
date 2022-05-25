@@ -33,11 +33,12 @@ spec:
         configOverrides:
           useCustomConnections: |
             SQLALCHEMY_DATABASE_URI = 'mysql://superset:superset@mysql.mdc.ingtra.net/superset'
-            class CeleryConfig(object):
+            class CustomCeleryConfig(object):
               CELERY_IMPORTS = ('superset.sql_lab', )
               CELERY_ANNOTATIONS = {'tasks.add': {'rate_limit': '10/s'}}
               BROKER_URL = 'redis://redis.mdc.ingtra.net:6379/2'
               CELERY_RESULT_BACKEND = 'redis://redis.mdc.ingtra.net:6379/2'
+            CELERY_CONFIG = CustomCeleryConfig
             CACHE_CONFIG = {
               'CACHE_TYPE': 'RedisCache',
               'CACHE_DEFAULT_TIMEOUT': 300,
