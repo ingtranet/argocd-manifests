@@ -19,6 +19,8 @@ spec:
           repository: harbor.ingtra.net/dockerhub/library/busybox
         supersetNode:
           initContainers: []
+        supersetWorker:
+          initContainers: []
         configOverrides:
           useCustomConnections: |
             SQLALCHEMY_DATABASE_URI = 'mysql://superset:superset@mysql.mdc.ingtra.net/superset'
