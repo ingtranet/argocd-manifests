@@ -29,7 +29,7 @@ spec:
             BROKER_URL = 'redis://redis.mdc.ingtra.net:6379/2'
             CELERY_RESULT_BACKEND = 'redis://redis.mdc.ingtra.net:6379/2'
             CACHE_CONFIG = {
-              'CACHE_TYPE': 'redis',
+              'CACHE_TYPE': 'RedisCache',
               'CACHE_DEFAULT_TIMEOUT': 300,
               'CACHE_KEY_PREFIX': 'superset_cache_',
               'CACHE_REDIS_HOST': 'redis.mdc.ingtra.net',
