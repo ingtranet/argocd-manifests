@@ -17,6 +17,8 @@ spec:
           tag: 1.5.0
         initImage:
           repository: harbor.ingtra.net/dockerhub/library/busybox
+        supersetNode:
+          initContainers: []
         configOverrides:
           useCustomConnections: |
             SQLALCHEMY_DATABASE_URI = 'mysql://superset:superset@mysql.mdc.ingtra.net/superset'
@@ -30,7 +32,6 @@ spec:
               'CACHE_REDIS_PORT': 6379,
               'CACHE_REDIS_DB': 2
             }
-        initContainers: []
         postgresql:
           enabled: false
         redis:
