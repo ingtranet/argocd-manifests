@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: superset
+spec:
+  hosts:
+    - superset.ig.ingtra.net
+  http:
+    - name: superset
+      route:
+      - destination:
+          host: superset.superset.svc.cluster.local
+          port: 
+            number: 8088
+  gateways:
+    - internal-gateway
