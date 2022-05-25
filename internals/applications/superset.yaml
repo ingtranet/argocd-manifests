@@ -46,6 +46,11 @@ spec:
             DATA_CACHE_CONFIG = CACHE_CONFIG
             FILTER_STATE_CACHE_CONFIG = CACHE_CONFIG
             EXPLORE_FORM_DATA_CACHE_CONFIG = CACHE_CONFIG
+            RESULT_BACKEND = RedisCache(
+              host='redis.mdc.ingtra.net',
+              port=6379,
+              key_prefix='superset_results_'
+            )
         postgresql:
           enabled: false
         redis:
