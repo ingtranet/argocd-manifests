@@ -21,6 +21,15 @@ spec:
           useCustomConnections: |
             SQLALCHEMY_DATABASE_URI = 'mysql://superset:superset@mysql.mdc.ingtra.net/superset'
             BROKER_URL = 'redis://redis.mdc.ingtra.net:6379/2'
+            CELERY_RESULT_BACKEND = 'redis://redis.mdc.ingtra.net:6379/2'
+            CACHE_CONFIG = {
+              'CACHE_TYPE': 'redis',
+              'CACHE_DEFAULT_TIMEOUT': 300,
+              'CACHE_KEY_PREFIX': 'superset_cache_',
+              'CACHE_REDIS_HOST': 'redis.mdc.ingtra.net',
+              'CACHE_REDIS_PORT': 6379,
+              'CACHE_REDIS_DB': 2
+            }
         postgresql:
           enabled: false
         redis:
