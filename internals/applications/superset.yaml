@@ -23,6 +23,13 @@ spec:
           initContainers: []
         init:
           initContainers: []
+        bootstrapScript: |
+          #!/bin/bash
+          rm -rf /var/lib/apt/lists/* && \
+          pip install \
+            trino[sqlalchemy]==0.313.0 \
+            redis==4.3.1 && \
+          if [ ! -f ~/bootstrap ]; then echo "Running Superset with uid {{ .Values.runAsUser }}" > ~/bootstrap; fi
         configOverrides:
           useCustomConnections: |
             SQLALCHEMY_DATABASE_URI = 'mysql://superset:superset@mysql.mdc.ingtra.net/superset'
