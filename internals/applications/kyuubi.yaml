@@ -48,6 +48,7 @@ spec:
          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.2.1
          - spark.kubernetes.container.image.pullPolicy=Always
          - spark.kubernetes.executor.podTemplateFile=http://minio.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
+         - spark.kubernetes.file.upload.path=s3a://temp/kyuubi-spark
   destination:
     server: https://kubernetes.default.svc
     namespace: kyuubi
