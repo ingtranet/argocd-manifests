@@ -25,8 +25,8 @@ spec:
             web-ui.authentication.type=fixed
           config:
             query:
-              maxMemory: 6GB
-              maxMemoryPerNode: 2GB
+              maxMemory: 10GB
+              maxMemoryPerNode: 3GB
             memory:
               heapHeadroomPerNode: 1GB
           exchangeManager:
