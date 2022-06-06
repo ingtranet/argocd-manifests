@@ -19,35 +19,35 @@ spec:
         service:
           type: LoadBalancer
         additionalConfigProperties:
-         - kyuubi.engine.connection.url.use.hostname=false
-         - spark.driver.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.maxDirectMemory=0
-         - spark.driver.memory=512M
-         - spark.executor.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.maxDirectMemory=0
-         - spark.executor.memory=4G
-         - spark.shuffle.io.preferDirectBufs=false
-         - spark.network.io.preferDirectBufs=false
-         - spark.eventLog.gcMetrics.youngGenerationGarbageCollectors=Shenandoah Cycles
-         - spark.eventLog.gcMetrics.oldGenerationGarbageCollectors=Shenandoah Pauses
-         - spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
-         - spark.sql.catalog.iceberg=org.apache.iceberg.spark.SparkCatalog
-         - spark.sql.catalog.iceberg.type=hive
-         - spark.sql.catalog.iceberg.uri=thrift://hive-metastore.mdc.ingtra.net:9083
-         - spark.sql.catalog.iceberg.warehouse=s3a://iceberg/
-         - spark.sql.catalog.iceberg.hive.metastore.warehouse.dir=s3a://iceberg/
-         - spark.hadoop.fs.s3a.endpoint=http://minio.mdc.ingtra.net
-         - spark.hadoop.fs.s3a.access.key=spark
-         - spark.hadoop.fs.s3a.secret.key=sparkuser
-         - spark.hadoop.fs.s3a.connection.ssl.enabled=false
-         - spark.hadoop.fs.s3a.fast.upload=true
-         - spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled=true
-         - spark.master=k8s://https://kubernetes.default.svc
-         - spark.executor.instances=3
-         - spark.kubernetes.executor.request.cores=0.1
-         - spark.kubernetes.executor.limit.cores=2
-         - spark.kubernetes.namespace=kyuubi
-         - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.2.1
-         - spark.kubernetes.container.image.pullPolicy=Always
-         - spark.kubernetes.executor.podTemplateFile=http://minio.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
+          - kyuubi.engine.connection.url.use.hostname=false
+          - spark.driver.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.maxDirectMemory=0
+          - spark.driver.memory=512M
+          - spark.executor.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.maxDirectMemory=0
+          - spark.executor.memory=4G
+          - spark.shuffle.io.preferDirectBufs=false
+          - spark.network.io.preferDirectBufs=false
+          - spark.eventLog.gcMetrics.youngGenerationGarbageCollectors=Shenandoah Cycles
+          - spark.eventLog.gcMetrics.oldGenerationGarbageCollectors=Shenandoah Pauses
+          - spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
+          - spark.sql.catalog.iceberg=org.apache.iceberg.spark.SparkCatalog
+          - spark.sql.catalog.iceberg.type=hive
+          - spark.sql.catalog.iceberg.uri=thrift://hive-metastore.mdc.ingtra.net:9083
+          - spark.sql.catalog.iceberg.warehouse=s3a://iceberg/
+          - spark.sql.catalog.iceberg.hive.metastore.warehouse.dir=s3a://iceberg/
+          - spark.hadoop.fs.s3a.endpoint=http://minio.mdc.ingtra.net
+          - spark.hadoop.fs.s3a.access.key=spark
+          - spark.hadoop.fs.s3a.secret.key=sparkuser
+          - spark.hadoop.fs.s3a.connection.ssl.enabled=false
+          - spark.hadoop.fs.s3a.fast.upload=true
+          - spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled=true
+          - spark.master=k8s://https://kubernetes.default.svc
+          - spark.executor.instances=3
+          - spark.kubernetes.executor.request.cores=0.1
+          - spark.kubernetes.executor.limit.cores=2
+          - spark.kubernetes.namespace=kyuubi
+          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.2.1
+          - spark.kubernetes.container.image.pullPolicy=Always
+          - spark.kubernetes.executor.podTemplateFile=http://minio.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: kyuubi
