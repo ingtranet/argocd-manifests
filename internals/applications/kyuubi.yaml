@@ -26,8 +26,8 @@ spec:
          - spark.executor.memoryOverhead=1G
          - spark.shuffle.io.preferDirectBufs=false
          - spark.network.io.preferDirectBufs=false
-         - spark.eventLog.gcMetrics.youngGenerationGarbageCollectors="Shenandoah Cycles"
-         - spark.eventLog.gcMetrics.oldGenerationGarbageCollectors="Shenandoah Pauses"
+         - spark.eventLog.gcMetrics.youngGenerationGarbageCollectors=Shenandoah Cycles
+         - spark.eventLog.gcMetrics.oldGenerationGarbageCollectors=Shenandoah Pauses
          - spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
          - spark.sql.catalog.iceberg=org.apache.iceberg.spark.SparkCatalog
          - spark.sql.catalog.iceberg.type=hive
