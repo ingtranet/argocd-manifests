@@ -29,9 +29,6 @@ spec:
               maxMemoryPerNode: 3GB
             memory:
               heapHeadroomPerNode: 1GB
-          exchangeManager:
-            name: "filesystem"
-            baseDir: "s3a://trino/exchange"
         coordinator:
           jvm:
             maxHeapSize: 3G
@@ -113,12 +110,6 @@ spec:
           - spill-compression-enabled=false
           - query-max-spill-per-node=30GB
           - query.max-total-memory=30GB
-        additionalExchangeManagerProperties:
-          - exchange.encryption-enabled=false
-          - exchange.s3.aws-access-key=trino
-          - exchange.s3.aws-secret-key=trinouser
-          - exchange.s3.endpoint=http://minio.mdc.ingtra.net
-          - exchange.s3.region=us-east-1
 
   destination:
     server: https://kubernetes.default.svc
