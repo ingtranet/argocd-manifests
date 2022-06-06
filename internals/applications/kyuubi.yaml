@@ -45,12 +45,10 @@ spec:
          - spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled=true
          - spark.master=k8s://https://kubernetes.default.svc
          - spark.executor.instances=3
-         - spark.submit.deployMode=cluster
          - spark.kubernetes.namespace=kyuubi
          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.2.1
          - spark.kubernetes.container.image.pullPolicy=Always
          - spark.kubernetes.executor.podTemplateFile=http://minio.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
-         - spark.kubernetes.file.upload.path=s3a://temp/kyuubi-spark
   destination:
     server: https://kubernetes.default.svc
     namespace: kyuubi
