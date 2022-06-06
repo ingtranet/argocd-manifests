@@ -68,6 +68,7 @@ spec:
             max_retries: 3
             timeout: 30
             retry_timeout: 'True'
+        fernetKey: H8RLkpZN5z9vjF1Dj2vuH9Q6IZbMFHrGy2oHACIijA8=
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
