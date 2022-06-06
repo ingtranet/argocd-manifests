@@ -31,7 +31,7 @@ spec:
               heapHeadroomPerNode: 1GB
         coordinator:
           jvm:
-            maxHeapSize: 3G
+            maxHeapSize: 4G
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
