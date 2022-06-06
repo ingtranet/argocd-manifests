@@ -22,7 +22,7 @@ spec:
          - kyuubi.engine.connection.url.use.hostname=false
          - spark.driver.extraJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact
          - spark.driver.memory=512M
-         - spark.executor.extraJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dspark.shuffle.io.preferDirectBufs=false
+         - spark.executor.extraJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact
          - spark.executor.memory=1G
          - spark.executor.memoryOverhead=1G
          - spark.shuffle.io.preferDirectBufs=false
