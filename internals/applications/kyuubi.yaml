@@ -29,7 +29,6 @@ spec:
          - spark.eventLog.gcMetrics.youngGenerationGarbageCollectors=Shenandoah Cycles
          - spark.eventLog.gcMetrics.oldGenerationGarbageCollectors=Shenandoah Pauses
          - spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
-         - spark.sql.defaultCatalog=iceberg
          - spark.sql.catalog.iceberg=org.apache.iceberg.spark.SparkCatalog
          - spark.sql.catalog.iceberg.type=hive
          - spark.sql.catalog.iceberg.uri=thrift://hive-metastore.mdc.ingtra.net:9083
