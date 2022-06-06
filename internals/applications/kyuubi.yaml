@@ -20,9 +20,9 @@ spec:
           type: LoadBalancer
         additionalConfigProperties:
           - kyuubi.engine.connection.url.use.hostname=false
-          - spark.driver.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.maxDirectMemory=0
+          - spark.driver.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.noPreferDirect=true -Dio.netty.maxDirectMemory=0
           - spark.driver.memory=512M
-          - spark.executor.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.maxDirectMemory=0
+          - spark.executor.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.noPreferDirect=true -Dio.netty.maxDirectMemory=0
           - spark.executor.memory=4G
           - spark.shuffle.io.preferDirectBufs=false
           - spark.network.io.preferDirectBufs=false
