@@ -44,7 +44,6 @@ spec:
          - spark.master=k8s://https://kubernetes.default.svc
          - spark.executor.instances=3
          - spark.kubernetes.namespace=kyuubi
-         - spark.kubernetes.authenticate.driver.serviceAccountName=spark
          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.2.1
          - spark.kubernetes.container.image.pullPolicy=Always
          - spark.kubernetes.executor.podTemplateFile=http://minio.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
