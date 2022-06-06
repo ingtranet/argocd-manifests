@@ -20,11 +20,10 @@ spec:
           type: LoadBalancer
         additionalConfigProperties:
          - kyuubi.engine.connection.url.use.hostname=false
-         - spark.driver.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.maxDirectMemory=0
+         - spark.driver.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.maxDirectMemory=0 -Dio.netty.noPreferDirect=true
          - spark.driver.memory=512M
-         - spark.executor.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.maxDirectMemory=0
-         - spark.executor.memory=1G
-         - spark.executor.memoryOverhead=1G
+         - spark.executor.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.maxDirectMemory=0 -Dio.netty.noPreferDirect=true
+         - spark.executor.memory=4G
          - spark.shuffle.io.preferDirectBufs=false
          - spark.network.io.preferDirectBufs=false
          - spark.eventLog.gcMetrics.youngGenerationGarbageCollectors=Shenandoah Cycles
@@ -44,6 +43,8 @@ spec:
          - spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled=true
          - spark.master=k8s://https://kubernetes.default.svc
          - spark.executor.instances=3
+         - spark.kubernetes.executor.request.cores=0.1
+         - spark.kubernetes.executor.limit.cores=2
          - spark.kubernetes.namespace=kyuubi
          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.2.1
          - spark.kubernetes.container.image.pullPolicy=Always
