@@ -22,7 +22,7 @@ spec:
          - kyuubi.engine.connection.url.use.hostname=false
          - kyuubi.zookeeper.embedded.client.port.address=kyuubi-zk-svc
          - spark.driver.extraJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact
-         - spark.driver.memory=1G
+         - spark.driver.memory=512M
          - spark.executor.extraJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact
          - spark.executor.memory=1G
          - spark.executor.memoryOverhead=1G
@@ -45,6 +45,7 @@ spec:
          - spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled=true
          - spark.master=k8s://https://kubernetes.default.svc
          - spark.executor.instances=3
+         - spark.submit.deployMode=cluster
          - spark.kubernetes.namespace=kyuubi
          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.2.1
          - spark.kubernetes.container.image.pullPolicy=Always
