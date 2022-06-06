@@ -19,15 +19,15 @@ spec:
         service:
           type: LoadBalancer
         additionalConfigProperties:
-         - spark.driver.extraJavaOptions="-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact"
+         - spark.driver.extraJavaOptions='-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact'
          - spark.driver.memory=1G
-         - spark.executor.extraJavaOptions="-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact"
+         - spark.executor.extraJavaOptions='-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact'
          - spark.executor.memory=1G
          - spark.executor.memoryOverhead=1G
          - spark.shuffle.io.preferDirectBufs=false
          - spark.network.io.preferDirectBufs=false
-         - spark.eventLog.gcMetrics.youngGenerationGarbageCollectors="Shenandoah Cycles"
-         - spark.eventLog.gcMetrics.oldGenerationGarbageCollectors="Shenandoah Pauses"
+         - spark.eventLog.gcMetrics.youngGenerationGarbageCollectors='Shenandoah Cycles'
+         - spark.eventLog.gcMetrics.oldGenerationGarbageCollectors='Shenandoah Pauses'
          - spark.sql.extensions=org.apache.iceberg.spark.extensions.IcebergSparkSessionExtensions
          - spark.sql.defaultCatalog=iceberg
          - spark.sql.catalog.iceberg=org.apache.iceberg.spark.SparkCatalog
@@ -43,7 +43,7 @@ spec:
          - spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled=true
          - spark.kubernetes.namespace=airflow
          - spark.kubernetes.authenticate.driver.serviceAccountName=spark
-         - spark.kubernetes.container.image="harbor.ingtra.net/library/spark:3.2.1"
+         - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.2.1
          - spark.kubernetes.container.image.pullPolicy=Always
          - spark.kubernetes.executor.podTemplateFile=http://minio.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
   destination:
