@@ -6,18 +6,18 @@ metadata:
 spec:
   project: default
   source:
-    chart: trino
-    repoURL: https://trinodb.github.io/charts
-    targetRevision: 0.7.0
-    #repoURL: https://github.com/trinodb/charts.git
-    #path: charts/trino
-    #targetRevision: main
+    #chart: trino
+    #repoURL: https://trinodb.github.io/charts
+    #targetRevision: 0.7.0
+    repoURL: https://github.com/trinodb/charts.git
+    path: charts/trino
+    targetRevision: main
     helm:
       releaseName: trino
       values: |
         image:
           repository: harbor.ingtra.net/dockerhub/trinodb/trino
-          tag: "381-amd64"
+          tag: "384"
         server:
           workers: 3
           coordinatorExtraConfig: |
@@ -39,6 +39,23 @@ spec:
               type: UseShenandoahGC
           additionalJVMConfig:
             - "-XX:ShenandoahGCHeuristics=compact"
+          resources:
+            requests:
+              cpu: 0.1
+            limits:
+              cpu: 2
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+            successThreshold: 1
+          readinessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+            successThreshold: 1
         worker:
           jvm:
             maxHeapSize: 4G
@@ -50,7 +67,19 @@ spec:
             requests:
               cpu: 0.1
             limits:
-              cpu: 4
+              cpu: 3
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+            successThreshold: 1
+          readinessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+            successThreshold: 1
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
