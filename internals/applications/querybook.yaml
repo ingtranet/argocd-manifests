@@ -16,7 +16,7 @@ spec:
           replicaCount: 1
           name: worker
           image:
-            repository: harbor.ingtra.net/dockerhub/querybook/querybook
+            repository: harbor.ingtra.net/library/querybook
             pullPolicy: Always
             tag: 3.4.0
           resources:
