@@ -1,0 +1,22 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kyuubi
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ingtranet/helm-charts.git
+    path: kyuubi
+    targetRevision: master
+    helm:
+      releaseName: kyuubi
+      values: |
+        replicaCount: 1
+
+        image:
+          repository: harbor.ingtra.net/library/kyuubi
+          tag: 1.5.1-s3.2.1
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kyuubi
