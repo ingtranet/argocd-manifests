@@ -41,6 +41,8 @@ spec:
          - spark.hadoop.fs.s3a.connection.ssl.enabled=false
          - spark.hadoop.fs.s3a.fast.upload=true
          - spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled=true
+         - spark.master=k8s://https://kubernetes.default.svc
+         - spark.executor.instances=3
          - spark.kubernetes.namespace=airflow
          - spark.kubernetes.authenticate.driver.serviceAccountName=spark
          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.2.1
