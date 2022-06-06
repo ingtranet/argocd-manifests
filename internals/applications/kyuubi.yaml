@@ -22,7 +22,7 @@ spec:
          #- spark.driver.extraJavaOptions="-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact"
          - spark.driver.memory=1G
          #- spark.executor.extraJavaOptions="-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact"
-         - spark.executor.memory=1
+         - spark.executor.memory=1G
          - spark.executor.memoryOverhead=1G
          - spark.shuffle.io.preferDirectBufs=false
          - spark.network.io.preferDirectBufs=false
