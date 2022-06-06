@@ -20,7 +20,7 @@ spec:
           type: LoadBalancer
         additionalConfigProperties:
          - kyuubi.engine.connection.url.use.hostname=false
-         - kyuubi.zookeeper.embedded.client.port.address=kyuubi-zk-svc
+         - kyuubi.zookeeper.embedded.client.port.address=kyuubi-zk-svc.kyuubi.svc.cluster.local
          - spark.driver.extraJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact
          - spark.driver.memory=512M
          - spark.executor.extraJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact
