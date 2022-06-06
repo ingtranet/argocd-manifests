@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/ingtranet/helm-charts.git
     path: kyuubi
-    targetRevision: master
+    targetRevision: main
     helm:
       releaseName: kyuubi
       values: |
