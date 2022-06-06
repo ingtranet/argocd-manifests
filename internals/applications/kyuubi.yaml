@@ -19,6 +19,7 @@ spec:
         service:
           type: LoadBalancer
         additionalConfigProperties:
+         - kyuubi.engine.connection.url.use.hostname=false
          - spark.driver.extraJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact
          - spark.driver.memory=1G
          - spark.executor.extraJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact
