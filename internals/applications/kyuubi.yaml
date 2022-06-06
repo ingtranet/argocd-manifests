@@ -33,9 +33,9 @@ spec:
          - spark.sql.catalog.iceberg=org.apache.iceberg.spark.SparkCatalog
          - spark.sql.catalog.iceberg.type=hive
          - spark.sql.catalog.iceberg.uri=thrift://hive-metastore.mdc.ingtra.net:9083
-         - spark.sql.catalog.iceberg.hadoop.fs.s3a.endpoint=http://minio.mdc.ingtra.net
          - spark.sql.catalog.iceberg.warehouse=s3a://iceberg/
          - spark.sql.catalog.iceberg.hive.metastore.warehouse.dir=s3a://iceberg/
+         - spark.hadoop.fs.s3a.endpoint=http://minio.mdc.ingtra.net
          - spark.hadoop.fs.s3a.access.key=spark
          - spark.hadoop.fs.s3a.secret.key=sparkuser
          - spark.hadoop.fs.s3a.connection.ssl.enabled=false
