@@ -12,7 +12,7 @@ spec:
         name: http
         protocol: HTTP
       hosts:
-        - synology.ig.ingtra.net
+        - proxy.ig.ingtra.net
 
 ---
 apiVersion: networking.istio.io/v1beta1
@@ -36,7 +36,7 @@ metadata:
   name: synology-proxy
 spec:
   hosts:
-    - synology.mdc.ingtra.net
+    - proxy.ig.ingtra.net
   http:
     - route:
         - destination:
