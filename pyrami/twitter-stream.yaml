@@ -27,6 +27,6 @@ spec:
             - name: PYRAMI_APP
               value: twitter_stream
             - name: PYRAMI_KAFKA_BOOTSTRAP_SERVERS
-              value: redpanda.mdc.ingtra.net:9092
+              value: kafka.mdc.ingtra.net:9092
             - name: PYRAMI_KAFKA_TOPIC
               value: data.twitter.sampled-stream.1
