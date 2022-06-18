@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: twitter-stream
-          image: harbor.ingtra.net/dockerhub/cookieshake/pyrami
+          image: cookieshake/pyrami
           imagePullPolicy: Always
           env:
             - name: PYRAMI_BEARER_TOKEN
