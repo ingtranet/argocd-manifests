@@ -19,7 +19,7 @@ spec:
         service:
           type: LoadBalancer
         additionalConfigProperties:
-          - kyuubi.engine.single.spark.session=true
+          - kyuubi.engine.share.level=SERVER
           - kyuubi.engine.connection.url.use.hostname=false
           - spark.driver.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.noPreferDirect=true -Dio.netty.maxDirectMemory=0
           - spark.driver.memory=512M
