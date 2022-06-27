@@ -6,18 +6,18 @@ metadata:
 spec:
   project: default
   source:
-    #chart: trino
-    #repoURL: https://trinodb.github.io/charts
-    #targetRevision: 0.7.0
-    repoURL: https://github.com/trinodb/charts.git
-    path: charts/trino
-    targetRevision: main
+    chart: trino
+    repoURL: https://trinodb.github.io/charts
+    targetRevision: 0.8.0
+    #repoURL: https://github.com/trinodb/charts.git
+    #path: charts/trino
+    #targetRevision: main
     helm:
       releaseName: trino
       values: |
         image:
           repository: harbor.ingtra.net/dockerhub/trinodb/trino
-          tag: "384"
+          tag: "387"
         server:
           workers: 3
           coordinatorExtraConfig: |
