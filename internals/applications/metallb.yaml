@@ -15,6 +15,7 @@ spec:
         configInline:
           peers:
             - peer-address: 172.23.10.2
+              source-address: 172.23.10.1
               peer-asn: 64521
               my-asn: 64523
           address-pools:
