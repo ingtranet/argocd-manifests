@@ -8,16 +8,18 @@ spec:
   source:
     chart: metallb
     repoURL: https://metallb.github.io/metallb
-    targetRevision: 0.13.3
+    targetRevision: 0.12.1
     helm:
       releaseName: metallb
       values: |
+        speaker:
+          frr:
+            enabled: true
         configInline:
           peers:
             - peer-address: 172.23.10.2
               peer-asn: 64521
               my-asn: 64523
-              ebgp-multi-hop: true
           address-pools:
             - name: default
               protocol: bgp
