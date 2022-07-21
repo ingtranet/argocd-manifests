@@ -14,7 +14,7 @@ spec:
       values: |
         createUserJob:
           useHelmHooks: false
-        migrateDatabaseJob"
+        migrateDatabaseJob:
           useHelmHooks: false
         defaultAirflowRepository: harbor.ingtra.net/library/airflow
         #defaultAirflowTag: 2.3.3
