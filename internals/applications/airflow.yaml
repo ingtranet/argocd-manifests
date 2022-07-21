@@ -17,7 +17,7 @@ spec:
         migrateDatabaseJob:
           useHelmHooks: false
         defaultAirflowRepository: harbor.ingtra.net/library/airflow
-        #defaultAirflowTag: 2.3.3
+        defaultAirflowTag: 2.3.3
         executor: "KubernetesExecutor"
         dags:
           gitSync:
