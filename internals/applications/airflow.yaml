@@ -8,12 +8,16 @@ spec:
   source:
     chart: airflow
     repoURL: https://airflow.apache.org
-    targetRevision: 1.5.0
+    targetRevision: 1.6.0
     helm:
       releaseName: airflow
       values: |
+        createUserJob:
+          useHelmHooks: false
+        migrateDatabaseJob"
+          useHelmHooks: false
         defaultAirflowRepository: harbor.ingtra.net/library/airflow
-        defaultAirflowTag: 2.2.4
+        #defaultAirflowTag: 2.3.3
         executor: "KubernetesExecutor"
         dags:
           gitSync:
