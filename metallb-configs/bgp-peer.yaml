@@ -5,5 +5,5 @@ metadata:
 spec:
   myASN: 64523
   peerASN: 64521
-  peerAddress: 172.21.0.2
+  peerAddress: 172.23.10.2
   ebgpMultiHop: true
