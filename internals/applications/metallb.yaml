@@ -8,24 +8,13 @@ spec:
   source:
     chart: metallb
     repoURL: https://metallb.github.io/metallb
-    targetRevision: 0.12.1
+    targetRevision: 0.13.3
     helm:
       releaseName: metallb
       values: |
         speaker:
           frr:
             enabled: true
-        configInline:
-          peers:
-            - peer-address: 172.21.0.2
-              peer-asn: 64521
-              my-asn: 64523
-          address-pools:
-            - name: default
-              protocol: bgp
-              avoid-buggy-ips: true
-              addresses:
-                - 172.23.20.0/24
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb

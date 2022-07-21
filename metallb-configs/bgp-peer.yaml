@@ -1,0 +1,9 @@
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: sophos-xg
+spec:
+  myASN: 64523
+  peerASN: 64521
+  peerAddress: 172.21.0.2
+  ebgpMultiHop: true
