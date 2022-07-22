@@ -15,7 +15,7 @@ spec:
         replicaCount: 1
         image:
           repository: harbor.ingtra.net/library/kyuubi
-          tag: 1.5.1-s3.2.1
+          tag: 1.5.1
         service:
           type: LoadBalancer
         additionalConfigProperties:
@@ -48,7 +48,7 @@ spec:
           - spark.executor.instances=3
           - spark.kubernetes.executor.request.cores=0.1
           - spark.kubernetes.namespace=kyuubi
-          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.2.1
+          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.3.0
           - spark.kubernetes.container.image.pullPolicy=Always
           - spark.kubernetes.executor.podTemplateFile=http://minio.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
   destination:
