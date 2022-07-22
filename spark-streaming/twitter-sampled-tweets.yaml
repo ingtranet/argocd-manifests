@@ -5,13 +5,13 @@ metadata:
 spec:
   type: Scala
   mode: cluster
-  image: harbor.ingtra.net/library/spark:3.2.1
+  image: harbor.ingtra.net/library/spark:3.3.0
   imagePullPolicy: Always
   mainClass: net.ingtra.sparking.loader.LoaderApp
-  mainApplicationFile: http://minio.mdc.ingtra.net/bins/sparking/jars/sparking-assembly-0.1.0-SNAPSHOT.jar
+  mainApplicationFile: http://minio.mdc.ingtra.net/bins/sparking/jars/sparking-assembly-0.2.0-SNAPSHOT.jar
   arguments:
     - http://minio.mdc.ingtra.net/bins/sparking/configs/twitter/streaming_sampled_tweets.yaml
-  sparkVersion: 3.2.1
+  sparkVersion: 3.3.0
   restartPolicy:
     type: Always
   driver:
@@ -19,11 +19,11 @@ spec:
     coreRequest: 100m
     memory: "1024m"
     labels:
-      version: 3.2.1
+      version: 3.3.0
   executor:
     cores: 1
     coreRequest: 100m
     instances: 2
     memory: "1024m"
     labels:
-      version: 3.2.1
+      version: 3.3.0
