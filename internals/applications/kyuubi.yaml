@@ -15,7 +15,7 @@ spec:
         replicaCount: 1
         image:
           repository: harbor.ingtra.net/library/kyuubi
-          tag: 1.5.1
+          tag: 1.5.2
         service:
           type: LoadBalancer
         additionalConfigProperties:
