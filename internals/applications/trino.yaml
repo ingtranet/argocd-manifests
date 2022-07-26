@@ -34,8 +34,8 @@ spec:
             maxHeapSize: 4G
             gcMethod:
               type: UseShenandoahGC
-          additionalJVMConfig:
-            - "-XX:ShenandoahGCHeuristics=compact"
+          #additionalJVMConfig:
+          #  - "-XX:ShenandoahGCHeuristics=compact"
           resources:
             requests:
               cpu: 0.1
@@ -58,8 +58,8 @@ spec:
             maxHeapSize: 4G
             gcMethod:
               type: UseShenandoahGC
-          additionalJVMConfig:
-            - "-XX:ShenandoahGCHeuristics=compact"
+          #additionalJVMConfig:
+          #  - "-XX:ShenandoahGCHeuristics=compact"
           resources:
             requests:
               cpu: 0.1
