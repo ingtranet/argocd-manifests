@@ -110,6 +110,7 @@ spec:
           - spill-compression-enabled=false
           - query-max-spill-per-node=30GB
           - query.max-total-memory=30GB
+          - query.client.timeout=20m
 
   destination:
     server: https://kubernetes.default.svc
