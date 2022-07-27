@@ -25,7 +25,7 @@ spec:
           - spark.driver.memory=512M
           - spark.executor.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.noPreferDirect=true -Dio.netty.maxDirectMemory=0
           - spark.executor.cores=3
-          - spark.executor.memory=4G
+          - spark.executor.memory=6G
           - spark.task.cpus=3
           - spark.shuffle.io.preferDirectBufs=false
           - spark.network.io.preferDirectBufs=false
