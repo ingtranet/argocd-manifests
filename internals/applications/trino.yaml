@@ -26,16 +26,16 @@ spec:
           config:
             query:
               maxMemory: 10GB
-              maxMemoryPerNode: 3GB
+              maxMemoryPerNode: 2GB
             memory:
               heapHeadroomPerNode: 1GB
         coordinator:
           jvm:
-            maxHeapSize: 4G
+            maxHeapSize: 3G
             gcMethod:
               type: UseShenandoahGC
-          #additionalJVMConfig:
-          #  - "-XX:ShenandoahGCHeuristics=compact"
+          additionalJVMConfig:
+            - "-XX:ShenandoahGCHeuristics=compact"
           resources:
             requests:
               cpu: 0.1
@@ -55,11 +55,11 @@ spec:
             successThreshold: 1
         worker:
           jvm:
-            maxHeapSize: 4G
+            maxHeapSize: 3G
             gcMethod:
               type: UseShenandoahGC
-          #additionalJVMConfig:
-          #  - "-XX:ShenandoahGCHeuristics=compact"
+          additionalJVMConfig:
+            - "-XX:ShenandoahGCHeuristics=compact"
           resources:
             requests:
               cpu: 0.1
