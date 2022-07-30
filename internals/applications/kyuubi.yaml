@@ -42,6 +42,7 @@ spec:
           - spark.hadoop.fs.s3a.access.key=spark
           - spark.hadoop.fs.s3a.secret.key=sparkuser
           - spark.hadoop.fs.s3a.connection.ssl.enabled=false
+          - spark.hadoop.fs.s3a.connection.maximum=200
           - spark.hadoop.fs.s3a.fast.upload=true
           - spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled=true
           - spark.master=k8s://https://kubernetes.default.svc
