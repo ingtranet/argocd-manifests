@@ -40,6 +40,6 @@ spec:
             - name: PYRAMI_KAFKA_BOOTSTRAP_SERVERS
               value: kafka.mdc.ingtra.net:9092
             - name: PYRAMI_CONSUMER_NAME
-              value: pyrami-kinesis-to-kafka-2
+              value: pyrami-kinesis-to-kafka-3
             - name: PYRAMI_FROM_EARLIEST
               value: "true"
