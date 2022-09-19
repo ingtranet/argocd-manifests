@@ -22,12 +22,11 @@ spec:
           - kyuubi.engine.share.level=SERVER
           - kyuubi.engine.connection.url.use.hostname=false
           - spark.driver.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.noPreferDirect=true -Dio.netty.maxDirectMemory=0
-          - spark.driver.memory=512M
+          - spark.driver.memory=1G
           - spark.executor.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.noPreferDirect=true -Dio.netty.maxDirectMemory=0
-          - spark.executor.cores=3
-          - spark.executor.memory=4G
+          - spark.executor.cores=2
+          - spark.executor.memory=3G
           - spark.executor.memoryOverhead=2G
-          - spark.task.cpus=3
           - spark.shuffle.io.preferDirectBufs=false
           - spark.network.io.preferDirectBufs=false
           - spark.eventLog.gcMetrics.youngGenerationGarbageCollectors=Shenandoah Cycles
