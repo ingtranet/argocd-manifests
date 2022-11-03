@@ -17,7 +17,7 @@ spec:
       values: |
         image:
           repository: harbor.ingtra.net/dockerhub/trinodb/trino
-          tag: "400"
+          tag: "402"
         server:
           workers: 3
           coordinatorExtraConfig: |
@@ -35,7 +35,7 @@ spec:
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
-            - "-XX:ShenandoahGCHeuristics=compact"
+          #  - "-XX:ShenandoahGCHeuristics=compact"
           resources:
             requests:
               cpu: 0.1
@@ -59,7 +59,7 @@ spec:
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
-            - "-XX:ShenandoahGCHeuristics=compact"
+          #  - "-XX:ShenandoahGCHeuristics=compact"
           resources:
             requests:
               cpu: 0.1
@@ -79,7 +79,7 @@ spec:
             successThreshold: 1
         affinity:
           podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
+            requiredDuringSchedulingIgnoredDuringExecution:
               - weight: 1
                 podAffinityTerm:
                   labelSelector:
@@ -112,7 +112,7 @@ spec:
           - query-max-spill-per-node=30GB
           - query.max-total-memory=30GB
           - query.client.timeout=20m
-          - task.concurrency=8
+          - task.concurrency=4
           - task.max-worker-threads=16
 
   destination:
