@@ -64,7 +64,7 @@ spec:
             requests:
               cpu: 0.1
             limits:
-              cpu: 3
+              cpu: 5
           livenessProbe:
             initialDelaySeconds: 20
             periodSeconds: 10
@@ -105,12 +105,15 @@ spec:
             decimal-mapping=allow_overflow
             decimal-default-scale=16
         additionalConfigProperties:
+          - sql.default-catalog=iceberg
           - spill-enabled=true
           - spiller-spill-path=/tmp
           - spill-compression-enabled=false
           - query-max-spill-per-node=30GB
           - query.max-total-memory=30GB
           - query.client.timeout=20m
+          - task.concurrency=8
+          - task.max-worker-threads=16
 
   destination:
     server: https://kubernetes.default.svc
