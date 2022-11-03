@@ -80,14 +80,12 @@ spec:
         affinity:
           podAntiAffinity:
             requiredDuringSchedulingIgnoredDuringExecution:
-              - weight: 1
-                podAffinityTerm:
-                  labelSelector:
-                    matchExpressions:
-                      - key: component
-                        operator: In
-                        values: ["worker"]
-                  topologyKey: "kubernetes.io/hostname"
+              - labelSelector:
+                  matchExpressions:
+                    - key: component
+                      operator: In
+                      values: ["worker"]
+                topologyKey: "kubernetes.io/hostname"
         additionalCatalogs:
           iceberg: |
             connector.name=iceberg
