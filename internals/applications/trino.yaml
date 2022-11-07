@@ -32,8 +32,8 @@ spec:
         coordinator:
           jvm:
             maxHeapSize: 3G
-          #  gcMethod:
-          #    type: UseShenandoahGC
+            gcMethod:
+              type: UseShenandoahGC
           additionalJVMConfig:
           #  - "-XX:ShenandoahGCHeuristics=compact"
           resources:
@@ -56,8 +56,8 @@ spec:
         worker:
           jvm:
             maxHeapSize: 3G
-          #  gcMethod:
-          #    type: UseShenandoahGC
+            gcMethod:
+              type: UseShenandoahGC
           additionalJVMConfig:
           #  - "-XX:ShenandoahGCHeuristics=compact"
           resources:
