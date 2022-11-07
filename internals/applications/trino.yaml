@@ -79,10 +79,10 @@ spec:
             successThreshold: 1
         affinity:
           podAntiAffinity:
-            requiredDuringSchedulingIgnoredDuringExecution:
-               - weight: 1
-                 podAffinityTerm:
-                   labelSelector:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 1
+                podAffinityTerm:
+                  labelSelector:
                     matchExpressions:
                       - key: component
                         operator: In
