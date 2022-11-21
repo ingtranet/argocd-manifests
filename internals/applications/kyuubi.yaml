@@ -50,7 +50,7 @@ spec:
           - spark.executor.instances=3
           - spark.kubernetes.executor.request.cores=0.1
           - spark.kubernetes.namespace=kyuubi
-          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.3.0-scala2.12-java17-iceberg0.14.1
+          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.3.1-scala2.12-java17-iceberg0.14.1
           - spark.kubernetes.container.image.pullPolicy=Always
           - spark.kubernetes.executor.podNamePrefix=kyuubi-spark-executor
           - spark.kubernetes.executor.podTemplateFile=http://minio.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
