@@ -23,7 +23,7 @@ spec:
   executor:
     cores: 1
     coreRequest: 100m
-    instances: 2
-    memory: "1024m"
+    instances: 1
+    memory: "2048m"
     labels:
       version: 3.3.1
