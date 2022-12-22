@@ -32,9 +32,9 @@ spec:
         coordinator:
           jvm:
             maxHeapSize: 3G
-            #gcMethod:
-            #  type: UseShenandoahGC
-          additionalJVMConfig:
+            gcMethod:
+              type: UseShenandoahGC
+          additionalJVMConfig: []
           #  - "-XX:ShenandoahGCHeuristics=compact"
           resources:
             requests:
@@ -56,9 +56,9 @@ spec:
         worker:
           jvm:
             maxHeapSize: 3G
-            #gcMethod:
-            #  type: UseShenandoahGC
-          additionalJVMConfig:
+            gcMethod:
+              type: UseShenandoahGC
+          additionalJVMConfig: []
           #  - "-XX:ShenandoahGCHeuristics=compact"
           resources:
             requests:
@@ -96,7 +96,6 @@ spec:
             hive.s3.aws-secret-key=trinouser
             hive.s3.endpoint=http://minio.mdc.ingtra.net
             hive.s3.ssl.enabled=false
-            hive.s3.path-style-access=true
           postgresql: |
             connector.name=postgresql
             connection-url=jdbc:postgresql://postgresql.mdc.ingtra.net:5432/postgres
@@ -114,7 +113,6 @@ spec:
           - query.client.timeout=20m
           - task.concurrency=4
           - task.max-worker-threads=8
-
   destination:
     server: https://kubernetes.default.svc
     namespace: trino
