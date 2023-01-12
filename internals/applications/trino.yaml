@@ -97,6 +97,7 @@ spec:
             hive.s3.endpoint=http://s3.seaweedfs.mdc.ingtra.net
             hive.s3.ssl.enabled=false
             hive.s3.signer-type=AWSS3V4SignerType
+            hive.s3.path-style-access=true
           postgresql: |
             connector.name=postgresql
             connection-url=jdbc:postgresql://postgresql.mdc.ingtra.net:5432/postgres
