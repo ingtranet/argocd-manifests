@@ -10,7 +10,7 @@ spec:
   mainClass: net.ingtra.sparking.loader.LoaderApp
   mainApplicationFile: http://s3.seaweedfs.mdc.ingtra.net/bins/sparking/jars/sparking-assembly-0.2.0-SNAPSHOT.jar
   arguments:
-    - http://s3.seaweedfs.ingtra.net/bins/sparking/configs/twitter/streaming_sampled_tweets.yaml
+    - http://s3.seaweedfs.mdc.ingtra.net/bins/sparking/configs/twitter/streaming_sampled_tweets.yaml
   sparkVersion: 3.3.1
   restartPolicy:
     type: Always
