@@ -10,7 +10,7 @@ spec:
   source:
     chart: base
     repoURL: https://istio-release.storage.googleapis.com/charts
-    targetRevision: 1.13.1
+    targetRevision: 1.16.1
     helm:
       releaseName: istio-base
   destination:
@@ -28,12 +28,18 @@ spec:
   source:
     chart: istiod
     repoURL: https://istio-release.storage.googleapis.com/charts
-    targetRevision: 1.13.1
+    targetRevision: 1.16.1
     helm:
       releaseName: istiod
       values: |
         pilot:
           autoscaleEnabled: false
+        meshConfig:
+          trustDomain: rke.mdc.ingtra.net
+        global:
+          hub: harbor.ingtra.net/dockerhub/istio
+          proxy:
+            clusterDomain: rke.mdc.ingtra.net
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
@@ -49,7 +55,7 @@ spec:
   source:
     chart: gateway
     repoURL: https://istio-release.storage.googleapis.com/charts
-    targetRevision: 1.13.1
+    targetRevision: 1.16.1
     helm:
       releaseName: istio-internal-ingress
       values: |
@@ -70,7 +76,7 @@ spec:
   source:
     chart: gateway
     repoURL: https://istio-release.storage.googleapis.com/charts
-    targetRevision: 1.13.1
+    targetRevision: 1.16.1
     helm:
       releaseName: istio-external-ingress
       values: |
