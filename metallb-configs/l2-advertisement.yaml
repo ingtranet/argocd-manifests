@@ -3,7 +3,5 @@ kind: L2Advertisement
 metadata:
   name: default
 spec:
-  ipaddresspools:
-  - default
   interfaces:
   - eth1
