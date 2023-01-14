@@ -53,7 +53,7 @@ spec:
           - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.3.1-scala2.12-java11-iceberg0.14.1
           - spark.kubernetes.container.image.pullPolicy=Always
           - spark.kubernetes.executor.podNamePrefix=kyuubi-spark-executor
-          - spark.kubernetes.executor.podTemplateFile=http://minio.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
+          - spark.kubernetes.executor.podTemplateFile=http://s3.seaweedfs.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: kyuubi
