@@ -8,13 +8,10 @@ spec:
   source:
     chart: metallb
     repoURL: https://metallb.github.io/metallb
-    targetRevision: 0.13.3
+    targetRevision: 0.13.7
     helm:
       releaseName: metallb
-      values: |
-        speaker:
-          frr:
-            enabled: true
+      values: 
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb
