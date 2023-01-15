@@ -4,6 +4,6 @@ metadata:
   name: default
 spec:
   interfaces:
-    - eth0
+    - eth1
   ipAddressPools:
     - default
