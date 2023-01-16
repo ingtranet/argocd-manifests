@@ -9,7 +9,7 @@ spec:
     - name: kibana
       route:
       - destination:
-          host: coupang-partners-proxy.coupang-partners-proxy.svc.cluster.local
+          host: coupang-partners-proxy.svc.rke.mdc.ingtra.net
           port: 
             number: 80
   gateways:

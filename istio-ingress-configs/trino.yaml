@@ -9,7 +9,7 @@ spec:
     - name: trino
       route:
       - destination:
-          host: trino.trino.svc.cluster.local
+          host: trino.trino.svc.rke.mdc.ingtra.net
           port: 
             number: 8080
   gateways:
