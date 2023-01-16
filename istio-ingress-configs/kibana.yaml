@@ -9,7 +9,7 @@ spec:
     - name: kibana
       route:
       - destination:
-          host: kibana-kibana.kibana.svc.cluster.local
+          host: kibana-kibana.kibana.svc.rke.mdc.ingtra.net
           port: 
             number: 5601
   gateways:

@@ -9,7 +9,7 @@ spec:
     - name: superset
       route:
       - destination:
-          host: superset.superset.svc.cluster.local
+          host: superset.superset.svc.rke.mdc.ingtra.net
           port: 
             number: 8088
   gateways:

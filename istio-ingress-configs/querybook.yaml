@@ -9,7 +9,7 @@ spec:
     - name: querybook
       route:
       - destination:
-          host: web.querybook.svc.cluster.local
+          host: web.querybook.svc.rke.mdc.ingtra.net
           port: 
             number: 80
   gateways:
