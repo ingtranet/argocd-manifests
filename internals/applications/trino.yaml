@@ -17,7 +17,7 @@ spec:
       values: |
         image:
           repository: harbor.ingtra.net/dockerhub/trinodb/trino
-          tag: "405"
+          tag: "406"
         server:
           workers: 3
           coordinatorExtraConfig: |
@@ -40,7 +40,7 @@ spec:
             requests:
               cpu: 0.1
             limits:
-              cpu: 2
+              cpu: 1
           livenessProbe:
             initialDelaySeconds: 20
             periodSeconds: 10
