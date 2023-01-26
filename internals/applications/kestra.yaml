@@ -13,6 +13,7 @@ spec:
       releaseName: kestra
       values: |
         image:
+          image: harbor.ingtra.net/dockerhub/kestra/kestra
           tag: v0.6.0-full
         minio:
           enabled: false
@@ -41,4 +42,4 @@ spec:
             dialect: MYSQL
   destination:
     server: https://kubernetes.default.svc
-    namespace: cert-manager
+    namespace: kestra

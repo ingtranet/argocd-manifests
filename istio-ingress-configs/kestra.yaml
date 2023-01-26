@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: kestra
+spec:
+  hosts:
+    - kestra.ig.ingtra.net
+  http:
+    - name: kestra
+      route:
+      - destination:
+          host: kestra-service.kestra.svc.rke.mdc.ingtra.net
+          port: 
+            number: 5601
+  gateways:
+    - internal-gateway
