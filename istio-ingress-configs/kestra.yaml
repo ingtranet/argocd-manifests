@@ -11,6 +11,6 @@ spec:
       - destination:
           host: kestra-service.kestra.svc.rke.mdc.ingtra.net
           port: 
-            number: 5601
+            number: 8080
   gateways:
     - internal-gateway
