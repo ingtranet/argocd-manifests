@@ -19,7 +19,7 @@ spec:
           enabled: false
         postgresql:
           enabled: false
-        configuration: |
+        configuration:
           kestra:
             queue:
               type: mysql
@@ -33,13 +33,13 @@ spec:
                 accessKey: kestra
                 secretKey: kestrasecret
                 bucket: kestra
-            datasources:
-              mysql:
-                url: jdbc:mysql://mysql.mdc.ingtra.net:3306/kestra
-                driverClassName: com.mysql.cj.jdbc.Driver
-                username: kestra
-                password: kestra
-                dialect: MYSQL
+          datasources:
+            mysql:
+              url: jdbc:mysql://mysql.mdc.ingtra.net:3306/kestra
+              driverClassName: com.mysql.cj.jdbc.Driver
+              username: kestra
+              password: kestra
+              dialect: MYSQL
   destination:
     server: https://kubernetes.default.svc
     namespace: kestra
