@@ -1,0 +1,58 @@
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: flyte
+spec:
+  hosts:
+    - flyte.ig.ingtra.net
+  http:
+    - name: flyteadmin
+      match:
+        - uri:
+            exact: /api
+        - uri:
+            prefix: /api/
+        - uri:
+            exact: /healthcheck
+        - uri:
+            prefix: /v1/
+        - uri:
+            exact: /.well-known
+        - uri:
+            prefix: /.well-known/
+        - uri:
+            exact: /login
+        - uri:
+            prefix: /login/
+        - uri:
+            exact: /logout
+        - uri:
+            prefix: /logout/
+        - uri:
+            exact: /callback
+        - uri:
+            prefix: /callback/
+        - uri:
+            exact: /me
+        - uri:
+            exact: /config
+        - uri:
+            prefix: /config/
+        - uri:
+            exact: /oauth2
+        - uri:
+            prefix: /oath2/
+      route:
+        - destination:
+            host: flyteadmin.flyte.svc.rke.mdc.ingtra.net
+            port: 
+              number: 80
+    - name: flyteconsole:
+      route:
+        - destincation:
+            host: flyteconsole.flyte.svc.rke.mdc.ingtra.net
+            port:
+              number: 80
+  gateways:
+    - internal-gateway
