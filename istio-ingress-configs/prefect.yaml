@@ -9,7 +9,7 @@ spec:
     - name: prefect
       route:
       - destination:
-          host: prefect.prefect.svc.rke.mdc.ingtra.net
+          host: prefect-orion.prefect.svc.rke.mdc.ingtra.net
           port: 
             number: 4200
   gateways:
