@@ -46,7 +46,7 @@ spec:
         configmap:
           adminServer:
             logger:
-              level: 0
+              level: 1
 
           
   destination:
