@@ -49,7 +49,7 @@ spec:
               number: 80
     - name: flyteconsole:
       route:
-        - destincation:
+        - destination:
             host: flyteconsole.flyte.svc.rke.mdc.ingtra.net
             port:
               number: 80
