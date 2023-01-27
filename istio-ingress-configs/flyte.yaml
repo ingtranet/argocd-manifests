@@ -47,7 +47,7 @@ spec:
             host: flyteadmin.flyte.svc.rke.mdc.ingtra.net
             port: 
               number: 80
-    - name: flyteconsole:
+    - name: flyteconsole
       route:
         - destination:
             host: flyteconsole.flyte.svc.rke.mdc.ingtra.net
