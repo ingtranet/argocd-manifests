@@ -16,7 +16,7 @@ spec:
         orion:
           image:
             repository: harbor.ingtra.net/dockerhub/prefecthq/prefect
-            perfectTag: 2.7.10-python3.11
+            prefectTag: 2.7.10-python3.11
         postgresql:
           enabled: true
           externalHostname: postgresql.mdc.ingtra.net
