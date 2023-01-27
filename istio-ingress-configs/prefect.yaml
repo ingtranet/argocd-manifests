@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: prefect
+spec:
+  hosts:
+    - prefect.ig.ingtra.net
+  http:
+    - name: prefect
+      route:
+      - destination:
+          host: prefect.prefect.svc.rke.mdc.ingtra.net
+          port: 
+            number: 4200
+  gateways:
+    - internal-gateway
