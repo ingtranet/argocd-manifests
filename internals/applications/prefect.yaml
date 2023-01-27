@@ -1,0 +1,28 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prefect
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: kestra
+    repoURL: https://prefecthq.github.io/prefect-helm
+    targetRevision: 2023.1.26
+    helm:
+      releaseName: kestra
+      values: |
+        image:
+          repository: harbor.ingtra.net/dockerhub/prefecthq/prefect
+          perfectTag: 2.7.10-python3.11
+        postgresql:
+          enabled: false
+          externalHostname: postgresql.mdc.ingtra.net
+          auth:
+            database: prefect
+            username: prefect
+            password: prefect
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: prefect
