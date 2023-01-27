@@ -2,12 +2,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: prefect
+  name: prefect-orion
   namespace: argocd
 spec:
   project: default
   source:
-    chart: kestra
+    chart: prefect-orion
     repoURL: https://prefecthq.github.io/prefect-helm
     targetRevision: 2023.1.26
     helm:
