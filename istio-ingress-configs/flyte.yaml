@@ -47,6 +47,17 @@ spec:
             host: flyteadmin.flyte.svc.rke.mdc.ingtra.net
             port: 
               number: 80
+    - name: flyteadmin-grpc
+      match:
+        - uri:
+            prefix: /flyteidl.service.
+        - uri:
+            prefix: /grpc.health.v1.Health
+      route:
+        - destination:
+            host: flyteadmin.flyte.svc.rke.mdc.ingtra.net
+            port: 
+              number: 81
     - name: flyteconsole
       route:
         - destination:
