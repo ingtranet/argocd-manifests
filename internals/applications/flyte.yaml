@@ -49,6 +49,7 @@ spec:
             endpoint: s3.seaweedfs.mdc.ingtra.net
         configmap:
           console:
+            BASE_URL: /
             CONFIG_DIR: /etc/flyte/config
             DISABLE_AUTH: "1"           
           k8s:
