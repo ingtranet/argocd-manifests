@@ -1,0 +1,49 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: flyte
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: flyte-core
+    repoURL: https://helm.flyte.org
+    targetRevision: v1.3.0
+    helm:
+      releaseName: prefect-orion
+      values: |
+        datacatalog:
+          service:
+            type: ClusterIP
+        common:
+          ingress:
+            enabled: false
+        db:
+          datacatalog:
+            database:
+              host: postgresql.mdc.ingtra.net
+              port: 5432
+              dbname: flyte-datacatalog
+              username: flyte
+              password: flyte
+          admin:
+            database:
+              host: postgresql.mdc.ingtra.net
+              port: 5432
+              dbname: flyte-admin
+              username: flyte
+              password: flyte
+        storage:
+          type: s3
+          bucketName: flyte
+          s3:
+            authType: accesskey
+            accessKey: flyte
+            secretKey: flytesecret
+            disableSsl: true
+            endpoint: s3.seaweedfs.mdc.ingtra.net
+          
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: flyte
