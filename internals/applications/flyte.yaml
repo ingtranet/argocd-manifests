@@ -43,6 +43,11 @@ spec:
             secretKey: flytesecret
             disableSsl: true
             endpoint: s3.seaweedfs.mdc.ingtra.net
+        configmap:
+          adminServer:
+            logger:
+              level: 0
+
           
   destination:
     server: https://kubernetes.default.svc
