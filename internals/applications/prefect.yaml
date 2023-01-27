@@ -17,6 +17,9 @@ spec:
           image:
             repository: harbor.ingtra.net/dockerhub/prefecthq/prefect
             prefectTag: 2.7.10-python3.11
+          env:
+            - name: PREFECT_API_URL
+              value: https://prefect.ig.ingtra.net/api
         postgresql:
           enabled: true
           externalHostname: postgresql.mdc.ingtra.net
