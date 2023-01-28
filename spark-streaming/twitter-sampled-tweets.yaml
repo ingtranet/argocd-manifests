@@ -27,3 +27,5 @@ spec:
     memory: "2048m"
     labels:
       version: 3.3.1
+  sparkConf:
+    spark.kubernetes.driver.annotation.argocd.argoproj.io/compare-options: IgnoreExtraneous
