@@ -8,9 +8,9 @@ spec:
   image: harbor.ingtra.net/library/spark:3.3.1-scala2.13-java17-iceberg0.14.1
   imagePullPolicy: Always
   mainClass: net.ingtra.sparking.loader.LoaderApp
-  mainApplicationFile: http://s3.seaweedfs.mdc.ingtra.net/bins/sparking/jars/sparking-assembly-0.2.0-SNAPSHOT.jar
+  mainApplicationFile: https://s3.seaweedfs.mdc.ingtra.net/bins/sparking/jars/sparking-assembly-0.2.0-SNAPSHOT.jar
   arguments:
-    - http://s3.seaweedfs.mdc.ingtra.net/bins/sparking/configs/twitter/streaming_sampled_tweets.yaml
+    - https://s3.seaweedfs.mdc.ingtra.net/bins/sparking/configs/twitter/streaming_sampled_tweets.yaml
   sparkVersion: 3.3.1
   restartPolicy:
     type: Always

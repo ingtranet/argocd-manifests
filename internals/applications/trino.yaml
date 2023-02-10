@@ -92,7 +92,7 @@ spec:
             hive.metastore.uri=thrift://hive-metastore.mdc.ingtra.net:9083
             hive.s3.aws-access-key=trino
             hive.s3.aws-secret-key=trinosecret
-            hive.s3.endpoint=http://s3.seaweedfs.mdc.ingtra.net
+            hive.s3.endpoint=https://s3.seaweedfs.mdc.ingtra.net
             hive.s3.ssl.enabled=false
             hive.s3.signer-type=AWSS3V4SignerType
           postgresql: |
