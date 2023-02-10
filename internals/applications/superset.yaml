@@ -13,10 +13,10 @@ spec:
       releaseName: superset
       values: |
         image:
-          repository: harbor.ingtra.net/dockerhub/apache/superset
+          repository: apache/superset
           tag: 2.0.1
         initImage:
-          repository: harbor.ingtra.net/dockerhub/library/busybox
+          repository: busybox
         supersetNode:
           initContainers: []
         supersetWorker:

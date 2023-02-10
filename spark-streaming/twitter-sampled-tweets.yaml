@@ -5,7 +5,7 @@ metadata:
 spec:
   type: Scala
   mode: cluster
-  image: harbor.ingtra.net/library/spark:3.3.1-scala2.13-java17-iceberg0.14.1
+  image: ingtranet/spark:3.3.1-scala2.13-java17-iceberg1.1.0
   imagePullPolicy: Always
   mainClass: net.ingtra.sparking.loader.LoaderApp
   mainApplicationFile: https://s3.seaweedfs.mdc.ingtra.net/bins/sparking/jars/sparking-assembly-0.2.0-SNAPSHOT.jar

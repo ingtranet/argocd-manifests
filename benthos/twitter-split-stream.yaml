@@ -3,7 +3,7 @@ kind: BenthosPipeline
 metadata:
   name: twitter-split-stream
 spec:
-  image: harbor.ingtra.net/dockerhub/jeffail/benthos:3.64-cgo
+  image: jeffail/benthos:3.64-cgo
   replicas: 1
   configInline:
     logger:
