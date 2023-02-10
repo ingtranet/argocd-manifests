@@ -16,7 +16,7 @@ spec:
       releaseName: trino
       values: |
         image:
-          repository: harbor.ingtra.net/dockerhub/trinodb/trino
+          repository: trinodb/trino
           tag: "406"
         server:
           workers: 3

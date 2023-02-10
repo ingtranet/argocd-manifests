@@ -37,7 +37,6 @@ spec:
         meshConfig:
           trustDomain: rke.mdc.ingtra.net
         global:
-          #hub: harbor.ingtra.net/dockerhub/istio
           proxy:
             clusterDomain: rke.mdc.ingtra.net
   destination:
