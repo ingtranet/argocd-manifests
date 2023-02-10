@@ -24,7 +24,7 @@ spec:
           - spark.driver.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.noPreferDirect=true -Dio.netty.maxDirectMemory=0
           - spark.driver.memory=1G
           - spark.executor.defaultJavaOptions=-XX:+UseShenandoahGC -XX:ShenandoahGCHeuristics=compact -Dio.netty.noPreferDirect=true -Dio.netty.maxDirectMemory=0
-          - spark.executor.cores=2
+          - spark.executor.cores=1
           - spark.executor.memory=3G
           - spark.executor.memoryOverhead=2G
           - spark.shuffle.io.preferDirectBufs=false
@@ -39,7 +39,7 @@ spec:
           - spark.sql.catalog.iceberg.uri=thrift://hive-metastore.mdc.ingtra.net:9083
           - spark.sql.catalog.iceberg.warehouse=s3a://iceberg/
           - spark.sql.catalog.iceberg.hive.metastore.warehouse.dir=s3a://iceberg/
-          - spark.hadoop.fs.s3a.endpoint=http://s3.seaweedfs.mdc.ingtra.net
+          - spark.hadoop.fs.s3a.endpoint=https://s3.seaweedfs.mdc.ingtra.net
           - spark.hadoop.fs.s3a.access.key=spark
           - spark.hadoop.fs.s3a.secret.key=sparksecret
           - spark.hadoop.fs.s3a.connection.ssl.enabled=false
@@ -50,10 +50,10 @@ spec:
           - spark.executor.instances=3
           - spark.kubernetes.executor.request.cores=0.1
           - spark.kubernetes.namespace=kyuubi
-          - spark.kubernetes.container.image=harbor.ingtra.net/library/spark:3.3.1-scala2.12-java11-iceberg0.14.1
+          - spark.kubernetes.container.image=ingtranet/spark:3.3.1-scala2.12-java11-iceberg1.1.0
           - spark.kubernetes.container.image.pullPolicy=Always
           - spark.kubernetes.executor.podNamePrefix=kyuubi-spark-executor
-          - spark.kubernetes.executor.podTemplateFile=http://s3.seaweedfs.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
+          - spark.kubernetes.executor.podTemplateFile=https://s3.seaweedfs.mdc.ingtra.net/bins/spark/executor_pod_template.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: kyuubi
