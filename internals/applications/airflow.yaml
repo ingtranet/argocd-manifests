@@ -17,7 +17,7 @@ spec:
         migrateDatabaseJob:
           useHelmHooks: false
         defaultAirflowRepository: ingtranet/airflow
-        defaultAirflowTag: 2.4.3
+        defaultAirflowTag: 2.4.3-python3.10
         executor: "KubernetesExecutor"
         dags:
           gitSync:
