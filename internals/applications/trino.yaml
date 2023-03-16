@@ -17,7 +17,7 @@ spec:
       values: |
         image:
           repository: trinodb/trino
-          tag: "406"
+          tag: "410"
         server:
           workers: 3
           coordinatorExtraConfig: |
