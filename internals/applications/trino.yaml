@@ -102,6 +102,10 @@ spec:
             connection-password=trino
             decimal-mapping=allow_overflow
             decimal-default-scale=16
+          clickhouse: |
+            connector.name=clickhouse
+            connection-url=jdbc:clickhouse://clickhouse.mdc.ingtra.net:8123/
+            connection-user=default
         additionalConfigProperties:
           - sql.default-catalog=iceberg
           - spill-enabled=true
