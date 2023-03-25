@@ -6,7 +6,7 @@ metadata:
 data:
   config.yaml: |
     logger:
-      level: DEBUG
+      level: TRACE
       format: json
       add_timestamp: true
     input:
