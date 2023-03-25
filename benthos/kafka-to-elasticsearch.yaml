@@ -22,11 +22,11 @@ data:
       processors:
         - bloblang: |
             root = this
-            root."@timestamp" = (meta("kafka_timestamp_unix") / 1000000).format_timestamp_strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            root."@timestamp" = meta("kafka_timestamp_unix").int64().format_timestamp_strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     output:
       elasticsearch:
         urls: ["http://opensearch.mdc.ingtra.net:9200"]
-        index: ${! meta("kafka_topic") }-${! (meta("kafka_timestamp_unix") / 1000000).format_timestamp_strftime("%Y-%m-%d") }
+        index: ${! meta("kafka_topic") }-${! meta("kafka_timestamp_unix").int64().format_timestamp_strftime("%Y-%m-%d") }
         id: ${! meta("kafka_topic") }-${! meta("kafka_partition") }-${! meta("kafka_offset") }
 ---
 apiVersion: apps/v1
