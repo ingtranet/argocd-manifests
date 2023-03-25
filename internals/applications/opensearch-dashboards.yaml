@@ -14,6 +14,8 @@ spec:
       values: |
         opensearchHosts: "http://opensearch.mdc.ingtra.net:9200"
         replicaCount: 1
+        image:
+          repository: "ingtranet/opensearch-dashboards"
   destination:
     server: https://kubernetes.default.svc
     namespace: opensearch-dashboards
