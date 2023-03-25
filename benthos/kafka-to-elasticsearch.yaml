@@ -4,7 +4,7 @@ kind: ConfigMap
 metadata:
   name: kafka-to-elasticsearch
 data:
-  config.yml: |
+  config.yaml: |
     logger:
       level: DEBUG
       format: json
@@ -48,7 +48,7 @@ spec:
       containers:
         - name: benthos
           image: jeffail/benthos:4.13.0-cgo
-          args: ["-w"]
+          args: ["-c", "/etc/benthos/config.yaml", "-w"]
           volumeMounts:
           - name: config
             mountPath: /etc/benthos
