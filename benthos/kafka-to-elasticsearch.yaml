@@ -1,25 +1,18 @@
-apiVersion: ingtra.net/v1alpha1
-kind: BenthosPipeline
+---
+apiVersion: v1
+kind: ConfigMap
 metadata:
   name: kafka-to-elasticsearch
-spec:
-  image: jeffail/benthos:3.64-cgo
-  replicas: 1
-  configInline:
+data:
+  config.yml: |
     logger:
       level: DEBUG
       format: json
       add_timestamp: true
     input:
       kafka:
-        addresses: ["redpanda.mdc.ingtra.net:9092"]
-        target_version: 2.8.1
+        addresses: ["kafka.mdc.ingtra.net:9092"]
         topics:
-          - data.twitter.referenced-media.1
-          - data.twitter.referenced-places.1
-          - data.twitter.referenced-polls.1
-          - data.twitter.referenced-tweets.1
-          - data.twitter.referenced-users.1
           - data.twitter.sampled-tweets.1
         consumer_group: benthos-kafka-to-elasticsearch
         batching:
@@ -29,10 +22,37 @@ spec:
       processors:
         - bloblang: |
             root = this
-            root."@timestamp" = (timestamp_unix_nano() / 1000000000).format_timestamp_strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+            root."@timestamp" = meta("kafka_timestamp_unix").format_timestamp_strftime("%Y-%m-%dT%H:%M:%S.%fZ")
     output:
       elasticsearch:
-        urls: ["http://elasticsearch.mdc.ingtra.net:9200"]
-        index: ${! meta("kafka_topic") }-${! timestamp_unix().format_timestamp_strftime("%Y-%m-%d") }
+        urls: ["http://opensearch.mdc.ingtra.net:9200"]
+        index: ${! meta("kafka_topic") }-${! meta("kafka_timestamp_unix").format_timestamp_strftime("%Y-%m-%d") }
         id: ${! meta("kafka_topic") }-${! meta("kafka_partition") }-${! meta("kafka_offset") }
-        type: _doc
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-to-elasticsearch
+  labels:
+    app: benthos
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: benthos
+  template:
+    metadata:
+      labels:
+        app: benthos
+    spec:
+      containers:
+        - name: benthos
+          image: jeffail/benthos:4.13.0-cgo
+          command: ["-w"]
+          volumeMounts:
+          - name: config
+            mountPath: /etc/benthos
+      volumes:
+        - name: config
+          configMap:
+            name: kafka-to-elasticsearch
