@@ -63,6 +63,10 @@ spec:
           enabled: false
         elasticsearch:
           enabled: false
+        ingress:
+          enabled: true
+        extraEnv:
+          PUBLIC_URL: https://querybook.ig.ingtra.net
         secret:
           flask_secret_key: SOME_RANDOM_SECRET_KEY
           database_conn: mysql+pymysql://querybook:querybook@mysql.mdc.ingtra.net:3306/querybook?charset=utf8mb4
