@@ -1,12 +1,12 @@
 apiVersion: networking.istio.io/v1beta1
 kind: VirtualService
 metadata:
-  name: opensearch-dashboards
+  name: opendash
 spec:
   hosts:
-    - opensearch-dash.ig.ingtra.net
+    - opendash.ig.ingtra.net
   http:
-    - name: opensearch-dashboards
+    - name: opendash
       route:
       - destination:
           host: opensearch-dashboards.opensearch-dashboards.svc.rke.mdc.ingtra.net
