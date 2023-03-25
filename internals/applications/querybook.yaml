@@ -64,7 +64,7 @@ spec:
         elasticsearch:
           enabled: false
         ingress:
-          enabled: true
+          enabled: false
         extraEnv:
           PUBLIC_URL: https://querybook.ig.ingtra.net
         secret:
