@@ -13,7 +13,7 @@ data:
       kafka:
         addresses: ["kafka.mdc.ingtra.net:9092"]
         topics:
-          - data.twitter.sampled-tweets.1
+          - data.twitter.sampled-stream.1
         consumer_group: benthos-kafka-to-elasticsearch
         batching:
           count: 128
