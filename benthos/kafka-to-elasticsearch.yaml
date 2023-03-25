@@ -19,6 +19,7 @@ data:
           count: 128
           period: 10s
     pipeline:
+      threads: 1
       processors:
         - bloblang: |
             root = this
