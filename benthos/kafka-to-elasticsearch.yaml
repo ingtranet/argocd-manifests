@@ -48,7 +48,7 @@ spec:
       containers:
         - name: benthos
           image: jeffail/benthos:4.13.0-cgo
-          command: ["-w"]
+          args: ["-w"]
           volumeMounts:
           - name: config
             mountPath: /etc/benthos
