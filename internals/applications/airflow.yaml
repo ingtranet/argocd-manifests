@@ -49,29 +49,14 @@ spec:
           webserverConfig: |
             AUTH_ROLE_PUBLIC = 'Admin'
         webserverSecretKey: 9a0216e82ccc2aab070b2fb2af5cc725
-        elasticsearch:
-          enabled: true
-          connection:
-            host: elasticsearch.mdc.ingtra.net
-            port: 9200
         config:
           webserver:
             expose_config: 'True'
-          elasticsearch:
-            frontend: https://kibana.ig.ingtra.net/app/discover#/?_a=(columns:!(message),filters:!(),index:dff5d120-5d3d-11ec-b070-4d64674090d3,interval:auto,query:(language:kuery,query:'log_id:"{log_id}"'),sort:!(log.offset,asc))&amp;_g=(filters:!(),refreshInterval:(pause:!t,value:0),time:(from:now-1y,to:now))
-            json_format: 'True'
-            log_id_template: "{dag_id}_{task_id}_{execution_date}_{try_number}"
-            end_of_log_mark: end_of_log
-            write_stdout: 'True'
-            host_field: 'host.name'
-            offset_field: 'log.offset'
-            json_fields: asctime, filename, lineno, levelname, message
-          elasticsearch_configs:
-            use_ssl: 'False'
-            verify_certs: 'False'
-            max_retries: 3
-            timeout: 30
-            retry_timeout: 'True'
+          logging:
+            remote_logging: 'True'
+            logging_level: 'INFO'
+            remote_base_log_folder: 's3://airflow/logs'
+            remote_log_conn_id: 'seaweedfs'
         fernetKey: H8RLkpZN5z9vjF1Dj2vuH9Q6IZbMFHrGy2oHACIijA8=
   destination:
     server: https://kubernetes.default.svc
