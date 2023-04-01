@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: mlflow
+spec:
+  hosts:
+    - mlflow.ig.ingtra.net
+  http:
+    - name: mlflow
+      route:
+      - destination:
+          host: mlflow.mlflow.svc.rke.mdc.ingtra.net
+          port: 
+            number: 5000
+  gateways:
+    - internal-gateway
