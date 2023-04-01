@@ -13,4 +13,5 @@ spec:
           port: 
             number: 5000
   gateways:
+    - mesh
     - internal-gateway
