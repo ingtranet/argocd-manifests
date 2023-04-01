@@ -42,7 +42,6 @@ spec:
           - spark.hadoop.fs.s3a.endpoint=https://s3.seaweedfs.mdc.ingtra.net
           - spark.hadoop.fs.s3a.access.key=spark
           - spark.hadoop.fs.s3a.secret.key=sparksecret
-          - spark.hadoop.fs.s3a.connection.ssl.enabled=false
           - spark.hadoop.fs.s3a.connection.maximum=200
           - spark.hadoop.fs.s3a.fast.upload=true
           - spark.hadoop.fs.s3a.bucket.all.committer.magic.enabled=true
