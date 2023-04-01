@@ -5,31 +5,31 @@ metadata:
   namespace: argocd
 spec:
   project: default
-source:
-    chart: mlflow
-    repoURL: https://community-charts.github.io/helm-charts
-    targetRevision: 0.7.19
-    helm:
-      releaseName: mlflow
-      values: |
-        backendStore:
-          databaseConnectionCheck: true
-          databaseMigration: true
-          mysql:
-            enabled: true
-            host: "mysql.mdc.ingtra.net"
-            port: 3306
-            database: "mlflow"
-            user: "mlflow"
-            password: "mlflow"
-        artifactRoot:
-          s3:
-            enabled: true
-            bucket: "mlflow"
-            awsAccessKeyId: "mlflow"
-            awsSecretAccessKey: "mlflowsecret"
-        extraEnvVars:
-          MLFLOW_S3_ENDPOINT_URL: "https://s3.seaweedfs.mdc.ingtra.net"
-destination:
-  server: https://kubernetes.default.svc
-  namespace: mlflow
+  source:
+      chart: mlflow
+      repoURL: https://community-charts.github.io/helm-charts
+      targetRevision: 0.7.19
+      helm:
+        releaseName: mlflow
+        values: |
+          backendStore:
+            databaseConnectionCheck: true
+            databaseMigration: true
+            mysql:
+              enabled: true
+              host: "mysql.mdc.ingtra.net"
+              port: 3306
+              database: "mlflow"
+              user: "mlflow"
+              password: "mlflow"
+          artifactRoot:
+            s3:
+              enabled: true
+              bucket: "mlflow"
+              awsAccessKeyId: "mlflow"
+              awsSecretAccessKey: "mlflowsecret"
+          extraEnvVars:
+            MLFLOW_S3_ENDPOINT_URL: "https://s3.seaweedfs.mdc.ingtra.net"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mlflow
