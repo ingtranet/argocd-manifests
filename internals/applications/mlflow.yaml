@@ -30,6 +30,6 @@ source:
             awsSecretAccessKey: "mlflowsecret"
         extraEnvVars:
           MLFLOW_S3_ENDPOINT_URL: "https://s3.seaweedfs.mdc.ingtra.net"
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: mlflow
+destination:
+  server: https://kubernetes.default.svc
+  namespace: mlflow
