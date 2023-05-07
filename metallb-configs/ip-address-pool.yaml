@@ -4,4 +4,4 @@ metadata:
   name: default
 spec:
   addresses:
-    - 100.103.32.11 - 100.103.32.254
+    - 10.3.0.11-10.3.0.99
