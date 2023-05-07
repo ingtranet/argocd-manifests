@@ -1,0 +1,8 @@
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: vyos
+spec:
+  myASN: 64522
+  peerASN: 64521
+  peerAddress: 10.2.34.254
