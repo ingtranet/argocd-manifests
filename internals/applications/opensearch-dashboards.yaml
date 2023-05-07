@@ -12,7 +12,7 @@ spec:
     helm:
       releaseName: opensearch-dashboards
       values: |
-        opensearchHosts: "http://opensearch.mdc.ingtra.net:9200"
+        opensearchHosts: "http://opensearch.sd.ingtra.net:9200"
         replicaCount: 1
         image:
           repository: "ingtranet/opensearch-dashboards"
