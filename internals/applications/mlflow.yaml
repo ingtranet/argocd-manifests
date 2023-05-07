@@ -17,7 +17,7 @@ spec:
             databaseMigration: true
             mysql:
               enabled: true
-              host: "mysql.mdc.ingtra.net"
+              host: "mysql.sd.ingtra.net"
               port: 3306
               database: "mlflow"
               user: "mlflow"
