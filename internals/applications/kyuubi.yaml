@@ -15,7 +15,7 @@ spec:
         replicaCount: 1
         image:
           repository: ingtranet/kyuubi
-          tag: 1.6.1-spark3.3.1-scala2.12-java11-iceberg1.1.0
+          tag: 1.7.0-spark3.3.2-scala2.12-java11-iceberg1.2.0
         service:
           type: LoadBalancer
         additionalConfigProperties:
