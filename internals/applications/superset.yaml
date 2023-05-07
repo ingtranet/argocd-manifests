@@ -32,7 +32,7 @@ spec:
           if [ ! -f ~/bootstrap ]; then echo "Running Superset with uid {{ .Values.runAsUser }}" > ~/bootstrap; fi
         configOverrides:
           useCustomConnections: |
-            SQLALCHEMY_DATABASE_URI = 'mysql://superset:superset@mysql.mdc.ingtra.net/superset'
+            SQLALCHEMY_DATABASE_URI = 'mysql://superset:superset@mysql.sd.ingtra.net/superset'
             class CustomCeleryConfig(object):
               CELERY_IMPORTS = ('superset.sql_lab', )
               CELERY_ANNOTATIONS = {'tasks.add': {'rate_limit': '10/s'}}

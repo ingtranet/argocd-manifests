@@ -69,7 +69,7 @@ spec:
           PUBLIC_URL: https://querybook.ig.ingtra.net
         secret:
           flask_secret_key: SOME_RANDOM_SECRET_KEY
-          database_conn: mysql+pymysql://querybook:querybook@mysql.mdc.ingtra.net:3306/querybook?charset=utf8mb4
+          database_conn: mysql+pymysql://querybook:querybook@mysql.sd.ingtra.net:3306/querybook?charset=utf8mb4
           redis_url:  redis://redis.mdc.ingtra.net:6379/1
           elasticsearch_host: opensearch.mdc.ingtra.net:9200
   destination:

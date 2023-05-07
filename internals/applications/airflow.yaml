@@ -33,7 +33,7 @@ spec:
             user: airflow
             pass: airflow
             protocol: mysql
-            host: mysql.mdc.ingtra.net
+            host: mysql.sd.ingtra.net
             port: 3306
             db: airflow
             sslmode: disable
