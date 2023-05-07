@@ -3,6 +3,14 @@ kind: BGPPeer
 metadata:
   name: vyos
 spec:
-  myASN: 64522
+  myASN: 64521
   peerASN: 64521
   peerAddress: 10.2.34.254
+  nodeSelectors:
+    - matchExpressions:
+      - key: kubernetes.io/hostname
+        operator: In
+        values:
+          - k0s-worker-arm-1
+          - k0s-worker-arm-2
+          - k0s-worker-arm-3
