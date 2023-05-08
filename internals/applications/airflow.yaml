@@ -8,7 +8,7 @@ spec:
   source:
     chart: airflow
     repoURL: https://airflow.apache.org
-    targetRevision: 1.7.0
+    targetRevision: 1.9.0
     helm:
       releaseName: airflow
       values: |
@@ -17,7 +17,7 @@ spec:
         migrateDatabaseJob:
           useHelmHooks: false
         defaultAirflowRepository: ingtranet/airflow
-        defaultAirflowTag: 2.4.3-python3.10
+        defaultAirflowTag: 2.5.3-python3.10
         executor: "KubernetesExecutor"
         dags:
           gitSync:
