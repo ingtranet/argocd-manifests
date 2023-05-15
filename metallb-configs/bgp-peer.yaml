@@ -11,6 +11,6 @@ spec:
       - key: kubernetes.io/hostname
         operator: In
         values:
-          - k0s-worker-arm-1
-          - k0s-worker-arm-2
-          - k0s-worker-arm-3
+          - orin-nx-1
+          - orin-nx-2
+          - orin-nx-3
