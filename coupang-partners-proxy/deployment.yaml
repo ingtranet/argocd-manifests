@@ -28,7 +28,7 @@ spec:
                   name: partners-api-keys
                   key: secret-key
             - name: REDIS_URI
-              value: redis://redis.mdc.ingtra.net:6379/1
+              value: redis://redis.sd.ingtra.net:6379/1
           ports:
             - containerPort: 8000
           livenessProbe:

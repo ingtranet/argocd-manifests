@@ -36,7 +36,7 @@ spec:
             - name: PYRAMI_STREAM_NAME
               value: mirror-to-mdc-kafka
             - name: PYRAMI_REDIS_URL
-              value: redis.mdc.ingtra.net:6379
+              value: redis.sd.ingtra.net:6379
             - name: PYRAMI_KAFKA_BOOTSTRAP_SERVERS
               value: kafka.mdc.ingtra.net:9092
             - name: PYRAMI_CONSUMER_NAME
