@@ -36,14 +36,14 @@ spec:
             class CustomCeleryConfig(object):
               CELERY_IMPORTS = ('superset.sql_lab', )
               CELERY_ANNOTATIONS = {'tasks.add': {'rate_limit': '10/s'}}
-              BROKER_URL = 'redis://redis.mdc.ingtra.net:6379/2'
-              CELERY_RESULT_BACKEND = 'redis://redis.mdc.ingtra.net:6379/2'
+              BROKER_URL = 'redis://redis.sd.ingtra.net:6379/2'
+              CELERY_RESULT_BACKEND = 'redis://redis.sd.ingtra.net:6379/2'
             CELERY_CONFIG = CustomCeleryConfig
             CACHE_CONFIG = {
               'CACHE_TYPE': 'RedisCache',
               'CACHE_DEFAULT_TIMEOUT': 300,
               'CACHE_KEY_PREFIX': 'superset_cache_',
-              'CACHE_REDIS_HOST': 'redis.mdc.ingtra.net',
+              'CACHE_REDIS_HOST': 'redis.sd.ingtra.net',
               'CACHE_REDIS_PORT': 6379,
               'CACHE_REDIS_DB': 2
             }
@@ -51,7 +51,7 @@ spec:
             FILTER_STATE_CACHE_CONFIG = CACHE_CONFIG
             EXPLORE_FORM_DATA_CACHE_CONFIG = CACHE_CONFIG
             RESULTS_BACKEND = RedisCache(
-              host='redis.mdc.ingtra.net',
+              host='redis.sd.ingtra.net',
               port=6379,
               key_prefix='superset_results_'
             )
