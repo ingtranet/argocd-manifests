@@ -13,8 +13,8 @@ spec:
         releaseName: mlflow
         values: |
           image:
-            repository: ghcr.io/mlflow/mlflow	
-            tag: v2.7.1
+            repository: adacotechjp/mlflow
+            tag: 2.7.1
           backendStore:
             databaseConnectionCheck: true
             databaseMigration: true
