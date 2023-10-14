@@ -12,6 +12,8 @@ spec:
       helm:
         releaseName: mlflow
         values: |
+          image:
+            tag: v2.7.1
           backendStore:
             databaseConnectionCheck: true
             databaseMigration: true
