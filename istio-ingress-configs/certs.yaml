@@ -7,7 +7,7 @@ spec:
   secretName: ig-ingtra-net-tls
   issuerRef:
     kind: ClusterIssuer
-    name: letsencrypt
+    name: zerossl
   dnsNames:
     - '*.ig.ingtra.net'
 
@@ -20,6 +20,6 @@ spec:
   secretName: ingtra-net-tls
   issuerRef:
     kind: ClusterIssuer
-    name: letsencrypt
+    name: zerossl
   dnsNames:
     - '*.ingtra.net'
