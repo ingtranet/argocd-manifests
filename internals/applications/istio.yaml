@@ -10,7 +10,7 @@ spec:
   source:
     chart: base
     repoURL: https://istio-release.storage.googleapis.com/charts
-    targetRevision: 1.16.1
+    targetRevision: 1.20.2
     helm:
       releaseName: istio-base
   destination:
@@ -28,17 +28,17 @@ spec:
   source:
     chart: istiod
     repoURL: https://istio-release.storage.googleapis.com/charts
-    targetRevision: 1.16.1
+    targetRevision: 1.20.2
     helm:
       releaseName: istiod
       values: |
         pilot:
           autoscaleEnabled: false
         meshConfig:
-          trustDomain: rke.mdc.ingtra.net
+          trustDomain: kg.ingtra.net
         global:
           proxy:
-            clusterDomain: rke.mdc.ingtra.net
+            clusterDomain: kg.ingtra.net
   destination:
     server: https://kubernetes.default.svc
     namespace: istio-system
@@ -47,37 +47,16 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: istio-internal-ingress
+  name: istio-ingress-gateway
   namespace: argocd
 spec:
   project: default
   source:
     chart: gateway
     repoURL: https://istio-release.storage.googleapis.com/charts
-    targetRevision: 1.16.1
+    targetRevision: 1.20.2
     helm:
       releaseName: istio-internal-ingress
-      values: |
-        autoscaling:
-          enabled: false
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: istio-ingress
-
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: istio-external-ingress
-  namespace: argocd
-spec:
-  project: default
-  source:
-    chart: gateway
-    repoURL: https://istio-release.storage.googleapis.com/charts
-    targetRevision: 1.16.1
-    helm:
-      releaseName: istio-external-ingress
       values: |
         autoscaling:
           enabled: false
