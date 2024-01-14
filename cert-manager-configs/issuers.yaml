@@ -20,4 +20,4 @@ spec:
             email: cookieshake.dev@gmail.com
             apiTokenSecretRef:
               name: cloudflare-api-token
-              key: api-token
+              key: token
