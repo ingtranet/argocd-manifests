@@ -4,4 +4,5 @@ metadata:
   name: default
 spec:
   addresses:
-    - 10.3.234.11-10.3.234.99
+    - 10.3.234.0/24
+  avoidBuggyIPs: true

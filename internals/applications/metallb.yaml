@@ -8,15 +8,14 @@ spec:
   source:
     chart: metallb
     repoURL: https://metallb.github.io/metallb
-    targetRevision: 0.13.7
+    targetRevision: 0.13.12
     helm:
       releaseName: metallb
-      values: 
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb
-  ignoreDifferences:
-    - group: apiextensions.k8s.io
-      kind: CustomResourceDefinition
-      jqPathExpressions:
-        - .spec.conversion.webwook.clientConfig.caBundle
+  # ignoreDifferences:
+  #   - group: apiextensions.k8s.io
+  #     kind: CustomResourceDefinition
+  #     jqPathExpressions:
+  #       - .spec.conversion.webwook.clientConfig.caBundle
