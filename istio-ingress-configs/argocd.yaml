@@ -9,7 +9,7 @@ spec:
     - name: argocd-server
       route:
       - destination:
-          host: argocd-server.argocd.svc.rke.mdc.ingtra.net
+          host: argocd-server.argocd.svc.kg.ingtra.net
           port: 
             number: 443
   gateways:
