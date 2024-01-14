@@ -19,10 +19,10 @@ spec:
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
 metadata:
-  name: internal-gateway
+  name: ingress
 spec:
   selector:
-    istio: internal-ingress
+    istio: istio-ingress-gateway
   servers:
     - port:
         number: 443
