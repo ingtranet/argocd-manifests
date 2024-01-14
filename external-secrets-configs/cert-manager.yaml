@@ -10,3 +10,15 @@ spec:
   dataFrom:
     - extract:
         key: "k8s/cert-manager/cloudflare-api-token"
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: zerossl-eab-credentials
+spec:
+  secretStoreRef:
+    name: vault
+    kind: ClusterSecretStore
+  dataFrom:
+    - extract:
+        key: "k8s/cert-manager/zerossl-eab-credentials"
