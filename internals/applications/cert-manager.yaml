@@ -8,14 +8,11 @@ spec:
   source:
     chart: cert-manager
     repoURL: https://charts.jetstack.io
-    targetRevision: 1.10.2
+    targetRevision: 1.13.3
     helm:
       releaseName: cert-manager
       values: |
         installCRDs: true
-        startupapicheck:
-          podAnnotations:
-            sidecar.istio.io/inject: "false"
   destination:
     server: https://kubernetes.default.svc
     namespace: cert-manager
