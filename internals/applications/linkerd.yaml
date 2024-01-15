@@ -115,3 +115,23 @@ spec:
       name:  linkerd-policy-validator-webhook-config
       jsonPointers:
         - /webhooks/0/clientConfig/caBundle
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: linkerd-viz
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: linkerd-viz
+    repoURL: https://helm.linkerd.io/stable
+    targetRevision: 30.12.9
+    helm:
+      releaseName: linkerd-viz
+      values: |
+        defaultRegistry: ghcr.io/linkerd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: linkerd
