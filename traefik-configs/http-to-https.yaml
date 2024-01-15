@@ -19,3 +19,8 @@ spec:
       match: PathPrefix(`/`)
       middlewares:
         - name: https-redirect-scheme
+      services:
+        - kind: Service
+          name: traefik
+          namespace: traefik
+          port: 443
