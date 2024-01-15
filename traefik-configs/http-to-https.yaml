@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: https-redirect-scheme
+spec:
+  redirectScheme:
+    scheme: https
+  
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: http-to-https
+spec:
+  entryPoints:
+    - web
+  routes:
+    middlewares:
+      - name: https-redirect-scheme
