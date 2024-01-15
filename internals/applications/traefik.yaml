@@ -21,6 +21,11 @@ spec:
             maxSkew: 1
             topologyKey: kubernetes.io/hostname
             whenUnsatisfiable: DoNotSchedule
+        providers:
+          kubernetesCRD:
+            enabled: true
+            allowCrossNamespace: true
+            allowExternalNameServices: true
   destination:
     server: https://kubernetes.default.svc
     namespace: traefik
