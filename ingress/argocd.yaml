@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  tls:
+    - hosts:
+        - argocd.ig.ingtra.net
+      secretName: ig-ingtra-net-tls
+  rules:
+    - host: argocd.ig.ingtra.net
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: argocd-server
+                port:
+                  number: 80
