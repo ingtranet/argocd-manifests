@@ -13,3 +13,5 @@ spec:
           name: argocd-server
           namespace: argocd
           port: 80
+  tls:
+    secretName: ig-ingtra-net-tls
