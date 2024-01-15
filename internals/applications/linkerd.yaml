@@ -63,6 +63,21 @@ spec:
         proxyInit:
           image:
             name: ghcr.io/linkerd/proxy-init
+        identityTrustAnchorsPEM: |
+          -----BEGIN CERTIFICATE-----
+          MIIBjTCCATOgAwIBAgIQOXelNBvtv5D3m5OlV+ySvzAKBggqhkjOPQQDAjAlMSMw
+          IQYDVQQDExpyb290LmxpbmtlcmQua2cuaW5ndHJhLm5ldDAeFw0yNDAxMTUxNTI4
+          MTVaFw0zNDAxMTIxNTI4MTVaMCUxIzAhBgNVBAMTGnJvb3QubGlua2VyZC5rZy5p
+          bmd0cmEubmV0MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEMnSiVVO1fKmX4Eao
+          n7HuUYZ3Yn9ZLA/u2wiBv5i/8Dd6dujFDB3mTDzKC28+uepJDTLny828bVnSEWn6
+          9nJRM6NFMEMwDgYDVR0PAQH/BAQDAgEGMBIGA1UdEwEB/wQIMAYBAf8CAQEwHQYD
+          VR0OBBYEFOcAXqadcY/KQzCe9MFgAiypvWZ/MAoGCCqGSM49BAMCA0gAMEUCIQDB
+          u4OGl3EL+E0j5kvywdAcHG/ZUkQKOzZptCX5YQKc8QIgXk7nq1Uhzw2VjF71OVDy
+          iXTAPutNqf6lWlNZVcuOEaU=
+          -----END CERTIFICATE-----
+        identity:
+          issuer:
+            scheme: kubernetes.io/tls
   destination:
     server: https://kubernetes.default.svc
     namespace: linkerd
