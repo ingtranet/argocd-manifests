@@ -14,9 +14,6 @@ spec:
       values: |
         deployment:
           replicas: 2
-        experimental:
-          kubernetesGateway:
-            enabled: true
         topologySpreadConstraints:
           - labelSelector:
               matchLabels:
