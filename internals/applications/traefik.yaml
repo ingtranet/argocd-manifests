@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: traefik
+    repoURL: https://traefik.github.io/charts
+    targetRevision: 26.0.0
+    helm:
+      releaseName: traefik
+      valuesObject:
+        deployment:
+          replicas: 2
+        experimental:
+          kubernetesGateway:
+            enabled: true
+        topologySpreadConstraints:
+          - labelSelector:
+              matchLabels:
+                app: '{{ template "traefik.name" . }}'
+            maxSkew: 1
+            topologyKey: kubernetes.io/hostname
+            whenUnsatisfiable: DoNotSchedule
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: traefik
