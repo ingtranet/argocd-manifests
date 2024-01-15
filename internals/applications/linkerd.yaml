@@ -1,0 +1,50 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: linkerd-crds
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: linkerd-crds
+    repoURL: https://helm.linkerd.io/stable
+    targetRevision: 1.8.0
+    helm:
+      releaseName: linkerd-crds
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: linkerd
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: linkerd-control-plane
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: linkerd-control-plane
+    repoURL: https://helm.linkerd.io/stable
+    targetRevision: 1.16.9
+    helm:
+      releaseName: linkerd-control-plane
+      values: |
+        clusterDomain: kg.ingtra.net
+        controllerImage: ghcr.io/linkerd/controller
+        debugContainer:
+          image:
+            name: ghcr.io/linkerd/debug
+        policyController:
+          image:
+            name: ghcr.io/linkerd/policy-controller
+        proxy:
+          image:
+            name: ghcr.io/linkerd/proxy
+        proxyInit:
+          image:
+            name: ghcr.io/linkerd/proxy-init
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: linkerd
