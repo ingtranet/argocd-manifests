@@ -131,6 +131,7 @@ spec:
     helm:
       releaseName: linkerd-viz
       values: |
+        clusterDomain: kg.ingtra.net
         defaultRegistry: ghcr.io/linkerd
   destination:
     server: https://kubernetes.default.svc
