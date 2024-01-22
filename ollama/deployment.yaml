@@ -20,7 +20,6 @@ spec:
       containers:
         - name: ollama
           image: ollama/ollama:0.1.20
-          args: ["run", "phi"]
           ports:
             - containerPort: 11434
           resources:
