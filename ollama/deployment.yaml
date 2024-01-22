@@ -16,7 +16,7 @@ spec:
         app: ollama
     spec:
       nodeSelector:
-        nvidia.com/gpu.product: NVIDIA-GeForce-RTX-3090
+        nvidia.com/gpu.product: Orin
       runtimeClassName: nvidia
       containers:
         - name: ollama
@@ -41,6 +41,7 @@ spec:
               set -ex
               sleep 10
               ollama pull phi
+              sleep infinity
           resources:
             limits:
               cpu: 100m
