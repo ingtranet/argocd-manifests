@@ -24,6 +24,8 @@ spec:
                       - orin-nx-1
                       - orin-nx-2
                       - orin-nx-3
+        gfd:
+          enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: nvidia-device-plugin
