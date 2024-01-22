@@ -16,7 +16,7 @@ spec:
         app: ollama
     spec:
       nodeSelector:
-        nvidia.com/gpu.product: Orin
+        nvidia.com/gpu.product: NVIDIA-GeForce-RTX-3090
       runtimeClassName: nvidia
       containers:
         - name: ollama
