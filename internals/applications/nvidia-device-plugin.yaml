@@ -11,6 +11,19 @@ spec:
     targetRevision: 0.14.3
     helm:
       releaseName: nvidia-device-plugin
+      values: |
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - k8s-ga-gpu-1
+                      - orin-nx-1
+                      - orin-nx-2
+                      - orin-nx-3
   destination:
     server: https://kubernetes.default.svc
     namespace: nvidia-device-plugin
