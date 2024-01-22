@@ -17,6 +17,7 @@ spec:
     spec:
       nodeSelector:
         nvidia.com/gpu.product: Orin
+      runtimeClassName: nvidia
       containers:
         - name: ollama
           image: ollama/ollama:0.1.20
