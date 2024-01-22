@@ -26,6 +26,12 @@ spec:
               value: "all"
             - name: NVIDIA_REQUIRE_CUDA
               value: "cuda>=11.0"
+            - name: LD_LIBRARY_PATH
+              value: /usr/local/cuda/lib64
+          volumeMounts:
+            - name: cuda-lib
+              mountPath: /usr/local/cuda/lib64
+              readOnly: true
           ports:
             - containerPort: 11434
           resources:
@@ -46,3 +52,8 @@ spec:
             limits:
               cpu: 100m
               memory: "128Mi"
+      volumes:
+        - name: cuda-lib
+          hostPath:
+            path: /usr/local/cuda/lib64
+            type: Directory
