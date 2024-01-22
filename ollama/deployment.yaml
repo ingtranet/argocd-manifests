@@ -21,6 +21,11 @@ spec:
       containers:
         - name: ollama
           image: ollama/ollama:0.1.20
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: NVIDIA_REQUIRE_CUDA
+              value: "cuda>=11.0"
           ports:
             - containerPort: 11434
           resources:
