@@ -8,7 +8,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/coder/code-server
-    path: ci/helm-chart/code-server
+    path: ci/helm-chart
     targetRevision: HEAD
     helm:
       releaseName: code-server
