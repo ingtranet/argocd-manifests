@@ -17,6 +17,7 @@ spec:
           enabled: false
         nodeSelector:
           kubernetes.io/hostname: k8s-ga-gpu-1
+        existingSecret: true
         extraVars:
           - name: NVIDIA_VISIBLE_DEVICES
             value: "all"
