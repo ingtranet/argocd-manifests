@@ -17,6 +17,11 @@ spec:
           enabled: false
         nodeSelector:
           kubernetes.io/hostname: k8s-ga-gpu-1
+        extraVars:
+          - name: NVIDIA_VISIBLE_DEVICES
+            value: "all"
+          - name: NVIDIA_REQUIRE_CUDA
+            value: "cuda>=11.0"
   destination:
     server: https://kubernetes.default.svc
     namespace: code-server
