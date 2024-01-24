@@ -133,6 +133,10 @@ spec:
       values: |
         clusterDomain: kg.ingtra.net
         defaultRegistry: ghcr.io/linkerd
+        enablePodAntiAffinity: true
+        prometheusUrl: http://victoria-metrics.sd.ingtra.net:8428
+        prometheus:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: linkerd
