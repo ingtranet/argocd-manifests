@@ -33,7 +33,7 @@ spec:
                 clustering {
                   enabled = true
                 }
-                targets  = discovery.relabel.kubelet.output
+                targets  = discovery.kubernetes.nodes.output
                 scheme   = "https"
                 bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
                 tls_config {
