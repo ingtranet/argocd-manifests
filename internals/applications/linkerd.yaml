@@ -137,6 +137,8 @@ spec:
         prometheusUrl: http://victoria-metrics.sd.ingtra.net:8428
         prometheus:
           enabled: false
+        dashboard:
+          enforcedHostRegexp: ".*"
   destination:
     server: https://kubernetes.default.svc
     namespace: linkerd
