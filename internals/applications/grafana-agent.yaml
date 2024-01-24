@@ -21,12 +21,20 @@ spec:
                 }
               }
 
-              discovery.kubernetes "nodes" {
+              discovery.kubernetes "node" {
                 role = "node"
               }
 
-              discovery.kubernetes "pods" {
+              discovery.kubernetes "pod" {
                 role = "pod"
+              }
+
+              discovery.relabel "cadvisor" {
+                targets = discovery.kubernetes.node.targets
+                rule {
+                  replacement   = "/metrics/cadvisor"
+                  target_label  = "__metrics_path__"
+                }
               }
 
               prometheus.scrape "kubelet" {
@@ -35,7 +43,7 @@ spec:
                 }
                 scrape_interval = "15s"
                 scrape_timeout  = "14s"
-                targets  = discovery.kubernetes.nodes.targets
+                targets  = discovery.kubernetes.node.targets
                 scheme   = "https"
                 bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
                 tls_config {
@@ -44,17 +52,32 @@ spec:
                 forward_to = [prometheus.remote_write.victoria_metrics.receiver]
               }
 
-              prometheus.scrape "pods" {
+              prometheus.scrape "cadvisor" {
                 clustering {
                   enabled = true
                 }
                 scrape_interval = "15s"
                 scrape_timeout  = "14s"
-                targets    = discovery.kubernetes.pods.targets
+                targets  = discovery.relabel.cadvisor.output
+                scheme   = "https"
+                bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+                tls_config {
+                  insecure_skip_verify = true
+                }
+                forward_to = [prometheus.remote_write.victoria_metrics.receiver]
+              }
+
+              prometheus.scrape "pod" {
+                clustering {
+                  enabled = true
+                }
+                scrape_interval = "15s"
+                scrape_timeout  = "14s"
+                targets    = discovery.kubernetes.pod.targets
                 forward_to = [prometheus.remote_write.victoria_metrics.receiver]
               }
           
-              prometheus.scrape "externals" {
+              prometheus.scrape "external" {
                 clustering {
                   enabled = true
                 }
