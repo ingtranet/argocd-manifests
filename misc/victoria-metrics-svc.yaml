@@ -4,5 +4,20 @@ metadata:
   name: victoria-metrics
   namespace: monitoring
 spec:
-  type: ExternalName
-  externalName: victoria-metrics.sd.ingtra.net
+  ports:
+    - port: 8428
+      protocol: TCP
+      targetPort: 8428
+      name: http
+
+---
+apiVersion: v1
+kind: Endpoints
+metadata:
+  name: victoria-metrics
+  namespace: monitoring
+subsets:
+  - addresses:
+      - ip: 10.3.65.13
+    ports:
+      - port: 8428
