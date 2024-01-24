@@ -39,7 +39,7 @@ spec:
             - --from
             - :8080
             - --to
-            - victoria-metrics.sd.ingtra.net:8128
+            - victoria-metrics.sd.ingtra.net:8428
           resources:
             requests:
               cpu: 100m
