@@ -41,13 +41,14 @@ spec:
                 targets = [
                   {
                     __address__ = "victoria-metrics.sd.ingtra.net:8428",
-                    __metrics_path__ = "/metrics"
-                  }
+                    __metrics_path__ = "/metrics",
+                  },
                 ]
                 forward_to = [prometheus.remote_write.victoria_metrics.receiver]
               }
           clustering:
             enabled: true
+          enableReporting: false
           resources:
             limits:
               cpu: 2000m
