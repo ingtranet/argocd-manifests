@@ -13,7 +13,7 @@ spec:
       releaseName: grafana-agent
       values: |
         agent:
-          configmap:
+          configMap:
             content: |
               prometheus.remote_write "victoria-metrics" {
                 endpoint {
