@@ -37,13 +37,13 @@ spec:
                 }
               }
 
-              discovery.relabel "linkerd-proxy" {
+              discovery.relabel "linkerd_proxy" {
                 targets = discovery.kubernetes.pod.targets
                 rule {
                   source_labels = [
                     "__meta_kubernetes_pod_container_name",
                     "__meta_kubernetes_pod_container_port_name",
-                    "__meta_kubernetes_pod_label_linkerd_io_control_plane_ns"
+                    "__meta_kubernetes_pod_label_linkerd_io_control_plane_ns",
                   ]
                   action = "keep"
                   regex = "linkerd-proxy;linkerd-admin;linkerd$"
@@ -139,13 +139,13 @@ spec:
                 forward_to = [prometheus.remote_write.victoria_metrics.receiver]
               }
 
-              prometheus.scrape "linkerd-proxy" {
+              prometheus.scrape "linkerd_proxy" {
                 clustering {
                   enabled = true
                 }
                 scrape_interval = "15s"
                 scrape_timeout  = "14s"
-                targets    = discovery.relabel.linkerd-proxy.output
+                targets    = discovery.relabel.linkerd_proxy.output
                 forward_to = [prometheus.remote_write.victoria_metrics.receiver]
               }
           
