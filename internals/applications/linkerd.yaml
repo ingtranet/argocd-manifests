@@ -134,7 +134,7 @@ spec:
         clusterDomain: kg.ingtra.net
         defaultRegistry: ghcr.io/linkerd
         enablePodAntiAffinity: true
-        prometheusUrl: victoria-metrics.sd.ingtra.net:8428
+        prometheusUrl: http://victoria-metrics.sd.ingtra.net:8428
         prometheus:
           enabled: false
   destination:
