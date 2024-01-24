@@ -138,6 +138,16 @@ spec:
                 targets    = discovery.kubernetes.pod.targets
                 forward_to = [prometheus.remote_write.victoria_metrics.receiver]
               }
+
+              prometheus.scrape "linkerd-proxy" {
+                clustering {
+                  enabled = true
+                }
+                scrape_interval = "15s"
+                scrape_timeout  = "14s"
+                targets    = discovery.relabel.linkerd-proxy.output
+                forward_to = [prometheus.remote_write.victoria_metrics.receiver]
+              }
           
               prometheus.scrape "external" {
                 clustering {
