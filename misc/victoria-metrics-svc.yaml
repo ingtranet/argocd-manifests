@@ -4,6 +4,8 @@ metadata:
   name: victoria-metrics
   namespace: monitoring
 spec:
+  selector:
+    app.kubernetes.io/name: victoria-metrics
   ports:
     - port: 8428
 
@@ -13,6 +15,8 @@ kind: Endpoints
 metadata:
   name: victoria-metrics
   namespace: monitoring
+  labels:
+    app.kubernetes.io/name: victoria-metrics
 subsets:
   - addresses:
       - ip: 10.3.65.13
