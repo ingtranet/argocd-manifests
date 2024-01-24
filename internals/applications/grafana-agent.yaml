@@ -13,6 +13,39 @@ spec:
       releaseName: grafana-agent
       values: |
         agent:
+          configmap:
+            content: |
+              prometheus.remote_write "victoria-metrics" {
+                endpoint {
+                  url = "http://victoria-metrics.sd.ingtra.net:8428/api/v1/write"
+                }
+              }
+
+              discovery.kubernetes "nodes" {
+                role = "node"
+              }
+              prometheus.scrape "nodes" {
+                targets    = discovery.kubernetes.nodes.targets
+                forward_to = [prometheus.remote_write.victoria-metrics.receiver]
+              }
+
+              discovery.kubernetes "pods" {
+                role = "pod"
+              }
+              prometheus.scrape "pods" {
+                targets    = discovery.kubernetes.pods.targets
+                forward_to = [prometheus.remote_write.victoria-metrics.receiver]
+              }
+          
+              prometheus.scrape "externals" {
+                targets = [
+                  {
+                    __address__ = "victoria-metrics.sd.ingtra.net:8428",
+                    __metrics_path__ = "/metrics"
+                  }
+                ]
+                forward_to = [prometheus.remote_write.victoria-metrics.receiver]
+              }
           clustering:
             enabled: true
           resources:
