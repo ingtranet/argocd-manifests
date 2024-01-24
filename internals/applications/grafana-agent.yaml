@@ -24,15 +24,28 @@ spec:
               discovery.kubernetes "nodes" {
                 role = "node"
               }
-              prometheus.scrape "nodes" {
-                targets    = discovery.kubernetes.nodes.targets
-                forward_to = [prometheus.remote_write.victoria_metrics.receiver]
-              }
 
               discovery.kubernetes "pods" {
                 role = "pod"
               }
+
+              prometheus.scrape "kubelet" {
+                clustering {
+                  enabled = true
+                }
+                targets  = discovery.relabel.kubelet.output
+                scheme   = "https"
+                bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+                tls_config {
+                  insecure_skip_verify = true
+                }
+                forward_to = [prometheus.remote_write.victoria_metrics.receiver]
+              }
+
               prometheus.scrape "pods" {
+                clustering {
+                  enabled = true
+                }
                 targets    = discovery.kubernetes.pods.targets
                 forward_to = [prometheus.remote_write.victoria_metrics.receiver]
               }
