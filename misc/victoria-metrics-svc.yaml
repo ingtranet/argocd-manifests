@@ -6,9 +6,6 @@ metadata:
 spec:
   ports:
     - port: 8428
-      protocol: TCP
-      targetPort: 8428
-      name: http
 
 ---
 apiVersion: v1
@@ -20,5 +17,4 @@ subsets:
   - addresses:
       - ip: 10.3.65.13
     ports:
-      - name: http
-        port: 8428
+      - port: 8428
