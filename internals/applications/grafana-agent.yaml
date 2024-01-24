@@ -33,6 +33,8 @@ spec:
                 clustering {
                   enabled = true
                 }
+                scrape_interval = "15s"
+                scrape_timeout  = "14s"
                 targets  = discovery.kubernetes.nodes.targets
                 scheme   = "https"
                 bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
@@ -46,11 +48,18 @@ spec:
                 clustering {
                   enabled = true
                 }
+                scrape_interval = "15s"
+                scrape_timeout  = "14s"
                 targets    = discovery.kubernetes.pods.targets
                 forward_to = [prometheus.remote_write.victoria_metrics.receiver]
               }
           
               prometheus.scrape "externals" {
+                clustering {
+                  enabled = true
+                }
+                scrape_interval = "15s"
+                scrape_timeout  = "14s"
                 targets = [
                   {
                     __address__ = "victoria-metrics.sd.ingtra.net:8428",
