@@ -1,24 +1,48 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: victoria-metrics
+  name: victoria-metrics-proxy
   namespace: monitoring
 spec:
   selector:
-    app.kubernetes.io/name: victoria-metrics
+    app.kubernetes.io/name: victoria-metrics-proxy
   ports:
-    - port: 8428
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
 
 ---
-apiVersion: v1
-kind: Endpoints
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: victoria-metrics
+  name: victoria-metrics-proxy
   namespace: monitoring
-  labels:
-    app.kubernetes.io/name: victoria-metrics
-subsets:
-  - addresses:
-      - ip: 10.3.65.13
-    ports:
-      - port: 8428
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: victoria-metrics-proxy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: victoria-metrics-proxy
+    spec:
+      containers:
+        - name: caddy
+          image: ingtranet/caddy:2.7.6
+          ports:
+            - containerPort: 8080
+          args:
+            - reverse-proxy
+            - --from
+            - :8080
+            - --to
+            - victoria-metrics.sd.ingtra.net:8128
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi"
+            limits:
+              cpu: 500m
+              memory: 500Mi
