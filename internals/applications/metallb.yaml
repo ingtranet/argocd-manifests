@@ -19,3 +19,21 @@ spec:
       kind: CustomResourceDefinition
       jqPathExpressions:
         - .spec.conversion.webhook.clientConfig.caBundle
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: metallb-configs
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ingtranet/argocd-manifests.git
+    path: metallb-configs
+    targetRevision: HEAD
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: metallb
