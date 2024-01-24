@@ -37,6 +37,68 @@ spec:
                 }
               }
 
+              discovery.relabel "linkerd-proxy" {
+                targets = discovery.kubernetes.pod.targets
+                rule {
+                  source_labels = [
+                    "__meta_kubernetes_pod_container_name",
+                    "__meta_kubernetes_pod_container_port_name",
+                    "__meta_kubernetes_pod_label_linkerd_io_control_plane_ns"
+                  ]
+                  action = "keep"
+                  regex = "linkerd-proxy;linkerd-admin;linkerd$"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_namespace"]
+                  action = "replace"
+                  target_label = "namespace"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_name"]
+                  action = "replace"
+                  target_label = "pod"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_label_linkerd_io_proxy_job"]
+                  action = "replace"
+                  target_label = "k8s_job"
+                }
+                rule {
+                  action = "labeldrop"
+                  regex = "__meta_kubernetes_pod_label_linkerd_io_proxy_job"
+                }
+                rule {
+                  action = "labelmap"
+                  regex = "__meta_kubernetes_pod_label_linkerd_io_proxy_(.+)"
+                }
+                rule {
+                  action = "labeldrop"
+                  regex = "__meta_kubernetes_pod_label_linkerd_io_proxy_(.+)"
+                }
+                rule {
+                  action = "labelmap"
+                  regex = "__meta_kubernetes_pod_label_linkerd_io_(.+)"
+                }
+                rule {
+                  action = "labelmap"
+                  regex = "__meta_kubernetes_pod_label_(.+)"
+                  replacement = "__tmp_pod_label_$1"
+                }
+                rule {
+                  action = "labelmap"
+                  regex = "__tmp_pod_label_linkerd_io_(.+)"
+                  replacement = "__tmp_pod_label_$1"
+                }
+                rule {
+                  action = "labeldrop"
+                  regex = "__tmp_pod_label_linkerd_io_(.+)"
+                }
+                rule {
+                  action = "labelmap"
+                  regex = "__tmp_pod_label_(.+)"
+                }
+              }
+
               prometheus.scrape "kubelet" {
                 clustering {
                   enabled = true
