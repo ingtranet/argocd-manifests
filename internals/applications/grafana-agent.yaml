@@ -224,4 +224,4 @@ spec:
           type: deployment
   destination:
     server: https://kubernetes.default.svc
-    namespace: grafana-agent
+    namespace: monitoring
