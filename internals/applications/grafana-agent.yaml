@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana-agent
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: grafana-agent
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: 0.31.1
+    helm:
+      releaseName: grafana-agent
+      values: |
+        agent:
+          clustering:
+            enabled: true
+          resources:
+            limits:
+              cpu: 2000m
+              memory: 2Gi
+            requests:
+              cpu: 100m
+              memory: 100Mi
+        controller:
+          type: deployment
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: grafana-agent
