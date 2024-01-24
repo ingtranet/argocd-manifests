@@ -10,7 +10,7 @@ spec:
       match: Host(`linkerd-viz.ig.ingtra.net`)
       services:
         - kind: Service
-          name: linkerd-viz
+          name: web
           namespace: linkerd
           port: 8084
   tls:
