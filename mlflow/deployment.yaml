@@ -30,7 +30,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: mlflow
-                  key: tracking-uri
+                  key: backend-store-uri
             - name: MLFLOW_ARTIFACTS_DESTINATION
               value: s3://mlflow
             - name: MLFLOW_S3_ENDPOINT_URL
