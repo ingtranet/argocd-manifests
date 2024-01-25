@@ -24,14 +24,15 @@ spec:
             - "0.0.0.0"
             - --port
             - "8080"
-            - --artifacts-destination
-            - s3://mlflow
+            - --dev
           env:
-            - name: MLFLOW_TRACKING_URI
+            - name: MLFLOW_BACKEND_STORE_URI
               valueFrom:
                 secretKeyRef:
                   name: mlflow
                   key: tracking-uri
+            - name: MLFLOW_ARTIFACTS_DESTINATION
+              value: s3://mlflow
             - name: MLFLOW_S3_ENDPOINT_URL
               valueFrom:
                 secretKeyRef:
