@@ -17,6 +17,10 @@ spec:
       containers:
         - name: mlflow
           image: ghcr.io/mlflow/mlflow:v2.9.2
+          args:
+            - server
+            - --artifacts-destination
+            - s3://mlflow
           env:
             - name: MLFLOW_TRACKING_URI
               valueFrom:
@@ -41,6 +45,14 @@ spec:
           ports:
             - name: http
               containerPort: 5000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
           resources:
             requests:
               cpu: 100m
