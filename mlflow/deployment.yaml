@@ -17,6 +17,7 @@ spec:
       containers:
         - name: mlflow
           image: ingtranet/mlflow:v2.9.2
+          imagePullPolicy: Always
           args:
             - mlflow
             - server
