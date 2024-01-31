@@ -4,7 +4,10 @@ metadata:
   name: seldon
 spec:
   seldonConfig: default
-  overrides: 
+  overrides:
+    - name: seldon-envoy
+      replicas: 2
+      serviceType: ClusterIP
     - name: seldon-scheduler
       disable: true
   config:
