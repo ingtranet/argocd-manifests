@@ -1,0 +1,35 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: seldon-core-operator
+  
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: seldon-core-operator
+    repoURL: https://storage.googleapis.com/seldon-charts
+    targetRevision: 1.18.0
+    helm:
+      releaseName: seldon-core-operator
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: seldon
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: seldon-configs
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ingtranet/argocd-manifests.git
+    path: seldon-configs
+    targetRevision: HEAD
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: seldon
