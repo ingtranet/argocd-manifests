@@ -13,6 +13,9 @@ spec:
       releaseName: seldon-core-v2-crds
   destination:
     server: https://kubernetes.default.svc
+  syncPolicy:
+    syncOptions:
+      - Replace=true
 
 ---
 apiVersion: argoproj.io/v1alpha1
@@ -44,7 +47,7 @@ metadata:
 spec:
   project: default
   source:
-    chart: seldon-v2-runtime
+    chart: seldon-core-v2-runtime
     repoURL: https://seldonio.github.io/helm-charts
     targetRevision: 2.7.0
     helm:
