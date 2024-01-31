@@ -9,7 +9,6 @@ provisioner: nfs.csi.k8s.io
 parameters:
   server: synology.dv.ingtra.net
   share: /volume1/k8s-csi-nfs
-  subDir: ga
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
 mountOptions:
