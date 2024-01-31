@@ -9,12 +9,12 @@ spec:
   source:
     chart: seldon-core-operator
     repoURL: https://storage.googleapis.com/seldon-charts
-    targetRevision: 1.18.0
+    targetRevision: 1.17.1
     helm:
       releaseName: seldon-core-operator
   destination:
     server: https://kubernetes.default.svc
-    namespace: seldon
+    namespace: seldon-system
 
 ---
 apiVersion: argoproj.io/v1alpha1
@@ -32,4 +32,4 @@ spec:
       recurse: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: seldon
+    namespace: seldon-system
