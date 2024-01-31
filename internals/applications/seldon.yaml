@@ -23,7 +23,7 @@ metadata:
 spec:
   project: default
   source:
-    chart: seldon-core-v2
+    chart: seldon-core-v2-setup
     repoURL: https://seldonio.github.io/helm-charts
     targetRevision: 2.7.0
     helm:
