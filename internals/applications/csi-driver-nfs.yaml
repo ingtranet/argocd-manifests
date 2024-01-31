@@ -11,6 +11,10 @@ spec:
     targetRevision: v4.6.0
     helm:
       releaseName: csi-driver-nfs
+      values:
+        kubeletDir: /var/lib/k0s/kubelet
+        controller:
+          workingMountDir: /tmp/csi-driver-nfs
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
