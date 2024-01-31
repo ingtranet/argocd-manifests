@@ -1,31 +1,57 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: seldon-core-operator
-  
+  name: seldon-core-v2-crds
   namespace: argocd
 spec:
   project: default
-  ignoreDifferences:
-    - group: apiextensions.k8s.io
-      kind: CustomResourceDefinition
-      name: seldondeployments.machinelearning.seldon.io
-      jsonPointers:
-        - /spec
-        - /status
-        - /metadata/labels
   source:
-    chart: seldon-core-operator
-    repoURL: https://storage.googleapis.com/seldon-charts
-    targetRevision: 1.17.1
+    chart: seldon-core-v2-crds
+    repoURL: https://seldonio.github.io/helm-charts
+    targetRevision: 2.7.0
     helm:
-      releaseName: seldon-core-operator
+      releaseName: seldon-core-v2-crds
   destination:
     server: https://kubernetes.default.svc
-    namespace: seldon-system
-  syncPolicy:
-    syncOptions:
-      - Replace=true
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: seldon-core-v2
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: seldon-core-v2
+    repoURL: https://seldonio.github.io/helm-charts
+    targetRevision: 2.7.0
+    helm:
+      releaseName: seldon-core-v2
+      values: |
+        controller:
+          clusterwide: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: seldon-mesh
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: seldon-v2-runtime
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: seldon-v2-runtime
+    repoURL: https://seldonio.github.io/helm-charts
+    targetRevision: 2.7.0
+    helm:
+      releaseName: seldon-v2-runtime
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: seldon-mesh
 
 ---
 apiVersion: argoproj.io/v1alpha1
@@ -43,4 +69,4 @@ spec:
       recurse: true
   destination:
     server: https://kubernetes.default.svc
-    namespace: seldon
+    namespace: seldon-mesh
