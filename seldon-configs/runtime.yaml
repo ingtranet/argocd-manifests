@@ -7,5 +7,4 @@ spec:
   overrides:
     - name: seldon-envoy
       replicas: 2
-    - name: seldon-scheduler
-      disable: true
+
