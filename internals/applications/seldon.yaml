@@ -42,24 +42,6 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: seldon-v2-runtime
-  namespace: argocd
-spec:
-  project: default
-  source:
-    chart: seldon-core-v2-runtime
-    repoURL: https://seldonio.github.io/helm-charts
-    targetRevision: 2.7.0
-    helm:
-      releaseName: seldon-v2-runtime
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: seldon-mesh
-
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
   name: seldon-configs
   namespace: argocd
 spec:
