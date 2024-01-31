@@ -11,7 +11,7 @@ spec:
     targetRevision: v4.6.0
     helm:
       releaseName: csi-driver-nfs
-      values:
+      values: |
         kubeletDir: /var/lib/k0s/kubelet
         controller:
           workingMountDir: /tmp/csi-driver-nfs
