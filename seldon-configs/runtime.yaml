@@ -7,29 +7,5 @@ spec:
   overrides:
     - name: seldon-envoy
       replicas: 2
-      serviceType: ClusterIP
     - name: seldon-scheduler
       disable: true
-  config:
-    agentConfig: {}
-    kafkaConfig:
-      bootstrap.servers: 'redpanda.sd.ingtra.net:9092'
-      consumer:
-        auto.offset.reset: 'earliest'
-        message.max.bytes: '1000000000'
-        session.timeout.ms: '6000'
-        topic.metadata.propagation.max.ms: '300000'
-      consumerGroupIdPrefix: 'svc.seldon.'
-      debug: ''
-      producer:
-        linger.ms: '0'
-        message.max.bytes: '1000000000'
-        compression.type: zstd
-      topicPrefix: 'svc.seldon.'
-    serviceConfig:
-      grpcServicePrefix:
-      serviceType:
-    tracingConfig:
-      disable: true
-      otelExporterEndpoint:
-      ratio:
