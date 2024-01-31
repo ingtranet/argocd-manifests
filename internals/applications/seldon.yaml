@@ -6,6 +6,14 @@ metadata:
   namespace: argocd
 spec:
   project: default
+  ignoreDifferences:
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: seldondeployments.machinelearning.seldon.io
+      jsonPointers:
+        - /spec
+        - /status
+        - /metadata/labels
   source:
     chart: seldon-core-operator
     repoURL: https://storage.googleapis.com/seldon-charts
