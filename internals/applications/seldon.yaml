@@ -32,8 +32,15 @@ spec:
     helm:
       releaseName: seldon-core-v2
       values: |
-        controller:
-          clusterwide: true
+        opentelemetry:
+          disable: false
+        kafka:
+          bootstrap: redpanda.sd.ingtra.net:9092
+          topicPrefix: svc.seldon.
+          consumerGroupIdPrefix: svc.seldon.
+        services:
+          serviceGRPCPrefix: "grpc-"
+          defaultServiceType: ClusterIP
   destination:
     server: https://kubernetes.default.svc
     namespace: seldon-mesh
