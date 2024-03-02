@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlserver
+  namespace: mlserver
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mlserver
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: mlserver
+    spec:
+      initContainers:
+        - name: git-sync
+          image: k8s.gcr.io/git-sync:v4.2.1
+          args:
+            - --repo=https://github.com/ingtranet/mlserver-repository.git
+            - --branch=main
+            - --depth=1
+            - --root=/mnt/repo
+            - --one-time
+          volumeMounts:
+            - name: repo
+              mountPath: /mnt/repo
+      containers:
+        - name: caddy
+          image: ingtranet/jetson-ml-inference:24.3.1-l4t36.2.0
+          ports:
+            - name: http
+              containerPort: 8080
+          args:
+            - mlserver
+            - start
+            - /mnt/repo
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: "4"
+              memory: 8Gi
+          volumeMounts:
+            - name: repo
+              mountPath: /mnt/repo
+      volumes:
+        - name: repo
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlserver
+  namespace: mlserver
+spec:
+  selector:
+    app.kubernetes.io/name: mlserver
+  ports:
+    - name: http
+      port: 80
+      protocol: TCP
+      targetPort: 8080
