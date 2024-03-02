@@ -27,7 +27,7 @@ spec:
               mountPath: /mnt/repo
       containers:
         - name: caddy
-          image: ingtranet/jetson-ml-inference:24.3.1-l4t36.2.0
+          image: docker.io/ingtranet/jetson-ml-inference:24.3.1-l4t36.2.0
           ports:
             - name: http
               containerPort: 8080
