@@ -32,8 +32,8 @@ spec:
           env:
             - name: HF_HOME
               value: /mnt/huggingface-home
-            - name: HUGGINGFACE_HUB_CACHE
-              value: /mnt/huggingface-home/hub
+            - name: TRANSFORMERS_CACHE
+              value: /mnt/huggingface-home/transformers
           ports:
             - name: http
               containerPort: 8080
