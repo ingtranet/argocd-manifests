@@ -57,7 +57,7 @@ spec:
         - name: huggingface-home
           nfs:
             server: synology.dv.ingtra.net
-            path: /volume1/ga/volume-nfs/huggingface-home
+            path: /volume1/k8s-volume/ga/volume-nfs/huggingface-home
       tolerations:
         - key: dedicated
           operator: Equal
