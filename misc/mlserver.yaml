@@ -26,9 +26,12 @@ spec:
             - name: repo
               mountPath: /mnt/repo
       containers:
-        - name: caddy
+        - name: mlserver
           image: docker.io/ingtranet/jetson-ml-inference:24.3.1-l4t36.2.0
           imagePullPolicy: Always
+          env:
+            - name: HF_HOME
+              value: /mnt/huggingface-home
           ports:
             - name: http
               containerPort: 8080
@@ -46,9 +49,15 @@ spec:
           volumeMounts:
             - name: repo
               mountPath: /mnt/repo
+            - name: huggingface-home
+              mountPath: /mnt/huggingface-home
       volumes:
         - name: repo
           emptyDir: {}
+        - name: huggingface-home
+          nfs:
+            server: synology.dv.ingtra.net
+            path: /volume1/ga/volume-nfs/huggingface-home
       tolerations:
         - key: dedicated
           operator: Equal
