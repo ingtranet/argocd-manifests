@@ -53,7 +53,28 @@ spec:
           operator: Equal
           value: gpu
           effect: "PreferNoSchedule"
-
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: nvidia.com/gpu.product
+                    operator: In
+                    values:
+                      - Orin
+                  - key: kubernetes.io/arch
+                    operator: In
+                    values:
+                      - arm64
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - mlserver
+              topologyKey: kubernetes.io/hostname
 ---
 apiVersion: v1
 kind: Service
