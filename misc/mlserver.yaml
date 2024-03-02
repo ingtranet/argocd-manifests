@@ -48,6 +48,12 @@ spec:
       volumes:
         - name: repo
           emptyDir: {}
+      tolerations:
+        - key: dedicated
+          operator: Equal
+          value: gpu
+          effect: "PreferNoSchedule"
+
 ---
 apiVersion: v1
 kind: Service
