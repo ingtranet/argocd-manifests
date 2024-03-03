@@ -19,7 +19,7 @@ spec:
           imagePullPolicy: Always
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 8000
           resources:
             requests:
               cpu: 100m
@@ -41,4 +41,4 @@ spec:
     - name: http
       port: 80
       protocol: TCP
-      targetPort: 8080
+      targetPort: 8000
