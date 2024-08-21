@@ -8,7 +8,7 @@ spec:
   source:
     chart: csi-driver-nfs
     repoURL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
-    targetRevision: v4.6.0
+    targetRevision: v4.8.0
     helm:
       releaseName: csi-driver-nfs
       values: |
@@ -28,7 +28,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/ingtranet/argocd-manifests.git
-    path: csi-driver-nfs-configs
+    path: manifests/csi-driver-nfs-configs
     targetRevision: HEAD
     directory:
       recurse: true

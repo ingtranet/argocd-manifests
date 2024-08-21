@@ -1,3 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: cert-namager
+
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -8,7 +14,7 @@ spec:
   source:
     chart: cert-manager
     repoURL: https://charts.jetstack.io
-    targetRevision: 1.13.3
+    targetRevision: 1.15.3
     helm:
       releaseName: cert-manager
       values: |
@@ -33,7 +39,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/ingtranet/argocd-manifests.git
-    path: cert-manager-configs
+    path: manifests/cert-manager-configs
     targetRevision: HEAD
     directory:
       recurse: true
