@@ -2,14 +2,14 @@
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
 metadata:
-  name: nfs-csi
+  name: synology-nfs-csi
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
 provisioner: nfs.csi.k8s.io
 parameters:
   server: synology.dv.ingtra.net
   share: /volume1/k8s-volume
-  subDir: ga/nfs-csi/${pv.metadata.name}
+  subDir: na/nfs-csi/${pv.metadata.name}
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
 mountOptions:
