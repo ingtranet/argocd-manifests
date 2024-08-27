@@ -2,8 +2,6 @@ apiVersion: v1
 kind: PersistentVolume
 metadata:
   name: ollama
-  annotations:
-    pv.kubernetes.io/provisioned-by: nfs.csi.k8s.io
 spec:
   capacity:
     storage: 500Gi
@@ -14,12 +12,10 @@ spec:
     - nfsvers=4.1
   csi:
     driver: nfs.csi.k8s.io
-    # volumeHandle format: {nfs-server-address}#{sub-dir-name}#{share-name}
-    # make sure this value is unique for every share in the cluster
-    volumeHandle: synology.dv.ingtra.net/volume
+    volumeHandle: synology.dv.ingtra.net#volume1#k8s
     volumeAttributes:
-      server: nfs-server.default.svc.cluster.local
-      share: /
+      server: synology.dv.ingtra.net
+      share: /volume1/k8s
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -32,15 +28,3 @@ spec:
     requests:
       storage: 500Gi
   volumeName: ollama
-
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-nfs-dynamic
-spec:
-  accessModes:
-    - ReadWriteMany
-  resources:
-    requests:
-      storage: 10Gi
