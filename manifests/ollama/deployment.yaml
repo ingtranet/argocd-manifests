@@ -20,7 +20,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: ollama
-          image: ollama/ollama:0.3.7
+          image: dustynv/ollama:r36.2.0
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
