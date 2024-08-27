@@ -8,7 +8,7 @@ metadata:
 provisioner: nfs.csi.k8s.io
 parameters:
   server: synology.dv.ingtra.net
-  share: /volume1/k8s-volume
+  share: /volume1/k8s
   subDir: na/nfs-csi/${pv.metadata.name}
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
