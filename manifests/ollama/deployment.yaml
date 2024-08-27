@@ -27,14 +27,14 @@ spec:
             - name: NVIDIA_REQUIRE_CUDA
               value: "cuda>=12.0"
             - name: LD_LIBRARY_PATH
-              value: /usr/local/cuda/lib64
+              value: /usr/local/cuda/lib:/usr/local/cuda/lib64:/usr/local/cuda/include
             - name: OLLAMA_MODELS
               value: /ollama
             - name: OLLAMA_LLM_LIBRARY
               value: cuda_v12
           volumeMounts:
             - name: cuda-lib
-              mountPath: /usr/local/cuda/lib64
+              mountPath: /usr/local/cuda
               readOnly: true
             - name: ollama
               mountPath: /ollama
@@ -48,7 +48,7 @@ spec:
       volumes:
         - name: cuda-lib
           hostPath:
-            path: /usr/local/cuda/lib64
+            path: /usr/local/cuda
             type: Directory
         - name: ollama
           persistentVolumeClaim:
