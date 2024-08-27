@@ -12,10 +12,11 @@ spec:
     - nfsvers=4.1
   csi:
     driver: nfs.csi.k8s.io
-    volumeHandle: synology.dv.ingtra.net#volume1#k8s
+    volumeHandle: "synology.dv.ingtra.net#volume1#k8s"
     volumeAttributes:
       server: synology.dv.ingtra.net
       share: /volume1/k8s
+  storageClassName: synology-nfs-csi
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
