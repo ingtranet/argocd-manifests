@@ -29,3 +29,15 @@ spec:
     requests:
       storage: 500Gi
   volumeName: ollama
+
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: test
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 500Gi
