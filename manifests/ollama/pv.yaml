@@ -10,9 +10,16 @@ spec:
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
+  mountOptions:
+    - nfsvers=4.1
   csi:
     driver: nfs.csi.k8s.io
-
+    # volumeHandle format: {nfs-server-address}#{sub-dir-name}#{share-name}
+    # make sure this value is unique for every share in the cluster
+    volumeHandle: synology.dv.ingtra.net/volume
+    volumeAttributes:
+      server: nfs-server.default.svc.cluster.local
+      share: /
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
@@ -25,3 +32,16 @@ spec:
     requests:
       storage: 500Gi
   volumeName: ollama
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-nfs-dynamic
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: nfs-csi
