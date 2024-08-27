@@ -10,6 +10,8 @@ spec:
   accessModes:
     - ReadWriteMany
   persistentVolumeReclaimPolicy: Retain
+  csi:
+    driver: nfs.csi.k8s.io
 
 ---
 kind: PersistentVolumeClaim
