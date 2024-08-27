@@ -21,6 +21,8 @@ spec:
       containers:
         - name: ollama
           image: dustynv/ollama:r36.2.0
+          command: ["/bin/ollama"]
+          args: ["serve"]
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
