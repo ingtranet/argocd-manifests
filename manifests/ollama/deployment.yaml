@@ -25,11 +25,13 @@ spec:
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
             - name: NVIDIA_REQUIRE_CUDA
-              value: "cuda>=11.0"
+              value: "cuda>=12.0"
             - name: LD_LIBRARY_PATH
               value: /usr/local/cuda/lib64
             - name: OLLAMA_MODELS
               value: /ollama
+            - name: OLLAMA_LLM_LIBRARY
+              value: cuda_v12
           volumeMounts:
             - name: cuda-lib
               mountPath: /usr/local/cuda/lib64
