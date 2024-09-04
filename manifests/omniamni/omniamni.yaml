@@ -17,7 +17,7 @@ spec:
           image: harbor.ingtra.net/library/omniamni:latest
           imagePullPolicy: Always
           env:
-            - name: OLLAMA_SERVER_URL
+            - name: OLLAMA_BASE_URL
               value: https://ollama.ig.ingtra.net
           ports:
             - name: http
