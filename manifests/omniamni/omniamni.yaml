@@ -16,6 +16,9 @@ spec:
         - name: omniamni
           image: harbor.ingtra.net/library/omniamni:latest
           imagePullPolicy: Always
+          env:
+            - name: OLLAMA_SERVER_URL
+              value: http://ollama.ollama.svc.cluster.local
           ports:
             - name: http
               containerPort: 8000
