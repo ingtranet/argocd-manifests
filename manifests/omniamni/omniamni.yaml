@@ -18,7 +18,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: OLLAMA_SERVER_URL
-              value: http://ollama.ollama.svc.cluster.local
+              value: https://ollama.ig.ingtra.net
           ports:
             - name: http
               containerPort: 8000
