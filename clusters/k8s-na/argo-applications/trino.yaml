@@ -1,0 +1,99 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: trino
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: trino
+    repoURL: https://trinodb.github.io/charts
+    targetRevision: 0.28.0
+    helm:
+      releaseName: trino
+      values: |
+        image:
+          repository: trinodb/trino
+          tag: "455"
+        server:
+          workers: 3
+          coordinatorExtraConfig: |
+            web-ui.user=admin
+            web-ui.authentication.type=fixed
+          config:
+            query:
+              maxMemory: 4GB
+              maxMemoryPerNode: 1GB
+        coordinator:
+          jvm:
+            maxHeapSize: 2G
+            gcMethod:
+              type: UseShenandoahGC
+          additionalJVMConfig:
+            - "-XX:ShenandoahGCHeuristics=compact"
+          resources:
+            limits:
+              memory: 3Gi
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+            successThreshold: 1
+          readinessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+            successThreshold: 1
+        worker:
+          jvm:
+            maxHeapSize: 2G
+            gcMethod:
+              type: UseShenandoahGC
+          additionalJVMConfig:
+            - "-XX:ShenandoahGCHeuristics=compact"
+          resources:
+            limits:
+              memory: 3Gi
+          livenessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+            successThreshold: 1
+          readinessProbe:
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 6
+            successThreshold: 1
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 1
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                      - key: component
+                        operator: In
+                        values: ["worker"]
+                  topologyKey: "kubernetes.io/hostname"
+        additionalCatalogs:
+          iceberg: |
+            connector.name=iceberg
+            iceberg.catalog.type=hive
+            iceberg.rest-catalog.uri=https://amoro.ig.ingtra.net/api/iceberg/rest
+        additionalConfigProperties:
+          - sql.default-catalog=iceberg
+          - spill-enabled=true
+          - spiller-spill-path=/tmp
+          - spill-compression-enabled=false
+          - query-max-spill-per-node=30GB
+          - query.max-total-memory=30GB
+          - query.client.timeout=20m
+          - task.concurrency=4
+          - task.max-worker-threads=8
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: trino
