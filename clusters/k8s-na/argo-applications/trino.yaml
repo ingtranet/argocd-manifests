@@ -94,7 +94,7 @@ spec:
           - sql.default-catalog=iceberg
           - spill-enabled=true
           - spiller-spill-path=/tmp
-          - spill-compression-enabled=false
+          - spill-compression-codec=LZ4
           - query-max-spill-per-node=30GB
           - query.max-total-memory=30GB
           - query.client.timeout=20m
