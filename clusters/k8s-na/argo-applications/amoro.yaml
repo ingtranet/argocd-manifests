@@ -23,8 +23,8 @@ spec:
             type: postgres
             driver: org.postgresql.Driver
             url: jdbc:postgresql://postgresql.vd.ingtra.net:5432/amoro
-            username:
-            password:
+            username: change
+            password: me
         env:
           - name: AMS_DATABASE_USERNAME
             valueFrom:
