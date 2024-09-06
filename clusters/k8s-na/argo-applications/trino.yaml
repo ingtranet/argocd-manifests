@@ -93,10 +93,11 @@ spec:
             iceberg.rest-catalog.uri=https://amoro.ig.ingtra.net/api/iceberg/rest
             iceberg.rest-catalog.warehouse=iceberg
             iceberg.register-table-procedure.enabled=true
-            s3.endpoint=https://s3.sf.ingtra.net
-            s3.region=ingtranet
-            s3.aws-access-key=system
-            s3.aws-secret-key=systemsecret
+            hive.s3.aws-access-key=system
+            hive.s3.aws-secret-key=systemsecret
+            hive.s3.endpoint=https://s3.seaweedfs.mdc.ingtra.net
+            hive.s3.ssl.enabled=false
+            hive.s3.signer-type=AWSS3V4SignerType
         additionalConfigProperties:
           - sql.default-catalog=iceberg
           - spill-enabled=true
