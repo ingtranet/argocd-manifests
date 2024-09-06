@@ -95,7 +95,7 @@ spec:
             iceberg.register-table-procedure.enabled=true
             hive.s3.aws-access-key=system
             hive.s3.aws-secret-key=systemsecret
-            hive.s3.endpoint=https://s3.seaweedfs.mdc.ingtra.net
+            hive.s3.endpoint=https://s3.sf.ingtra.net
             hive.s3.ssl.enabled=false
             hive.s3.signer-type=AWSS3V4SignerType
         additionalConfigProperties:
