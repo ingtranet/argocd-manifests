@@ -91,9 +91,11 @@ spec:
             connector.name=iceberg
             iceberg.catalog.type=rest
             iceberg.rest-catalog.uri=https://amoro.ig.ingtra.net/api/iceberg/rest
+            iceberg.rest-catalog.warehouse=iceberg
             iceberg.register-table-procedure.enabled=true
             fs.native-s3.enabled=true
             s3.endpoint=https://s3.sf.ingtra.net
+            s3.region=ingtranet
             s3.aws-access-key=system
             s3.aws-secret-key=systemsecret
         additionalConfigProperties:
