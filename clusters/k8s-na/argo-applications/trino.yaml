@@ -88,7 +88,7 @@ spec:
         additionalCatalogs:
           iceberg: |
             connector.name=iceberg
-            iceberg.catalog.type=hive
+            iceberg.catalog.type=rest
             iceberg.rest-catalog.uri=https://amoro.ig.ingtra.net/api/iceberg/rest
         additionalConfigProperties:
           - sql.default-catalog=iceberg
