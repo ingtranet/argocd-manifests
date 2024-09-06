@@ -27,6 +27,9 @@ spec:
             url: jdbc:postgresql://postgresql.vd.ingtra.net:5432/amoro
             username: change
             password: me
+        optimizer:
+          kubernetes:
+            enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: amoro
