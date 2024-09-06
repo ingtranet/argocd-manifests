@@ -93,6 +93,7 @@ spec:
             iceberg.rest-catalog.uri=https://amoro.ig.ingtra.net/api/iceberg/rest
             iceberg.rest-catalog.warehouse=iceberg
             iceberg.register-table-procedure.enabled=true
+            iceberg.rest-catalog.vended-credentials-enabled=true
             fs.native-s3.enabled=true
             s3.endpoint=https://s3.sf.ingtra.net
             s3.region=us-west-2
