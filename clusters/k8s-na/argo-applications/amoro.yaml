@@ -18,6 +18,8 @@ spec:
     helm:
       releaseName: amoro
       values: |
+        image:
+          tag: "0.7.0-incubating"
         amoroConf: 
           database:
             type: postgres
