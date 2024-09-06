@@ -92,6 +92,10 @@ spec:
             iceberg.catalog.type=rest
             iceberg.rest-catalog.uri=https://amoro.ig.ingtra.net/api/iceberg/rest
             iceberg.register-table-procedure.enabled=true
+            fs.native-s3.enabled=true
+            fs.s3.endpoint=https://s3.sf.ingtra.net
+            s3.aws-access-key=system
+            s3.aws-secret-key=systemsecret
         additionalConfigProperties:
           - sql.default-catalog=iceberg
           - spill-enabled=true
@@ -102,10 +106,6 @@ spec:
           - query.client.timeout=20m
           - task.concurrency=4
           - task.max-worker-threads=8
-          - fs.native-s3.enabled=true
-          - fs.s3.endpoint=https://s3.sf.ingtra.net
-          - s3.aws-access-key=system
-          - s3.aws-secret-key=systemsecret
   destination:
     server: https://kubernetes.default.svc
     namespace: trino
