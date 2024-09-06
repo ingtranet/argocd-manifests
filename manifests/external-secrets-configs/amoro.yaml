@@ -1,7 +1,7 @@
 apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
-  name: amoro-database
+  name: amoro
   namespace: amoro
 spec:
   secretStoreRef:
