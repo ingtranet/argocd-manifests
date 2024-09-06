@@ -26,6 +26,7 @@ spec:
           coordinatorExtraConfig: |
             web-ui.user=admin
             web-ui.authentication.type=fixed
+            http-server.process-forwarded=true
           config:
             query:
               maxMemory: 4GB
