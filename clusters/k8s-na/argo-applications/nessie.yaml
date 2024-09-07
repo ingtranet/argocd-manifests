@@ -26,6 +26,7 @@ spec:
             username: username
             password: password
         catalog:
+          enabled: true
           iceberg:
             defaultWarehouse: s3://iceberg
           # storage:
