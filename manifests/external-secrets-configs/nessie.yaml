@@ -1,0 +1,18 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: nessie-db
+  namespace: nessie
+spec:
+  secretStoreRef:
+    name: vault
+    kind: ClusterSecretStore
+  data:
+    - secretKey: username
+      remoteRef:
+        key: k8s/common/database
+        property: postgres-system-user
+    - secretKey: password
+      remoteRef:
+        key: k8s/common/database
+        property: postgres-system-password
