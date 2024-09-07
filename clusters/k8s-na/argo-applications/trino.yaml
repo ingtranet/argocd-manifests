@@ -89,10 +89,10 @@ spec:
         additionalCatalogs:
           iceberg: |
             connector.name=iceberg
-            iceberg.catalog.type=rest
-            iceberg.rest-catalog.uri=https://amoro.ig.ingtra.net/api/iceberg/rest
-            iceberg.rest-catalog.warehouse=iceberg
-            iceberg.register-table-procedure.enabled=true
+            iceberg.catalog.type=nessie
+            iceberg.nessie-catalog.uri=https://nessie.ig.ingtra.net/api/v2
+            iceberg.nessie-catalog.ref=main
+            iceberg.nessie-catalog.default-warehouse-dir=s3://iceberg
             fs.native-s3.enabled=true
             s3.endpoint=https://s3.sf.ingtra.net
             s3.region=us-west-1
