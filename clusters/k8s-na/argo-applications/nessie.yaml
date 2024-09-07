@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nessie
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nessie
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: nessie
+    repoURL: https://charts.projectnessie.org
+    targetRevision: 0.95.0
+    helm:
+      releaseName: nessie
+      values: |
+        versionStoreType: JDBC
+        jdbc:
+          jdbcUrl: jdbc:postgresql://postgresql.vd.ingtra.net:5432/nessie?currentSchema=nessie
+          secret:
+            name: nessie-db
+            username: username
+            password: password
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nessie
