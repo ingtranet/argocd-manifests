@@ -20,7 +20,7 @@ spec:
       values: |
         versionStoreType: JDBC
         jdbc:
-          jdbcUrl: jdbc:postgresql://postgresql.vd.ingtra.net:5432/nessie?currentSchema=nessie
+          jdbcUrl: jdbc:postgresql://postgresql.vd.ingtra.net:5432/nessie
           secret:
             name: nessie-db
             username: username
