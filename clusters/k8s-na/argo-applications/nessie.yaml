@@ -30,8 +30,8 @@ spec:
           nessie.catalog.service.s3.default-options.access-key.name: system
           nessie.catalog.service.s3.default-options.access-key.secret: systemsecret
           nessie.catalog.service.s3.default-options.endpoint: https://s3.sf.ingtra.net
-          nessie.catalog.default-warehouse=iceberg
-          nessie.catalog.warehouses.iceberg.location=s3://iceberg
+          nessie.catalog.default-warehouse: iceberg
+          nessie.catalog.warehouses.iceberg.location: s3://iceberg
 
           
   destination:
