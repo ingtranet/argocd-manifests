@@ -25,14 +25,12 @@ spec:
             name: nessie-db
             username: username
             password: password
-        catalog:
-          enabled: true
-          iceberg:
-            defaultWarehouse: s3://iceberg
-          # storage:
-          #   s3:
-          #     defaultOptions:
-          #       endpoint: https://s3.sf.ingtra.net
+        advancedConfig:
+          nessie.catalog.warehouseDefaults.default-warehouse: s3://iceberg
+          nessie.catalog.service.s3.default-options.region=us-west-2
+          nessie.catalog.service.s3.default-options.access-key.name=system
+          nessie.catalog.service.s3.default-options.access-key.secret=systemsecret
+          nessie.catalog.service.s3.default-options.endpoint=https://s3.sf.ingtra.net
 
           
   destination:
