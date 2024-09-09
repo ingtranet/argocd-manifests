@@ -26,7 +26,8 @@ spec:
             - "$(JDBC_USER)"
             - --jdbc-password
             - "$(JDBC_PASSWORD)"
-            - --iceberg=s3.access-key-id=system,s3.secret-access-key=systemsecret,s3.endpoint=https://s3.sf.ingtra.net
+            - --iceberg
+            - s3.access-key-id=system,s3.secret-access-key=systemsecret,s3.endpoint=https://s3.sf.ingtra.net
           env:
             - name: JDBC_USER
               valueFrom:
