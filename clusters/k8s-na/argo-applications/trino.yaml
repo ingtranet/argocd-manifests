@@ -41,6 +41,7 @@ spec:
           additionalJVMConfig:
             - "-XX:+ZGenerational"
             - "-XX:SoftMaxHeapSize=2G"
+            - "-XX:ZAllocationSpikeTolerance=0.5"
           resources:
             limits:
               memory: 6Gi
@@ -67,6 +68,7 @@ spec:
           additionalJVMConfig:
             - "-XX:+ZGenerational"
             - "-XX:SoftMaxHeapSize=2G"
+            - "-XX:ZAllocationSpikeTolerance=0.5"
           resources:
             limits:
               memory: 8Gi
