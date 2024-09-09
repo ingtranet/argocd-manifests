@@ -29,17 +29,17 @@ spec:
             http-server.process-forwarded=true
           config:
             query:
-              maxMemory: 15GB
+              maxMemory: 20GB
         coordinator:
           config:
             query:
               maxMemoryPerNode: 2GB
           jvm:
             maxHeapSize: 4G
-            gcMethod:
-              type: UseShenandoahGC
-          additionalJVMConfig:
-            - "-XX:ShenandoahGCHeuristics=adaptive"
+          #   gcMethod:
+          #     type: UseShenandoahGC
+          # additionalJVMConfig:
+          #   - "-XX:ShenandoahGCHeuristics=adaptive"
           resources:
             limits:
               memory: 6Gi
@@ -61,10 +61,10 @@ spec:
               maxMemoryPerNode: 4GB
           jvm:
             maxHeapSize: 6G
-            gcMethod:
-              type: UseShenandoahGC
-          additionalJVMConfig:
-            - "-XX:ShenandoahGCHeuristics=adaptive"
+          #   gcMethod:
+          #     type: UseShenandoahGC
+          # additionalJVMConfig:
+          #   - "-XX:ShenandoahGCHeuristics=adaptive"
           resources:
             limits:
               memory: 8Gi
