@@ -23,9 +23,9 @@ spec:
             - --jdbc-url
             - "jdbc:postgresql://postgresql.vd.ingtra.net:5432/nessie_gc"
             - --jdbc-user
-            - "\$(JDBC_USER)"
+            - "$(JDBC_USER)"
             - --jdbc-password
-            - "\$(JDBC_PASSWORD)"
+            - "$(JDBC_PASSWORD)"
           env:
             - name: JDBC_USER
               valueFrom:
