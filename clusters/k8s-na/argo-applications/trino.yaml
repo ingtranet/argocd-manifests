@@ -33,14 +33,14 @@ spec:
               maxMemoryPerNode: 1GB
         coordinator:
           jvm:
-            maxHeapSize: 2G
+            maxHeapSize: 3G
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
             - "-XX:ShenandoahGCHeuristics=compact"
           resources:
             limits:
-              memory: 3Gi
+              memory: 4Gi
           livenessProbe:
             initialDelaySeconds: 20
             periodSeconds: 10
