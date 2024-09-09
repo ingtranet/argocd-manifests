@@ -22,7 +22,7 @@ spec:
           repository: trinodb/trino
           tag: "455"
         server:
-          workers: 3
+          workers: 2
           coordinatorExtraConfig: |
             web-ui.user=admin
             web-ui.authentication.type=fixed
@@ -35,14 +35,14 @@ spec:
             query:
               maxMemoryPerNode: 5GB
           jvm:
-            maxHeapSize: 3G
+            maxHeapSize: 6G
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
             - "-XX:ShenandoahGCHeuristics=compact"
           resources:
             limits:
-              memory: 4Gi
+              memory: 8Gi
           livenessProbe:
             initialDelaySeconds: 20
             periodSeconds: 10
