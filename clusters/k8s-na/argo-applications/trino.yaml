@@ -29,8 +29,8 @@ spec:
             http-server.process-forwarded=true
           config:
             query:
-              maxMemory: 4GB
-              maxMemoryPerNode: 1GB
+              maxMemory: 15GB
+              maxMemoryPerNode: 5GB
         coordinator:
           jvm:
             maxHeapSize: 3G
@@ -55,14 +55,14 @@ spec:
             successThreshold: 1
         worker:
           jvm:
-            maxHeapSize: 2G
+            maxHeapSize: 6G
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
             - "-XX:ShenandoahGCHeuristics=compact"
           resources:
             limits:
-              memory: 3Gi
+              memory: 8Gi
           livenessProbe:
             initialDelaySeconds: 20
             periodSeconds: 10
