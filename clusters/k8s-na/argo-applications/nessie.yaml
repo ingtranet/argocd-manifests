@@ -27,7 +27,7 @@ spec:
             - --jdbc-password
             - "$(JDBC_PASSWORD)"
             - --iceberg
-            - s3.access-key-id=system,s3.secret-access-key=systemsecret,s3.endpoint=https://s3.sf.ingtra.net,s3.region=us-west-2
+            - s3.access-key-id=system,s3.secret-access-key=systemsecret,s3.endpoint=https://s3.sf.ingtra.net
           env:
             - name: JDBC_USER
               valueFrom:
@@ -39,6 +39,8 @@ spec:
                 secretKeyRef:
                   name: nessie-db
                   key: password
+            - name: AWS_REGION
+              value: us-west-2
           resources:
             limits:
               memory: "2Gi"
