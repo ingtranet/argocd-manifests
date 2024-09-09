@@ -39,7 +39,7 @@ spec:
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
-            - "-XX:ShenandoahGCHeuristics=compact"
+            - "-XX:ShenandoahGCHeuristics=adaptive"
           resources:
             limits:
               memory: 6Gi
@@ -64,7 +64,7 @@ spec:
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
-            - "-XX:ShenandoahGCHeuristics=compact"
+            - "-XX:ShenandoahGCHeuristics=adaptive"
           resources:
             limits:
               memory: 8Gi
