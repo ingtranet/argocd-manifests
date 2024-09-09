@@ -4,6 +4,46 @@ metadata:
   name: nessie
 
 ---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nessie-gc-job
+  namespace: nessie
+spec:
+  template:
+    spec:
+      containers:
+        - name: nessie-gc
+          image: ghcr.io/projectnessie/nessie-gc
+          args: 
+            - gc
+            - --uri
+            - https://nessie.ig.ingtra.net/api/v2
+            - --jdbc
+            - --jdbc-url
+            - "jdbc:postgresql://postgresql.vd.ingtra.net:5432/nessie_gc"
+            - --jdbc-user
+            - "\$(JDBC_USER)"
+            - --jdbc-password
+            - "\$(JDBC_PASSWORD)"
+          env:
+            - name: JDBC_USER
+              valueFrom:
+                secretKeyRef:
+                  name: nessie-db
+                  key: username
+            - name: JDBC_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nessie-db
+                  key: password
+          resources:
+            limits:
+              memory: "2Gi"
+              cpu: "1"
+      restartPolicy: Never
+
+---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -32,7 +72,6 @@ spec:
           nessie.catalog.service.s3.default-options.endpoint: https://s3.sf.ingtra.net
           nessie.catalog.default-warehouse: iceberg
           nessie.catalog.warehouses.iceberg.location: s3://iceberg
-
           
   destination:
     server: https://kubernetes.default.svc
