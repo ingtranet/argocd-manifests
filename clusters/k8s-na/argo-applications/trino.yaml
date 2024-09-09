@@ -27,10 +27,12 @@ spec:
             web-ui.user=admin
             web-ui.authentication.type=fixed
             http-server.process-forwarded=true
-        coordinator:
           config:
             query:
               maxMemory: 15GB
+        coordinator:
+          config:
+            query:
               maxMemoryPerNode: 5GB
           jvm:
             maxHeapSize: 3G
