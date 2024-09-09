@@ -104,6 +104,8 @@ spec:
             s3.region=us-west-1
             s3.aws-access-key=system
             s3.aws-secret-key=systemsecret
+            s3.socket-connect-timeout=20s
+            s3.socket-read-timeout=20s
           iceberg_rest: |
             connector.name=iceberg
             iceberg.catalog.type=rest
@@ -118,6 +120,8 @@ spec:
             s3.region=us-west-2
             s3.aws-access-key=system
             s3.aws-secret-key=systemsecret
+            s3.socket-connect-timeout=20s
+            s3.socket-read-timeout=20s
         additionalConfigProperties:
           - sql.default-catalog=iceberg
           - spill-enabled=true
