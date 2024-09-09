@@ -98,6 +98,7 @@ spec:
             iceberg.nessie-catalog.uri=https://nessie.ig.ingtra.net/api/v2
             iceberg.nessie-catalog.ref=main
             iceberg.nessie-catalog.default-warehouse-dir=s3://iceberg
+            iceberg.target-max-file-size=256MB
             fs.native-s3.enabled=true
             s3.endpoint=https://s3.sf.ingtra.net
             s3.region=us-west-1
@@ -110,6 +111,7 @@ spec:
             iceberg.rest-catalog.uri=https\://nessie.ig.ingtra.net/iceberg/
             iceberg.rest-catalog.vended-credentials-enabled=false
             iceberg.register-table-procedure.enabled=true
+            iceberg.target-max-file-size=256MB
             fs.native-s3.enabled=true
             s3.endpoint=https\://s3.sf.ingtra.net
             s3.path-style-access=false
