@@ -37,11 +37,11 @@ spec:
           jvm:
             maxHeapSize: 4G
             gcMethod:
-              type: UseZGC
+              type: UseParallelGC
           additionalJVMConfig:
-            - "-XX:+ZGenerational"
-            - "-XX:SoftMaxHeapSize=2G"
-            - "-XX:ZAllocationSpikeTolerance=0.5"
+            # - "-XX:+ZGenerational"
+            # - "-XX:SoftMaxHeapSize=2G"
+            # - "-XX:ZAllocationSpikeTolerance=0.5"
           resources:
             limits:
               memory: 6Gi
@@ -64,11 +64,11 @@ spec:
           jvm:
             maxHeapSize: 6G
             gcMethod:
-              type: UseZGC
+              type: UseParallelGC
           additionalJVMConfig:
-            - "-XX:+ZGenerational"
-            - "-XX:SoftMaxHeapSize=2G"
-            - "-XX:ZAllocationSpikeTolerance=0.5"
+            # - "-XX:+ZGenerational"
+            # - "-XX:SoftMaxHeapSize=2G"
+            # - "-XX:ZAllocationSpikeTolerance=0.5"
           resources:
             limits:
               memory: 8Gi
