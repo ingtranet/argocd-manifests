@@ -55,6 +55,13 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 6
             successThreshold: 1
+          additionalVolumes:
+            - name: trino-exchange
+              persistentVolumeClaim:
+                claimName: trino-exchange
+          additionalVolumeMounts:
+            - name: trino-exchange
+              mountPath: /mnt/trino-exchange
         worker:
           config:
             query:
@@ -143,7 +150,7 @@ spec:
           - fault-tolerant-execution-task-memory=1GB
         additionalExchangeManagerProperties:
           - exchange-manager.name=filesystem
-          - exchange.base-directories=/mnt/trino-exchange/e
+          - exchange.base-directories=/mnt/trino-exchange
   destination:
     server: https://kubernetes.default.svc
     namespace: trino
