@@ -143,7 +143,7 @@ spec:
           - fault-tolerant-execution-task-memory=1GB
         additionalExchangeManagerProperties:
           - exchange-manager.name=filesystem
-          - exchange.base-directories=/mnt/trino-exchange
+          - exchange.base-directories=/mnt/trino-exchange/e
   destination:
     server: https://kubernetes.default.svc
     namespace: trino
