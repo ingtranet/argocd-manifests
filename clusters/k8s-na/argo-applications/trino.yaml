@@ -80,6 +80,13 @@ spec:
             timeoutSeconds: 5
             failureThreshold: 6
             successThreshold: 1
+          additionalVolumes:
+            - name: trino-exchange
+              persistentVolumeClaim:
+                claimName: trino-exchange
+          additionalVolumeMounts:
+            - name: trino-exchange
+              mountPath: /mnt/trino-exchange
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
@@ -137,13 +144,6 @@ spec:
         additionalExchangeManagerProperties:
           - exchange-manager.name=filesystem
           - exchange.base-directories=/mnt/trino-exchange
-        additionalVolumes:
-          - name: trino-exchange
-            persistentVolumeClaim:
-              claimName: trino-exchange
-        additionalVolumeMounts:
-          - name: trino-exchange
-            mountPath: /mnt/trino-exchange
   destination:
     server: https://kubernetes.default.svc
     namespace: trino
