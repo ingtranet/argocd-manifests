@@ -29,7 +29,7 @@ spec:
             http-server.process-forwarded=true
           config:
             query:
-              maxMemory: 20GB
+              maxMemory: 15GB
         coordinator:
           config:
             query:
@@ -37,11 +37,9 @@ spec:
           jvm:
             maxHeapSize: 4G
             gcMethod:
-              type: UseParallelGC
+              type: UseShenandoahGC
           additionalJVMConfig:
-            # - "-XX:+ZGenerational"
-            # - "-XX:SoftMaxHeapSize=2G"
-            # - "-XX:ZAllocationSpikeTolerance=0.5"
+            - "-XX:ShenandoahGCHeuristics=adaptive"
           resources:
             limits:
               memory: 6Gi
@@ -62,13 +60,11 @@ spec:
             query:
               maxMemoryPerNode: 4GB
           jvm:
-            maxHeapSize: 6G
+            maxHeapSize: 7G
             gcMethod:
-              type: UseParallelGC
+              type: UseShenandoahGC
           additionalJVMConfig:
-            # - "-XX:+ZGenerational"
-            # - "-XX:SoftMaxHeapSize=2G"
-            # - "-XX:ZAllocationSpikeTolerance=0.5"
+            - "-XX:ShenandoahGCHeuristics=adaptive"
           resources:
             limits:
               memory: 8Gi
@@ -135,6 +131,15 @@ spec:
           - query.client.timeout=20m
           - task.concurrency=1
           - task.max-worker-threads=2
+          - retry-policy=TASK
+          - fault-tolerant-execution.exchange-encryption-enabled=false
+          - fault-tolerant-execution-task-memory=1GB
+          - exchange-manager.name=filesystem
+          - exchange.base-directories=s3://temp/trino-exchange/129
+          - exchange.s3.aws-access-key=system
+          - exchange.s3.aws-secret-key=systemsecret
+          - exchange.s3.endpoint=https://s3.sf.ingtra.net
+          - exchange.s3.region=us-west-2
   destination:
     server: https://kubernetes.default.svc
     namespace: trino
