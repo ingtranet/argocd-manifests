@@ -136,11 +136,14 @@ spec:
           - fault-tolerant-execution-task-memory=1GB
         additionalExchangeManagerProperties:
           - exchange-manager.name=filesystem
-          - exchange.base-directories=s3://temp/trino-exchange/129
-          - exchange.s3.aws-access-key=system
-          - exchange.s3.aws-secret-key=systemsecret
-          - exchange.s3.endpoint=https://s3.sf.ingtra.net
-          - exchange.s3.region=us-west-2
+          - exchange.base-directories=/mnt/trino-exchange
+        additionalVolumes:
+          - name: trino-exchange
+            persistentVolumeClaim:
+              claimName: trino-exchange
+        additionalVolumeMounts:
+          - name: trino-exchange
+            mountPath: /mnt/trino-exchange
   destination:
     server: https://kubernetes.default.svc
     namespace: trino
