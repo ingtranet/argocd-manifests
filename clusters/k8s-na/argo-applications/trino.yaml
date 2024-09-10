@@ -134,6 +134,7 @@ spec:
           - retry-policy=TASK
           - fault-tolerant-execution.exchange-encryption-enabled=false
           - fault-tolerant-execution-task-memory=1GB
+        additionalExchangeManagerProperties:
           - exchange-manager.name=filesystem
           - exchange.base-directories=s3://temp/trino-exchange/129
           - exchange.s3.aws-access-key=system
