@@ -67,7 +67,7 @@ spec:
             query:
               maxMemoryPerNode: 4GB
           jvm:
-            maxHeapSize: 7G
+            maxHeapSize: 6G
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
@@ -129,7 +129,7 @@ spec:
             iceberg.register-table-procedure.enabled=true
             iceberg.target-max-file-size=64MB
             fs.native-s3.enabled=true
-            s3.endpoint=https\://s3.sf.ingtra.net
+            s3.endpoint=https://s3.sf.ingtra.net
             s3.path-style-access=false
             s3.region=us-west-2
             s3.aws-access-key=system
@@ -142,7 +142,7 @@ spec:
           - spiller-spill-path=/tmp
           - spill-compression-codec=LZ4
           - query-max-spill-per-node=30GB
-          - query.client.timeout=20m
+          - query.client.timeout=2d
           - task.concurrency=1
           - task.max-worker-threads=2
           - retry-policy=TASK
