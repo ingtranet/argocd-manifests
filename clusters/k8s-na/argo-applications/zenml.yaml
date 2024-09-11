@@ -28,4 +28,4 @@ spec:
             url: mysql://system:systemsecret@mysql.vd.ingtra.net:3306/zenml
   destination:
     server: https://kubernetes.default.svc
-    namespace: traefik
+    namespace: zenml
