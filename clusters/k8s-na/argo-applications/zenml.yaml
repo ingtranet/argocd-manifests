@@ -13,7 +13,7 @@ spec:
   project: default
   source:
     chart: zenml
-    repoURL: oci://public.ecr.aws/zenml/zenml
+    repoURL: public.ecr.aws/zenml/zenml
     targetRevision: 0.66.0
     helm:
       releaseName: zenml
