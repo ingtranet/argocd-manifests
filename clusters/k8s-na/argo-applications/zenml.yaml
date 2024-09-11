@@ -20,6 +20,8 @@ spec:
       values: |
         zenml:
           serverURL: https://zenml.ig.ingtra.net
+          ingress:
+            enabled: false
           auth:
             authType: NO_AUTH
           database:
