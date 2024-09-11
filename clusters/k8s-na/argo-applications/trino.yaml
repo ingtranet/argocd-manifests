@@ -146,6 +146,7 @@ spec:
           - task.concurrency=1
           - task.max-worker-threads=2
           - retry-policy=TASK
+          - task-retry-attempts-per-task=15
           - fault-tolerant-execution.exchange-encryption-enabled=false
           - fault-tolerant-execution-task-memory=1GB
         additionalExchangeManagerProperties:
