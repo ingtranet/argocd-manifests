@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: zenml
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: zenml
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: zenml
+    repoURL: oci://public.ecr.aws/zenml/zenml
+    targetRevision: 0.66.0
+    helm:
+      releaseName: zenml
+      values: |
+        zenml:
+          serverURL: https://zenml.ig.ingtra.net
+          auth:
+            authType: NO_AUTH
+          database:
+            url: mysql://system:systemsecret@mysql.vd.ingtra.net:3306/zenml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: traefik
