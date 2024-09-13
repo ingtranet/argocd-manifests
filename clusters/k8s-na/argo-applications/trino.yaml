@@ -20,7 +20,7 @@ spec:
       values: |
         image:
           repository: trinodb/trino
-          tag: "455"
+          tag: "457"
         server:
           workers: 2
           coordinatorExtraConfig: |
