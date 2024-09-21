@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jupyter
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`jupyter.ig.ingtra.net`)
+      services:
+        - kind: Service
+          name: proxy-public
+          namespace: jupyter
+          port: 80
+  tls:
+    secretName: ig-ingtra-net-tls
