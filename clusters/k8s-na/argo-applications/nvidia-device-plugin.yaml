@@ -26,7 +26,7 @@ spec:
                   - key: kubernetes.io/hostname
                     operator: In
                     values:
-                      - k8s-ga-gpu-1
+                      - k8s-na-gpu-1
                       - orin-nx-1
                       - orin-nx-2
                       - orin-nx-3
