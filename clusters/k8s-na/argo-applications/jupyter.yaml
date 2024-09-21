@@ -35,6 +35,8 @@ spec:
           image:
             name: quay.io/jupyter/base-notebook
             tag: "2024-09-16"
+          networkPolicy:
+            enabled: false
           profileList:
             - display_name: "Default environment"
               description: "The default image."
