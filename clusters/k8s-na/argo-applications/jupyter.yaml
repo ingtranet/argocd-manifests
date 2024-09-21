@@ -43,7 +43,7 @@ spec:
               description: "The image with GPU support."
               kubespawner_override:
                 image: quay.io/jupyter/pytorch-notebook:cuda12-2024-09-16
-                nodeSelector:
+                node_selector:
                   nvidia.com/gpu.product: NVIDIA-GeForce-RTX-3090
 
 
