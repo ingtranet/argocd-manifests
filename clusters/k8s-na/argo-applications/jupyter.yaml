@@ -28,7 +28,7 @@ spec:
         singleuser:
           # Defines the default image
           image:
-            name: jupyter/base-notebook
+            name: quay.io/jupyter/base-notebook
             tag: "2024-09-16"
           profileList:
             - display_name: "Default environment"
@@ -37,7 +37,7 @@ spec:
             - display_name: "GPU environment"
               description: "The image with GPU support."
               kubespawner_override:
-                image: jupyter/pytorch-notebook:cuda12-2024-09-16
+                image: quay.io/jupyter/pytorch-notebook:cuda12-2024-09-16
                 nodeSelector:
                   nvidia.com/gpu.product: NVIDIA-GeForce-RTX-3090
 
