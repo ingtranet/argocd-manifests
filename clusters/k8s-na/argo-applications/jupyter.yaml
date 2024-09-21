@@ -25,6 +25,11 @@ spec:
         proxy:
           service:
             type: ClusterIP
+        prePuller:
+          hook:
+            enabled: false
+          continuous:
+            enabled: false
         singleuser:
           # Defines the default image
           image:
