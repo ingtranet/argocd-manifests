@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: jupyter
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: jupyter
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: jupyterhub
+    repoURL: https://hub.jupyter.org/helm-chart
+    targetRevision: 3.3.8
+    helm:
+      releaseName: jupyterhub
+      values: |
+        hub:
+          db:
+            type: postgres
+            url: postgresql+psycopg2://system:systemsecret@postgresql.vd.ingtra.net:5432/jupyterhub
+    singleuser:
+      # Defines the default image
+      image:
+        name: jupyter/base-notebook
+        tag: "2024-09-16"
+      profileList:
+        - display_name: "Default environment"
+          description: "The default image."
+          default: true
+        - display_name: "GPU environment"
+          description: "The image with GPU support."
+          kubespawner_override:
+            image: jupyter/pytorch-notebook:cuda12-2024-09-16
+            nodeSelector:
+              nvidia.com/gpu.product: NVIDIA-GeForce-RTX-3090
+
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: jupyter
