@@ -22,21 +22,24 @@ spec:
           db:
             type: postgres
             url: postgresql+psycopg2://system:systemsecret@postgresql.vd.ingtra.net:5432/jupyterhub
-    singleuser:
-      # Defines the default image
-      image:
-        name: jupyter/base-notebook
-        tag: "2024-09-16"
-      profileList:
-        - display_name: "Default environment"
-          description: "The default image."
-          default: true
-        - display_name: "GPU environment"
-          description: "The image with GPU support."
-          kubespawner_override:
-            image: jupyter/pytorch-notebook:cuda12-2024-09-16
-            nodeSelector:
-              nvidia.com/gpu.product: NVIDIA-GeForce-RTX-3090
+        proxy:
+          service:
+            type: ClusterIP
+        singleuser:
+          # Defines the default image
+          image:
+            name: jupyter/base-notebook
+            tag: "2024-09-16"
+          profileList:
+            - display_name: "Default environment"
+              description: "The default image."
+              default: true
+            - display_name: "GPU environment"
+              description: "The image with GPU support."
+              kubespawner_override:
+                image: jupyter/pytorch-notebook:cuda12-2024-09-16
+                nodeSelector:
+                  nvidia.com/gpu.product: NVIDIA-GeForce-RTX-3090
 
 
   destination:
