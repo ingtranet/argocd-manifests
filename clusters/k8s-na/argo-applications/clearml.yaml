@@ -23,11 +23,17 @@ spec:
             type: ClusterIP
           ingress:
             enabled: false
+          extraEnvs:
+            - name: CLEARML_REDIS_SERVICE_PASSWORD
+              value: clearmlsecret
         fileserver:
           service:
             type: ClusterIP
           ingress:
             enabled: false
+          extraEnvs:
+            - name: CLEARML_REDIS_SERVICE_PASSWORD
+              value: clearmlsecret
         webserver:
           service:
             type: ClusterIP
