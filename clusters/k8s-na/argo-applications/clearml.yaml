@@ -16,7 +16,7 @@ spec:
     repoURL:  https://allegroai.github.io/clearml-helm-charts
     targetRevision: 7.11.3
     helm:
-      releaseName: traefik
+      releaseName: clearml
       values: |
         apiserver:
           service:
