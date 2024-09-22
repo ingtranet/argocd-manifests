@@ -18,6 +18,8 @@ spec:
     helm:
       releaseName: clearml
       values: |
+        clearml:
+          cookieDomain: clearml.ig.ingtra.net
         apiserver:
           service:
             type: ClusterIP
