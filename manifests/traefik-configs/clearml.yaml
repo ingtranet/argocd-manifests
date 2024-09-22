@@ -12,6 +12,6 @@ spec:
         - kind: Service
           name: clearml-webserver
           namespace: clearml
-          port: 80
+          port: 8080
   tls:
     secretName: ig-ingtra-net-tls
