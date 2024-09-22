@@ -47,36 +47,36 @@ spec:
               cpu: "1"
       restartPolicy: Never
 
----
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: nessie
-  namespace: argocd
-spec:
-  project: default
-  source:
-    chart: nessie
-    repoURL: https://charts.projectnessie.org
-    targetRevision: 0.95.0
-    helm:
-      releaseName: nessie
-      values: |
-        versionStoreType: JDBC
-        jdbc:
-          jdbcUrl: jdbc:postgresql://postgresql.vd.ingtra.net:5432/nessie
-          secret:
-            name: nessie-db
-            username: username
-            password: password
-        advancedConfig:
-          nessie.catalog.service.s3.default-options.region: us-west-2
-          nessie.catalog.service.s3.default-options.access-key.name: system
-          nessie.catalog.service.s3.default-options.access-key.secret: systemsecret
-          nessie.catalog.service.s3.default-options.endpoint: https://s3.sf.ingtra.net
-          nessie.catalog.default-warehouse: iceberg
-          nessie.catalog.warehouses.iceberg.location: s3://iceberg
+# ---
+# apiVersion: argoproj.io/v1alpha1
+# kind: Application
+# metadata:
+#   name: nessie
+#   namespace: argocd
+# spec:
+#   project: default
+#   source:
+#     chart: nessie
+#     repoURL: https://charts.projectnessie.org
+#     targetRevision: 0.95.0
+#     helm:
+#       releaseName: nessie
+#       values: |
+#         versionStoreType: JDBC
+#         jdbc:
+#           jdbcUrl: jdbc:postgresql://postgresql.vd.ingtra.net:5432/nessie
+#           secret:
+#             name: nessie-db
+#             username: username
+#             password: password
+#         advancedConfig:
+#           nessie.catalog.service.s3.default-options.region: us-west-2
+#           nessie.catalog.service.s3.default-options.access-key.name: system
+#           nessie.catalog.service.s3.default-options.access-key.secret: systemsecret
+#           nessie.catalog.service.s3.default-options.endpoint: https://s3.sf.ingtra.net
+#           nessie.catalog.default-warehouse: iceberg
+#           nessie.catalog.warehouses.iceberg.location: s3://iceberg
           
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: nessie
+#   destination:
+#     server: https://kubernetes.default.svc
+#     namespace: nessie
