@@ -22,8 +22,8 @@ spec:
           serverURL: https://zenml.ig.ingtra.net
           ingress:
             enabled: false
-          auth:
-            authType: NO_AUTH
+          # auth:
+          #   authType: NO_AUTH
           database:
             url: mysql://system:systemsecret@mysql.vd.ingtra.net:3306/zenml
   destination:
