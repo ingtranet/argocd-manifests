@@ -20,7 +20,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: clearml
+  name: clearml-api
 spec:
   entryPoints:
     - websecure
@@ -39,7 +39,7 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: clearml
+  name: clearml-file
 spec:
   entryPoints:
     - websecure
