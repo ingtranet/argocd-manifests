@@ -29,7 +29,7 @@ spec:
       match: Host(`clearml-api.ig.ingtra.net`)
       services:
         - kind: Service
-          name: clearml-api
+          name: clearml-apiserver
           namespace: clearml
           port: 8008
   tls:
