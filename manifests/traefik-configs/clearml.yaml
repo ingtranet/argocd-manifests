@@ -1,20 +1,20 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: clearml
+  name: clearml-app
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`clearml.ig.ingtra.net`)
+      match: Host(`app.clearml.ig.ingtra.net`)
       services:
         - kind: Service
           name: clearml-webserver
           namespace: clearml
           port: 8080
   tls:
-    secretName: ig-ingtra-net-tls
+    secretName: clearml-ig-ingtra-net-tls
 
 ---
 apiVersion: traefik.io/v1alpha1
@@ -26,30 +26,30 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`clearml-api.ig.ingtra.net`)
+      match: Host(`api.clearml.ig.ingtra.net`)
       services:
         - kind: Service
           name: clearml-apiserver
           namespace: clearml
           port: 8008
   tls:
-    secretName: ig-ingtra-net-tls
+    secretName: clearml-ig-ingtra-net-tls
 
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: clearml-file
+  name: clearml-files
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`clearml-file.ig.ingtra.net`)
+      match: Host(`files.clearml.ig.ingtra.net`)
       services:
         - kind: Service
           name: clearml-fileserver
           namespace: clearml
           port: 8081
   tls:
-    secretName: ig-ingtra-net-tls
+    secretName: clearml-ig-ingtra-net-tls
