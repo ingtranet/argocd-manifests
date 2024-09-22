@@ -47,7 +47,7 @@ spec:
           enabled: false
         externalServices:
           elasticsearchConnectionString: |
-            [{"host": "elasticsearch.vd.ingtra.net", "port":9200}]
+            [{"scheme": "http", "host": "elasticsearch.vd.ingtra.net", "port":9200}]
           mongodbConnectionStringAuth: mongodb://mongodb.vd.ingtra.net:27017/clearml_auth
           mongodbConnectionStringBackend: mongodb://mongodb.vd.ingtra.net:27017/clearml_backend
           redisHost: kvrocks.vd.ingtra.net
