@@ -29,6 +29,8 @@ spec:
             limits:
               cpu: "1"
               memory: 2Gi
+      nodeSelector:
+        k8s.ingtra.net/persistent: "true"
 
 ---
 apiVersion: v1

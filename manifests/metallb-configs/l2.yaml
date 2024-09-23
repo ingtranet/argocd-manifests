@@ -7,8 +7,6 @@ spec:
     - default
   nodeSelectors:
     - matchLabels:
-        kubernetes.io/hostname: k8s-na-work-1
-    - matchLabels:
-        kubernetes.io/hostname: k8s-na-work-2
+        kubernetes.io/hostname: k8s-na-work-3
   interfaces:
     - vlan396

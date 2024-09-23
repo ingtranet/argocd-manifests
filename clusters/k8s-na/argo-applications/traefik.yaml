@@ -20,6 +20,8 @@ spec:
       values: |
         deployment:
           replicas: 2
+        nodeSelector:
+          k8s.ingtra.net/persistent: "true"
         topologySpreadConstraints:
           - labelSelector:
               matchLabels:
