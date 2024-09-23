@@ -25,6 +25,8 @@ spec:
             type: ClusterIP
           ingress:
             enabled: false
+          nodeSelector:
+            kubernetes.io/arch: amd64
           extraEnvs:
             - name: CLEARML_REDIS_SERVICE_PASSWORD
               value: clearmlsecret
@@ -33,6 +35,8 @@ spec:
             type: ClusterIP
           ingress:
             enabled: false
+          nodeSelector:
+            kubernetes.io/arch: amd64
           extraEnvs:
             - name: CLEARML_REDIS_SERVICE_PASSWORD
               value: clearmlsecret
@@ -41,6 +45,8 @@ spec:
             type: ClusterIP
           ingress:
             enabled: false
+          nodeSelector:
+            kubernetes.io/arch: amd64
         redis:
           enabled: false
         mongodb:
