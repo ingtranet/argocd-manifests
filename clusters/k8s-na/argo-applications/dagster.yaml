@@ -70,7 +70,7 @@ spec:
           postgresqlHost: postgresql.vd.ingtra.net
           postgresqlUsername: system
           postgresqlPassword: systemsecret
-        
+          postgresqlDatabase: dagster
   destination:
     server: https://kubernetes.default.svc
     namespace: dagster
