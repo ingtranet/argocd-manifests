@@ -21,15 +21,16 @@ spec:
         dagster-user-deployments:
           enabled: true
           deployments:
-            - name: k8s-example-user-code-1
+            - name: dagster-ops
               image:
-                repository: docker.io/dagster/user-code-example
+                repository: harbor.ingtra.net/library/dagster-ops
                 tag: latest
                 pullPolicy: Always
               dagsterApiGrpcArgs:
-                - --python-file
-                - /example_project/example_repo/repo.py
-              port: 3030
+                - --working_directory
+                - /code
+                - --module-name 
+                - ops.definitions
               envSecrets:
                 - name: dagster-aws-key
         dagsterWebserver:
