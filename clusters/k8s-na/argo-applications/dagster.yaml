@@ -51,10 +51,6 @@ spec:
           type: K8sRunLauncher
           config:
             k8sRunLauncher:
-              image:
-                repository: docker.io/ingtranet/dagster
-                tag: 1.8.8
-                pullPolicy: Always
               envSecrets:
                 - name: dagster-aws-key
               runK8sConfig:
@@ -75,6 +71,7 @@ spec:
               useSsl: true
               endpointUrl: https://s3.sf.ingtra.net
               skipEmptyFiles: false
+              upload_interval: 20
         postgresql:
           enabled: false
           postgresqlHost: postgresql.vd.ingtra.net
