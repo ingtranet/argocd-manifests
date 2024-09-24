@@ -27,7 +27,7 @@ spec:
                 tag: latest
                 pullPolicy: Always
               dagsterApiGrpcArgs:
-                - --working_directory
+                - --working-directory
                 - /code
                 - --module-name 
                 - ops.definitions
