@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: amoro
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amoro
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/apache/amoro.git
+    path: charts/amoro
+    targetRevision: v0.7.0-incubating
+    helm:
+      releaseName: amoro
+      values: |
+        image:
+          tag: "0.7.0-incubating"
+        amoroConf: 
+          database:
+            type: postgres
+            driver: org.postgresql.Driver
+            url: jdbc:postgresql://postgresql.vd.ingtra.net:5432/amoro
+            username: change
+            password: me
+        optimizer:
+          kubernetes:
+            enabled: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: amoro
