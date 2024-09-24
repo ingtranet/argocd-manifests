@@ -40,6 +40,8 @@ spec:
             repository: docker.io/ingtranet/dagster
             tag: 1.8.8
             pullPolicy: Always
+          envSecrets:
+            - name: dagster-aws-key
         dagsterDaemon:
           image:
             repository: docker.io/ingtranet/dagster
