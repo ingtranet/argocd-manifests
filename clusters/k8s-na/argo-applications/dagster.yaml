@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dagster
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dagster
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: dagster
+    repoURL:  https://dagster-io.github.io/helm
+    targetRevision: 1.8.8
+    helm:
+      releaseName: dagster
+      values: |
+        dagster-user-deployments:
+          enabled: true
+          deployments:
+            - name: k8s-example-user-code-1
+              image:
+                repository: docker.io/dagster/user-code-example
+                tag: latest
+                pullPolicy: Always
+              dagsterApiGrpcArgs:
+                - --python-file
+                - /example_project/example_repo/repo.py
+              port: 3030
+              envSecrets:
+                - name: dagster-aws-key
+        computeLogManager:
+          type: S3ComputeLogManager
+          config:
+            s3ComputeLogManager:
+              bucket: dagster
+              localDir: /tmp/dagster/logs
+              prefix: logs/
+              useSsl: true
+              endpointUrl: https://s3.sf.ingtra.net
+              skipEmptyFiles: false
+        runLauncher:
+          type: K8sRunLauncher
+          config:
+            k8sRunLauncher:
+              envSecrets:
+                - name: dagster-aws-key
+        postgresql:
+          enabled: false
+          postgresqlHost: postgresql.vd.ingtra.net:5432
+          postgresqlUsername: system
+          postgresqlPassword: systemsecret
+        
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dagster
