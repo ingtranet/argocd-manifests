@@ -31,6 +31,7 @@ spec:
                 - /code
                 - --module-name 
                 - ops.definitions
+              port: 3030
               envSecrets:
                 - name: dagster-aws-key
         dagsterWebserver:
