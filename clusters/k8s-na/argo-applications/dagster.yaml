@@ -57,6 +57,14 @@ spec:
                 pullPolicy: Always
               envSecrets:
                 - name: dagster-aws-key
+              runK8sConfig:
+                containerConfig:
+                  resources:
+                    limits:
+                      cpu: 200m
+                      memory: 128Mi
+                jobSpecConfig:
+                  ttlSecondsAfterFinished: 7200
         computeLogManager:
           type: S3ComputeLogManager
           config:
