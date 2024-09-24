@@ -65,7 +65,7 @@ spec:
               skipEmptyFiles: false
         postgresql:
           enabled: false
-          postgresqlHost: postgresql.vd.ingtra.net:5432
+          postgresqlHost: postgresql.vd.ingtra.net
           postgresqlUsername: system
           postgresqlPassword: systemsecret
         
