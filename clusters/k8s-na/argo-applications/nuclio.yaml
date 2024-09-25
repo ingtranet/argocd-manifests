@@ -24,14 +24,14 @@ spec:
         dashboard:
           image:
             repository: quay.io/nuclio/dashboard
-            tag: 1.23.12
+            tag: 1.13.12-amd64
           nodeSelector:
             kubernetes.io/arch: amd64
           containerBuilderKind: kaniko
         controller:
           image:
             repository: quay.io/nuclio/controller
-            tag: 1.13.12
+            tag: 1.13.12-amd64
           nodeSelector:
             kubernetes.io/arch: amd64
   destination:
