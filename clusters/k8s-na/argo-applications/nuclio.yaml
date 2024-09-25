@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nuclio
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nuclio
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: nuclio
+    repoURL: https://nuclio.github.io/nuclio/charts
+    targetRevision: 0.19.12
+    helm:
+      releaseName: nuclio
+      values: |
+        registry:
+          secretName: registry-credentials
+          pushPullUrl: harbor.ingtra.net/nuclio
+        dashboard:
+          image:
+            repository: quay.io/nuclio/dashboard
+            tag: 1.23.12
+          nodeSelector:
+            kubernetes.io/arch: amd64
+          containerBuilderKind: kaniko
+        controller:
+          image:
+            repository: quay.io/nuclio/controller
+            tag: 1.13.12
+          nodeSelector:
+            kubernetes.io/arch: amd64
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: nuclio
