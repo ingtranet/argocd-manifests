@@ -40,6 +40,7 @@ spec:
           allowPrivilegeEscalation: true
           extraEnv:
             GRANT_SUDO: "yes"
+            NOTEBOOK_ARGS: "--allow-root"
             CLEARML_WEB_HOST: https://app.clearml.ig.ingtra.net
             CLEARML_API_HOST: https://api.clearml.ig.ingtra.net
             CLEARML_FILES_HOST: https://files.clearml.ig.ingtra.net
