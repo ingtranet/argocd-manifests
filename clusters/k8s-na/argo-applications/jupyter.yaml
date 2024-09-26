@@ -44,7 +44,7 @@ spec:
             CLEARML_FILES_HOST: https://files.clearml.ig.ingtra.net
             CLEARML_API_ACCESS_KEY: 3J5SAEPD5RCL11EGWOIQ5XP85XCAQ7
             CLEARML_API_SECRET_KEY: DdbtoHKh7k0SQq5nUtFwoGvAt_TRmW351ZVtRn2QH_PsgSNTXlXK1LDz5byoRf-PScU
-            CLEARML_LOG_MODEL: FALSE
+            CLEARML_LOG_MODEL: "FALSE"
           profileList:
             - display_name: "Default environment"
               description: "The default image."
