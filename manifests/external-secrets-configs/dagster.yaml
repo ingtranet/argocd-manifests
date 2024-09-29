@@ -26,13 +26,7 @@ spec:
   secretStoreRef:
     name: vault
     kind: ClusterSecretStore
-  data:
-    - secretKey: AWS_ACCESS_KEY_ID
-      remoteRef:
-        key: k8s/common/database
-        property: seaweedfs-access-key
-    - secretKey: AWS_SECRET_ACCESS_KEY
-      remoteRef:
-        key: k8s/common/database
-        property: seaweedfs-secret-key
+  dataFrom:
+    - extract:
+        key: "k8s/dagster/secrets"
 
