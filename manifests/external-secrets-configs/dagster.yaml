@@ -16,3 +16,23 @@ spec:
       remoteRef:
         key: k8s/common/database
         property: seaweedfs-secret-key
+---
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: dagster-worker-env
+  namespace: dagster
+spec:
+  secretStoreRef:
+    name: vault
+    kind: ClusterSecretStore
+  data:
+    - secretKey: AWS_ACCESS_KEY_ID
+      remoteRef:
+        key: k8s/common/database
+        property: seaweedfs-access-key
+    - secretKey: AWS_SECRET_ACCESS_KEY
+      remoteRef:
+        key: k8s/common/database
+        property: seaweedfs-secret-key
+
