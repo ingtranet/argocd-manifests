@@ -71,7 +71,7 @@ spec:
               useSsl: true
               endpointUrl: https://s3.sf.ingtra.net
               skipEmptyFiles: false
-              upload_interval: 20
+              uploadInterval: 20
         postgresql:
           enabled: false
           postgresqlHost: postgresql.vd.ingtra.net
