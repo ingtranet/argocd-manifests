@@ -18,12 +18,16 @@ spec:
     helm:
       releaseName: gpu-operator
       values: |
+        operator:
+          defaultRuntime: containerd
         toolkit:
           env:
             - name: CONTAINERD_CONFIG
-              value: /etc/k0s/containerd.d/gpu-operator.yaml
+              value: /etc/k0s/containerd.d/gpuoperator.yaml
             - name: CONTAINERD_SOCKET
               value: /run/k0s/containerd.sock
+            - name: CONTAINERD_RUNTIME_CLASS
+              value: nvidia
   destination:
     server: https://kubernetes.default.svc
     namespace: gpu-operator
