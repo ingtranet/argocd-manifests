@@ -17,6 +17,13 @@ spec:
     targetRevision: v24.9.1
     helm:
       releaseName: gpu-operator
+      values: |
+        toolkit:
+          env:
+            - name: CONTAINERD_CONFIG
+              value: /etc/k0s/containerd.d/gpu-operator.yaml
+            - name: CONTAINERD_SOCKET
+              value: /run/k0s/containerd.sock
   destination:
     server: https://kubernetes.default.svc
     namespace: gpu-operator
