@@ -23,7 +23,7 @@ spec:
         toolkit:
           env:
             - name: CONTAINERD_CONFIG
-              value: /etc/k0s/containerd.d/gpuoperator.yaml
+              value: /etc/k0s/containerd.d/gpuoperator.toml
             - name: CONTAINERD_SOCKET
               value: /run/k0s/containerd.sock
             - name: CONTAINERD_RUNTIME_CLASS
