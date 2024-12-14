@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gpu-operator
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gpu-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: gpu-operator
+    repoURL: https://helm.ngc.nvidia.com/nvidia
+    targetRevision: v24.9.1
+    helm:
+      releaseName: gpu-operator
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: gpu-operator
