@@ -17,6 +17,10 @@ spec:
     targetRevision: 0.14.8
     helm:
       releaseName: metallb
+      values: |
+        speaker:
+          nodeSelector:
+            ingtra.net/deploy-lb: "true"
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb
