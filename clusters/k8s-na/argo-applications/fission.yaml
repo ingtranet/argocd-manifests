@@ -21,8 +21,6 @@ spec:
     repoURL: https://github.com/fission/fission.git
     path: crds/v1
     targetRevision: v1.20.5
-    directory:
-      recurse: true
   destination:
     server: https://kubernetes.default.svc
     namespace: fission-system
