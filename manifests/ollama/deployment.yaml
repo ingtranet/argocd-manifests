@@ -20,38 +20,21 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: ollama
-          image: dustynv/ollama:r36.2.0
+          image: ollama/ollama:0.5.2
           command: ["/bin/ollama"]
           args: ["serve"]
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
-            # - name: NVIDIA_REQUIRE_CUDA
-            #   value: "cuda>=12.0"
-            # - name: LD_LIBRARY_PATH
-            #   value: /usr/local/cuda/lib:/usr/local/cuda/lib64:/usr/local/cuda/include
             - name: OLLAMA_MODELS
               value: /ollama
-            # - name: OLLAMA_LLM_LIBRARY
-            #   value: cuda_v12
           volumeMounts:
-            # - name: cuda-lib
-            #   mountPath: /usr/local/cuda
-            #   readOnly: true
             - name: ollama
               mountPath: /ollama
           ports:
             - name: http
               containerPort: 11434
-          resources:
-            limits:
-              cpu: "2"
-              memory: "8Gi"
       volumes:
-        # - name: cuda-lib
-        #   hostPath:
-        #     path: /usr/local/cuda
-        #     type: Directory
         - name: ollama
           persistentVolumeClaim:
             claimName: ollama
