@@ -13,6 +13,24 @@ metadata:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
+  name: fission-crds
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/fission/fission.git
+    path: crds/v1
+    targetRevision: v1.20.5
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: fission-system
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
   name: fission
   namespace: argocd
 spec:
