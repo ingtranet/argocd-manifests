@@ -27,7 +27,7 @@ spec:
                   key: coder-db-url
             - name: CODER_ACCESS_URL
               value: "https://coder.ig.ingtra.net"
-          sevice:
+          service:
             type: ClusterIP
   destination:
     server: https://kubernetes.default.svc
