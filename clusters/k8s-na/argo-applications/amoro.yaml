@@ -22,9 +22,9 @@ spec:
         image:
           tag: "0.7.1-incubating"
         jvmOptions: |
-          -Xms3g
-          -Xmx3g
-          -XX:+UseShenandoahGC
+          xms=3072
+          xmx=3072
+          gc=UseShenandoahGC
         amoroConf:
           database:
             type: mysql
