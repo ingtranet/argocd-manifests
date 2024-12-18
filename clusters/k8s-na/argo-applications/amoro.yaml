@@ -28,6 +28,29 @@ spec:
         amoroConf:
           amoroDefaults: |
             ams:
+              server-bind-host: "0.0.0.0"
+              server-expose-host: "127.0.0.1"
+              thrift-server:
+                max-message-size: 104857600 # 100MB
+                selector-thread-count: 2
+                selector-queue-size: 4
+                table-service:
+                  bind-port: 1260
+                  worker-thread-count: 20
+                optimizing-service:
+                  bind-port: 1261
+              http-server:
+                session-timeout: 7d
+                bind-port: 1630
+                rest-auth-type: token
+              refresh-external-catalogs:
+                interval: 180000 # 3min
+                thread-count: 10
+                queue-size: 1000000
+              refresh-tables:
+                thread-count: 10
+                interval: 60000 # 1min
+                max-pending-partition-count: 100 # default 100
               self-optimizing:
                 enabled: true
                 target-size: 67108864
