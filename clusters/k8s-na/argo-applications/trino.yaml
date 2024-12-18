@@ -124,7 +124,7 @@ spec:
             connector.name=iceberg
             iceberg.catalog.type=rest
             iceberg.rest-catalog.security=NONE
-            iceberg.rest-catalog.uri=https\://nessie.ig.ingtra.net/iceberg/
+            iceberg.rest-catalog.uri=https://nessie.ig.ingtra.net/iceberg/
             iceberg.rest-catalog.vended-credentials-enabled=false
             iceberg.register-table-procedure.enabled=true
             iceberg.target-max-file-size=64MB
