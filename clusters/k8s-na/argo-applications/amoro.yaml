@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: amoro
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: amoro
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/apache/amoro.git
+    path: charts/amoro
+    targetRevision: v0.7.1-incubating
+    helm:
+      releaseName: amoro
+      values: |
+        clusterDomain: kn.ingtra.net
+        image:
+          tag: "0.7.1-incubating"
+        amoroConf:
+          database:
+            type: mysql
+            driver: com.mysql.cj.jdbc.Driver
+            url: jdbc:mysql://mysql.vd.ingtra.net:3306/amoro?useUnicode=true&characterEncoding=UTF8&autoReconnect=true&useAffectedRows=true&allowPublicKeyRetrieval=true&useSSL=false
+            username: system
+            password: systemsecret
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: amoro
