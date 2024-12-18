@@ -33,7 +33,7 @@ spec:
         coordinator:
           config:
             query:
-              maxMemoryPerNode: 2GB
+              maxMemoryPerNode: 1GB
           jvm:
             maxHeapSize: 2G
             gcMethod:
