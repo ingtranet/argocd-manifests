@@ -28,6 +28,9 @@ spec:
             url: jdbc:mysql://mysql.vd.ingtra.net:3306/amoro?useUnicode=true&characterEncoding=UTF8&autoReconnect=true&useAffectedRows=true&allowPublicKeyRetrieval=true&useSSL=false
             username: system
             password: systemsecret
+        optimizer:
+          kubernetes:
+            enabled: false # it needs kubeconfig file
   destination:
     server: https://kubernetes.default.svc
     namespace: amoro
