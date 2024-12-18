@@ -51,7 +51,7 @@ spec:
               "spark-conf.spark.kubernetes.authenticate.driver.serviceAccountName": "amoro"
         resources:
           limits:
-            memory: 3Gi
+            memory: 4Gi
 
   destination:
     server: https://kubernetes.default.svc
