@@ -26,7 +26,7 @@ spec:
           xmx=3072
           gc=UseShenandoahGC
         amoroConf:
-          amoroDefaults:
+          amoroDefaults: |
             ams:
               self-optimizing:
                 enabled: true
