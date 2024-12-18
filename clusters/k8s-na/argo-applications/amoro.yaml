@@ -29,8 +29,30 @@ spec:
             username: system
             password: systemsecret
         optimizer:
+          local:
+            enabled: false
           kubernetes:
             enabled: false # it needs kubeconfig file
+          flink:
+            properties:
+              "flink-conf.taskmanager.memory.managed.size": "32mb"
+              "flink-conf.taskmanager.memory.network.max": "32mb"
+              "flink-conf.taskmanager.memory.network.min": "32mb"
+              "flink-conf.kubernetes.namespace": "amoro"
+              "flink-conf.kubernetes.service-account": "amoro"
+          spark:
+            properties:
+              "master": "k8s://https://kubernetes.default.svc"
+              "deploy-mode": "cluster"
+              "spark-conf.spark.dynamicAllocation.enabled": "true"
+              "spark-conf.spark.shuffle.service.enabled": "false"
+              "spark-conf.spark.dynamicAllocation.shuffleTracking.enabled": "true"
+              "spark-conf.spark.kubernetes.namespace": "amoro"
+              "spark-conf.spark.kubernetes.authenticate.driver.serviceAccountName": "amoro"
+        resources:
+          limits:
+            memory: 3Gi
+
   destination:
     server: https://kubernetes.default.svc
     namespace: amoro
