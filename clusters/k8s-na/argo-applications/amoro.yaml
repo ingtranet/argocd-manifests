@@ -14,7 +14,7 @@ spec:
   source:
     repoURL: https://github.com/apache/amoro.git
     path: charts/amoro
-    targetRevision: v0.7.1-incubating
+    targetRevision: ccda634
     helm:
       releaseName: amoro
       values: |
