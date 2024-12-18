@@ -12,6 +12,7 @@ spec:
   persistentVolumeReclaimPolicy: Delete
   mountOptions:
     - nfsvers=4.1
+    - mountPermissions=0
   csi:
     driver: nfs.csi.k8s.io
     volumeHandle: "synology.dv.ingtra.net#volume1/k8s#na/nfs-csi/trino-exchange#"
