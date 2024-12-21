@@ -53,8 +53,8 @@ spec:
                 max-pending-partition-count: 100 # default 100
               self-optimizing:
                 enabled: true
-                target-size: 67108864
-                max-task-size-bytes: 67108864
+                target-size: 33554432
+                max-task-size-bytes: 33554432
               expire-snapshots:
                 enabled: true
                 thread-count: 10
