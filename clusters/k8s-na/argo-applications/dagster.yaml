@@ -14,7 +14,7 @@ spec:
   source:
     chart: dagster
     repoURL:  https://dagster-io.github.io/helm
-    targetRevision: 1.8.8
+    targetRevision: 1.9.6
     helm:
       releaseName: dagster
       values: |
@@ -38,14 +38,14 @@ spec:
           replicaCount: 1
           image:
             repository: docker.io/ingtranet/dagster
-            tag: 1.8.8
+            tag: 1.9.6
             pullPolicy: Always
           envSecrets:
             - name: dagster-aws-key
         dagsterDaemon:
           image:
             repository: docker.io/ingtranet/dagster
-            tag: 1.8.8
+            tag: 1.9.6
             pullPolicy: Always
         runLauncher:
           type: K8sRunLauncher
