@@ -26,6 +26,9 @@ spec:
           password: systemsecret
         postgresql:
           enabled: false
+        catalog:
+          config:
+            ICEBERG_REST__BASE_URL: https://lakekeeper.ig.ingtra.net
   destination:
     server: https://kubernetes.default.svc
     namespace: lakekeeper
