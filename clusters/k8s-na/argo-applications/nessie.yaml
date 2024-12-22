@@ -69,20 +69,14 @@ spec:
             name: nessie-db
             username: username
             password: password
-        catalog:
-          storage:
-            s3:
-              defaultOptions:
-                accessKeySecret:
-                  awsAccessKeyId: system
-                  accessKeySecret: systemsecret
-                endpoint: https://s3.sf.ingtra.net
-                region: us-west-1
-          iceberg:
-            defaultWarehouse: iceberg
-            warehouses:
-              - name: iceberg
-                location: s3://iceberg
+        advancedConfig:
+          nessie.catalog.service.s3.default-options.region: us-west-2
+          nessie.catalog.service.s3.default-options.access-key.name: system
+          nessie.catalog.service.s3.default-options.access-key.secret: systemsecret
+          nessie.catalog.service.s3.default-options.endpoint: https://s3.sf.ingtra.net
+          nessie.catalog.default-warehouse: iceberg
+          nessie.catalog.warehouses.iceberg.location: s3://iceberg
+          
   destination:
     server: https://kubernetes.default.svc
     namespace: nessie
