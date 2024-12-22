@@ -58,7 +58,7 @@ spec:
   source:
     chart: nessie
     repoURL: https://charts.projectnessie.org
-    targetRevision: 0.95.0
+    targetRevision: 0.101.3
     helm:
       releaseName: nessie
       values: |
