@@ -58,8 +58,11 @@ spec:
                 image: quay.io/jupyter/pytorch-notebook:cuda12-2024-09-16
                 node_selector:
                   nvidia.com/gpu.product: NVIDIA-GeForce-RTX-3090
-
-
+                tolerations:
+                  - key: "ingtra.net/gpu"
+                    operator: "Equal"
+                    value: "true"
+                    effect: "NoSchedule"
   destination:
     server: https://kubernetes.default.svc
     namespace: jupyter
