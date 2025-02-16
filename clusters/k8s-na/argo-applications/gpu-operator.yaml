@@ -20,6 +20,20 @@ spec:
       values: |
         operator:
           defaultRuntime: containerd
+        devicePlugin:
+          env:
+            - name: PASS_DEVICE_SPECS
+              value: "true"
+            - name: FAIL_ON_INIT_ERROR
+              value: "false"
+            - name: DEVICE_LIST_STRATEGY
+              value: envvar
+            - name: DEVICE_ID_STRATEGY
+              value: uuid
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: all
+            - name: NVIDIA_DRIVER_CAPABILITIES
+              value: all
         toolkit:
           env:
             - name: CONTAINERD_CONFIG
