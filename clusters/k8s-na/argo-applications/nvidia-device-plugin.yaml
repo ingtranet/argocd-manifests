@@ -30,8 +30,19 @@ spec:
                       - orin-nx-1
                       - orin-nx-2
                       - orin-nx-3
+        tolerations:
+          - key: ingtra.net/gpu
+            operator: Equal
+            value: "true"
+            effect: NoSchedule
         gfd:
           enabled: true
+        nfd:
+          tolerations:
+            - key: nvidia.com/gpu
+              operator: Equal
+              value: "true"
+              effect: NoSchedule
   destination:
     server: https://kubernetes.default.svc
     namespace: nvidia-device-plugin
