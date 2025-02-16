@@ -57,7 +57,7 @@ spec:
               kubespawner_override:
                 image: quay.io/jupyter/pytorch-notebook:cuda12-2024-09-16
                 node_selector:
-                  nvidia.com/gpu.product: NVIDIA-GeForce-RTX-3090
+                  kubernetes.io/hostname=k8s-na-gpu-1
                 tolerations:
                   - key: "ingtra.net/gpu"
                     operator: "Equal"
