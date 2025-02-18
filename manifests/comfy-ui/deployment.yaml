@@ -8,7 +8,7 @@ spec:
   accessModes:
     - ReadWriteMany
   nfs:
-    path: "/volume1/k8s/pv/comfy-ui/pv-comfy-ui"
+    path: "/volume1/k8s/na/pv/comfy-ui/pv-comfy-ui"
     server: synology.dv.ingtra.net
     readOnly: false
   mountOptions:
