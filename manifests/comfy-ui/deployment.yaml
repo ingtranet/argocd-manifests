@@ -40,6 +40,13 @@ spec:
       labels:
         app: comfy-ui
     spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-na-gpu-1
+      tolerations:
+        - key: ingtra.net/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
       containers:
         - name: comfy-ui
           image: yanwk/comfyui-boot:cu124-slim
