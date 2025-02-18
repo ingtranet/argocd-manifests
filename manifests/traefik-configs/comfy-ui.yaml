@@ -12,6 +12,6 @@ spec:
         - kind: Service
           name: comfy-ui
           namespace: comfy-ui
-          port: 8080
+          port: 80
   tls:
     secretName: ig-ingtra-net-tls
