@@ -11,8 +11,6 @@ spec:
     path: "/volume1/k8s/pv/comfy-ui/pv-comfy-ui"
     server: synology.dv.ingtra.net
     readOnly: false
-  mountOptions:
-    - nfsvers=4.1
   persistentVolumeReclaimPolicy: Retain
 
 ---
