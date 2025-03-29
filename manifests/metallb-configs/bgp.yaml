@@ -11,7 +11,7 @@ kind: BGPPeer
 metadata:
   name: default
 spec:
-  myASN: 64522
+  myASN: 64521
   peerASN: 64521
   peerAddress: 10.0.0.2
   nodeSelectors:
