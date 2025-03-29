@@ -1,0 +1,25 @@
+apiVersion: metallb.io/v1beta1
+kind: BGPAdvertisement
+metadata:
+  name: external
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - first-pool
+  aggregationLength: 24
+---
+apiVersion: metallb.io/v1beta2
+kind: BGPPeer
+metadata:
+  name: default
+spec:
+  myASN: 64522
+  peerASN: 64521
+  peerAddress: 10.0.0.2
+  nodeSelectors:
+    - matchExpressions:
+      - key: kubernetes.io/hostname
+        operator: In
+        values:
+          - k8s-na-work-1
+          - turing-rk-1
