@@ -14,6 +14,7 @@ spec:
   myASN: 64521
   peerASN: 64521
   peerAddress: 10.0.0.2
+  ebgpMultiHop: true
   nodeSelectors:
     - matchExpressions:
       - key: kubernetes.io/hostname
