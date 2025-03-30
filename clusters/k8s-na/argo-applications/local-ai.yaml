@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: local-ai
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: local-ai
+  namespace: argocd
+spec:
+  project: default
+  sources:
+    - repoURL: https://github.com/ingtranet/argocd-manifests.git
+      path: manifests/local-ai-configs
+      targetRevision: HEAD
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: local-ai

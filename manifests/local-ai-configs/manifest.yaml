@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: local-ai
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: local-ai
+  template:
+    metadata:
+      labels:
+        app: local-ai
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      tolerations:
+        - key: "ingtra.net/gpu"
+          operator: "Equal"
+          value: "true"
+          effect: "NoSchedule"
+      containers:
+        - name: local-ai
+          image: quay.io/go-skynet/local-ai:v2.26.0-nvidia-l4t-arm64-core
+          ports:
+            - containerPort: 8080
+          volumeMounts:
+            - name: model-volume
+              mountPath: /build/models
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: model-volume
+          hostPath:
+            path: /mnt/mfs/k8s/local-ai/models
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: local-ai-service
+spec:
+  selector:
+    app: local-ai
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: ClusterIP
