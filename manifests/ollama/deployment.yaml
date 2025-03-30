@@ -41,5 +41,6 @@ spec:
               containerPort: 11434
       volumes:
         - name: ollama
-          persistentVolumeClaim:
-            claimName: ollama
+          hostPath:
+            path: /mnt/mfs/k8s/ollama/models
+            type: DirectoryOrCreate
