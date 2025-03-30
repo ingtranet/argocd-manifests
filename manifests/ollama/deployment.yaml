@@ -25,7 +25,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: ollama
-          image: ollama/ollama:0.5.2
+          image: ollama/ollama:0.6.3
           command: ["/bin/ollama"]
           args: ["serve"]
           env:
