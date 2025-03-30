@@ -33,6 +33,8 @@ spec:
               value: "all"
             - name: OLLAMA_MODELS
               value: /ollama
+            - name: JETSON_JETPACK
+              value: "6"
           volumeMounts:
             - name: ollama
               mountPath: /ollama
