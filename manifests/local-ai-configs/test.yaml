@@ -37,8 +37,16 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              mfsmount moosefs.vd.ingtra.net: /mnt/moosefs && \
+              umount -l $MOUNT_DIR || true
+              mfsmount moosefs.vd.ingtra.net: /mnt/moosefs
               sleep infinity
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c"]
+                args:
+                  - |
+                    umount -l /mnt/moosefs
       volumes:
         - name: moosefs-volume
           emptyDir: {} # ephemeral storage, MooseFS 마운트 지점
