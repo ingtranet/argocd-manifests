@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-moosefs-deployment
+  labels:
+    app: nginx-moosefs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-moosefs
+  template:
+    metadata:
+      labels:
+        app: nginx-moosefs
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html
+              name: moosefs-volume
+
+        - name: moosefs-client
+          image: moosefs/client:latest
+          securityContext:
+            privileged: true
+            capabilities:
+              add: ["SYS_ADMIN"] # FUSE 사용을 위해 필요
+          volumeMounts:
+            - mountPath: /mnt/moosefs
+              name: moosefs-volume
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              mfsmount moosefs.vd.ingtra.net: /mnt/moosefs && \
+              sleep infinity
+      volumes:
+        - name: moosefs-volume
+          emptyDir: {} # ephemeral storage, MooseFS 마운트 지점
