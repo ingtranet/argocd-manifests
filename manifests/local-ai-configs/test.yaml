@@ -24,7 +24,7 @@ spec:
               name: moosefs-volume
 
         - name: moosefs-client
-          image: moosefs/client:latest
+          image: tianon/moosefs:4.57.5
           securityContext:
             privileged: true
             capabilities:
