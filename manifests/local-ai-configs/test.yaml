@@ -31,6 +31,7 @@ spec:
               add: ["SYS_ADMIN"] # FUSE 사용을 위해 필요
           volumeMounts:
             - mountPath: /mnt/moosefs
+              mountPropagation: Bidirectional
               name: moosefs-volume
           command: ["/bin/sh", "-c"]
           args:
