@@ -20,7 +20,8 @@ spec:
           ports:
             - containerPort: 80
           volumeMounts:
-            - mountPath: /usr/share/nginx/html
+            - mountPath: /mnt/moosefs
+              mountPropagation: HostToContainer
               name: moosefs-volume
 
         - name: moosefs-client
