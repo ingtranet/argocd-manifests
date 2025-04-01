@@ -76,8 +76,8 @@ spec:
                 interval: 60000 # 1min
               database:
                 type: mysql
-                jdbc-driver-class: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://mysql.vd.ingtra.net:3306/amoro?useUnicode=true&characterEncoding=UTF8&autoReconnect=true&useAffectedRows=true&allowPublicKeyRetrieval=true&useSSL=false
+                jdbc-driver-class: org.postgresql.Driver
+                url: jdbc:postgresql://postgresql.vd.ingtra.net:5432/amoro
                 username: system
                 password: systemsecret
                 connection-pool-max-total: 20
