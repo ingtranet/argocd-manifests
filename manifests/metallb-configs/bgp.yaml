@@ -20,5 +20,4 @@ spec:
       - key: kubernetes.io/hostname
         operator: In
         values:
-          - k8s-na-work-1
-          - turing-rk-1
+          - k8s-da-control

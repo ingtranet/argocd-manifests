@@ -20,7 +20,7 @@ spec:
       values: |
         speaker:
           nodeSelector:
-            ingtra.net/deploy-lb: "true"
+            kubernetes.io/hostname : k8s-da-control
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb
