@@ -44,6 +44,7 @@ spec:
                 operator: Equal
                 value: "true"
                 effect: NoSchedule
+        runtimeClassName: nvidia
   destination:
     server: https://kubernetes.default.svc
     namespace: nvidia-device-plugin
