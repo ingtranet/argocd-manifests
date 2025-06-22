@@ -21,7 +21,7 @@ spec:
         - kind: Service
           name: qwen3-embedding-0-6b-service
           namespace: llm-serving
-          port: 80
+          port: 8080
       middlewares:
         - name: llm-serving-replacepath
   tls:
