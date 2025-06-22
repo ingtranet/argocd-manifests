@@ -68,7 +68,7 @@ spec:
             path: /mnt/mfs/k8s/llama_cpp/cache
             type: DirectoryOrCreate
       nodeSelector:
-        nvidia.com/gpu.present: "true"
+        nvidia.com/gpu.product: Orin
 ---
 apiVersion: v1
 kind: Service
