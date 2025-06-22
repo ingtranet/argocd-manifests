@@ -68,9 +68,5 @@ spec:
     targetPort: 8686
     protocol: TCP
     name: http
-  - port: 8686
-    targetPort: 8686
-    protocol: TCP
-    name: metrics
   selector:
     app: vector-http-to-kafka
