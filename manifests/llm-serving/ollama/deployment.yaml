@@ -17,11 +17,6 @@ spec:
     spec:
       nodeSelector:
         nvidia.com/gpu.product: Orin
-      tolerations:
-        - key: "ingtra.net/gpu"
-          operator: "Equal"
-          value: "true"
-          effect: "NoSchedule"
       runtimeClassName: nvidia
       containers:
         - name: ollama
