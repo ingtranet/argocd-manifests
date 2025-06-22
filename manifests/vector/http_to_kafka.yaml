@@ -1,0 +1,76 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vector-http-to-kafka
+  namespace: vector
+  labels:
+    app: vector-http-to-kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vector-http-to-kafka
+  template:
+    metadata:
+      labels:
+        app: vector-http-to-kafka
+    spec:
+      containers:
+      - name: vector
+        image: timberio/vector:0.47.0-debian
+        ports:
+        - containerPort: 8686
+          name: http
+        - containerPort: 8686
+          name: metrics
+        volumeMounts:
+        - name: vector-config
+          mountPath: /etc/vector
+          readOnly: true
+        - name: vector-data
+          mountPath: /var/lib/vector
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8686
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8686
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        command:
+        - vector
+        - --config
+        - /etc/vector/http_to_kafka.toml
+      volumes:
+      - name: vector-config
+        hostPath:
+          path: /mnt/mfs/k8s/vector
+          type: Directory
+      - name: vector-data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: vector-http-to-kafka
+  namespace: vector
+  labels:
+    app: vector-http-to-kafka
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8686
+    targetPort: 8686
+    protocol: TCP
+    name: http
+  - port: 8686
+    targetPort: 8686
+    protocol: TCP
+    name: metrics
+  selector:
+    app: vector-http-to-kafka
