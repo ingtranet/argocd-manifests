@@ -12,6 +12,6 @@ spec:
         - kind: Service
           name: vector-http-to-kafka
           namespace: vector
-          port: 8686
+          port: 80
   tls:
     secretName: ig-ingtra-net-tls
