@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qwen3-embedding-0.6b
+  namespace: llm-serving
+  labels:
+    app: qwen3-embedding-0.6b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qwen3-embedding-0.6b
+  template:
+    metadata:
+      labels:
+        app: qwen3-embedding-0.6b
+    spec:
+      runtimeClassName: nvidia
+      containers:
+        - name: qwen3-embedding
+          image: dustynv/llama_cpp:b5283-r36.4-cu128-24.04
+          args:
+            - llama-server
+            - --hf-repo
+            - Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0
+            - --embedding
+            - --pooling
+            - last
+            - --ubatch-size
+            - "8192"
+            - --verbose-prompt
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: LLAMA_CACHE
+              value: /opt/llama_cpp/cache
+          volumeMounts:
+          - name: cache-volume
+            mountPath: /opt/llama_cpp/cache
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 100
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+        volumes:
+        - name: cache-volume
+          hostPath:
+            path: /mnt/mfs/k8s/llama_cpp/cache
+            type: DirectoryOrCreate
+        nodeSelector:
+          nvidia.com/gpu.present: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen3-embedding-0.6b-service
+  namespace: llm-serving
+  labels:
+    app: qwen3-embedding-0.6b
+spec:
+  selector:
+    app: qwen3-embedding-0.6b
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  type: ClusterIP
