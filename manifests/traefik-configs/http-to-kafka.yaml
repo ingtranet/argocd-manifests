@@ -1,0 +1,17 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: http-to-kafka
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`http-to-kafka.ig.ingtra.net`)
+      services:
+        - kind: Service
+          name: vector-http-to-kafka
+          namespace: vector
+          port: 8686
+  tls:
+    secretName: ig-ingtra-net-tls
