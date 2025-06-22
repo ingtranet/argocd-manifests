@@ -62,13 +62,13 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
-        volumes:
+      volumes:
         - name: cache-volume
           hostPath:
             path: /mnt/mfs/k8s/llama_cpp/cache
             type: DirectoryOrCreate
-        nodeSelector:
-          nvidia.com/gpu.present: "true"
+      nodeSelector:
+        nvidia.com/gpu.present: "true"
 ---
 apiVersion: v1
 kind: Service
