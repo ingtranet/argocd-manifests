@@ -11,7 +11,7 @@ spec:
       services:
         - kind: Service
           name: ollama
-          namespace: ollama
+          namespace: llm-serving
           port: 80
   tls:
     secretName: ig-ingtra-net-tls
