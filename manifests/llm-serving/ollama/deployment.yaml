@@ -1,12 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
   name: ollama
   namespace: ollama
   labels:
     app: ollama
 spec:
-  replicas: 1
   selector:
     matchLabels:
       app: ollama
@@ -20,8 +19,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: ollama
-          image: dustynv/ollama:main-r36.4.0
-          #command: ["/bin/ollama"]
+          image: cookieshake/ollama-jetson:0.9.3
           args:
             - ollama
             - serve
