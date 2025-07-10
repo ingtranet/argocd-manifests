@@ -27,9 +27,10 @@ spec:
           REDIS_PASSWORD: immich
         image:
           tag: v1.135.3
-        persistence:
-          library:
-            existingClaim: nfs-immich
+        immich:
+          persistence:
+            library:
+              existingClaim: nfs-immich
   destination:
     server: https://kubernetes.default.svc
     namespace: immich
