@@ -22,6 +22,7 @@ spec:
           TZ: "Asia/Seoul"
           NO_COLOR: "true"
           DB_URL: postgresql://system:systemsecret@vchord.vd.ingtra.net:5432/immich
+          DB_VECTOR_EXTENSION: vectorchord
           REDIS_HOSTNAME: kvrocks.vd.ingtra.net
           REDIS_PORT: "6379"
           REDIS_PASSWORD: immich
