@@ -1,9 +1,0 @@
-apiVersion: ricoberger.de/v1alpha1
-kind: VaultSecret
-metadata:
-  name: twitter-bearer-tokens
-spec:
-  keys:
-    - staging
-  path: k8s-secrets/pyrami/twitter-bearer-tokens
-  type: Opaque
