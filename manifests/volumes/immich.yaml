@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-immich
+  namespace: immich
+spec:
+  capacity:
+    storage: 1000Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  mountOptions:
+    - nfsvers=4.1
+  nfs:
+    path: /volume1/photos/immich
+    server: synoplogy.dv.ingtra.net
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-immich
+  namespace: immich
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 1000Gi
+  storageClassName: ""
+  volumeName: nfs-immich
