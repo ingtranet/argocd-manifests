@@ -14,7 +14,7 @@ spec:
     - nfsvers=4.1
   nfs:
     path: /volume1/photos/immich
-    server: synoplogy.dv.ingtra.net
+    server: synology.dv.ingtra.net
 ---
 
 apiVersion: v1
