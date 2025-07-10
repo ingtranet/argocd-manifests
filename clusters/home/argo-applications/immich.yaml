@@ -23,9 +23,8 @@ spec:
           NO_COLOR: "true"
           DB_URL: postgresql://system:systemsecret@vchord.vd.ingtra.net:5432/immich
           DB_VECTOR_EXTENSION: vectorchord
-          REDIS_HOSTNAME: kvrocks.vd.ingtra.net
-          REDIS_PORT: "6666"
-          REDIS_PASSWORD: immich
+          REDIS_HOSTNAME: redis.vd.ingtra.net
+          REDIS_PORT: "6379"
         image:
           tag: v1.135.3
         immich:
