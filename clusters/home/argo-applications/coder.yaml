@@ -14,7 +14,7 @@ spec:
   source:
     chart: coder
     repoURL: https://helm.coder.com/v2
-    targetRevision: 2.18.0
+    targetRevision: 2.23.1
     helm:
       releaseName: coder
       values: |
