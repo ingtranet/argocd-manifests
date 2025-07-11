@@ -32,6 +32,19 @@ spec:
             enabled: true
             allowCrossNamespace: true
             allowExternalNameServices: true
+        ports:
+          web:
+            transport:
+              respondingTimeouts:
+                readTimeout: 1800s
+                idleTimeout: 1800s
+                writeTimeout: 1800s
+          websecure:
+            transport:
+              respondingTimeouts:
+                readTimeout: 1800s
+                idleTimeout: 1800s
+                writeTimeout: 1800s
   destination:
     server: https://kubernetes.default.svc
     namespace: traefik
