@@ -44,7 +44,7 @@ spec:
                   name: secrets
                   key: coder-oidc-client-secret
             - name: CODER_DISABLE_PASSWORD_AUTH
-              value: "false"
+              value: "true"
             - name: CODER_OIDC_ALLOW_SIGNUPS
               value: "false"
           service:
