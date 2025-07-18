@@ -7,7 +7,7 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`coder.ig.ingtra.net`)
+      match: Host(`coder.ig.ingtra.net`) || Host(`cdr.ing.gg`)
       services:
         - kind: Service
           name: coder
