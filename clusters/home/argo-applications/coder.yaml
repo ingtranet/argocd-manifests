@@ -27,6 +27,8 @@ spec:
                   key: coder-db-url
             - name: CODER_ACCESS_URL
               value: "https://coder.ig.ingtra.net"
+            - name: CODER_OAUTH2_GITHUB_DEFAULT_PROVIDER_ENABLE
+              value: "false"
           service:
             type: ClusterIP
   destination:
