@@ -18,9 +18,8 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: ollama
-          image: cookieshake/ollama-jetson:0.9.3
+          image: ollama/ollama:0.9.7-rc1
           args:
-            - ollama
             - serve
           env:
             - name: NVIDIA_VISIBLE_DEVICES
