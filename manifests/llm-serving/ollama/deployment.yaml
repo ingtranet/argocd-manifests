@@ -18,7 +18,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: ollama
-          image: ollama/ollama:0.9.7-rc1
+          image: ollama/ollama:0.10.0-rc1
           args:
             - serve
           env:
