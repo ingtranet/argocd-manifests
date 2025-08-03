@@ -23,7 +23,6 @@ spec:
           args:
             - "run"
             - "--log-level=debug"
-            - "--preload-backend-only"
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
