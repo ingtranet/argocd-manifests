@@ -14,12 +14,17 @@ spec:
       labels:
         app: localai-server
     spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      runtimeClassName: nvidia
       containers:
         - name: localai-server
           image: localai/localai:v3.3.1-nvidia-l4t-arm64
           args:
             - "run"
           env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
             - name: LOCALAI_MODELS_PATH
               value: /localai/models
             - name: LOCALAI_BACKENDS_PATH
@@ -83,8 +88,6 @@ spec:
               value: /localai/models
             - name: LOCALAI_BACKENDS_PATH
               value: /localai/backends
-            - name: JETSON_JETPACK
-              value: "6"
           volumeMounts:
             - name: localai-volume
               mountPath: /localai
