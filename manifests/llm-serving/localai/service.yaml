@@ -4,9 +4,36 @@ metadata:
   name: localai
 spec:
   selector:
-    app: localai
+    app: localai-server
   ports:
     - name: http
       protocol: TCP
       port: 80
       targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: localai-server
+spec:
+  selector:
+    app: localai-server
+  ports:
+    - name: scheduler
+      protocol: TCP
+      port: 8000
+      targetPort: scheduler
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: localai-worker
+spec:
+  clusterIP: None
+  selector:
+    app: localai-worker
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 50051
+      targetPort: 50051

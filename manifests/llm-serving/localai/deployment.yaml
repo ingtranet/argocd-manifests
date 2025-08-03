@@ -1,44 +1,101 @@
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
-  name: localai
+  name: localai-server
   labels:
-    app: localai
+    app: localai-server
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: localai
+      app: localai-server
   template:
     metadata:
       labels:
-        app: localai
+        app: localai-server
     spec:
+      containers:
+        - name: localai-server
+          image: localai/localai:v3.3.1-nvidia-l4t-arm64
+          args:
+            - "run"
+          env:
+            - name: LOCALAI_MODELS_PATH
+              value: /localai/models
+            - name: LOCALAI_BACKENDS_PATH
+              value: /localai/backends
+            - name: LLAMACPP_GRPC_SERVERS
+              value: "localai-worker-0.localai-worker:50051,localai-worker-1.localai-worker:50051,localai-worker-2.localai-worker:50051"
+          volumeMounts:
+            - name: localai-volume
+              mountPath: /localai
+          ports:
+            - name: http
+              containerPort: 8080
+            - name: scheduler
+              containerPort: 8000
+      volumes:
+        - name: localai-volume
+          hostPath:
+            path: /mnt/mfs/k8s/localai
+            type: Directory
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: localai-worker
+  labels:
+    app: localai-worker
+spec:
+  serviceName: "localai-worker"
+  replicas: 3
+  podManagementPolicy: Parallel
+  selector:
+    matchLabels:
+      app: localai-worker
+  template:
+    metadata:
+      labels:
+        app: localai-worker
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app
+                    operator: In
+                    values:
+                      - localai-worker
+              topologyKey: "kubernetes.io/hostname"
       nodeSelector:
         nvidia.com/gpu.product: Orin
       runtimeClassName: nvidia
       containers:
-        - name: localai
+        - name: localai-worker
           image: localai/localai:v3.3.1-nvidia-l4t-arm64
           args:
-            - "--models-path"
-            - "/models"
-            - "--threads"
-            - "4"
+            - "worker"
+            - "p2p-llama-cpp-rpc"
+            - "--llama-cpp-args="
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
             - name: LOCALAI_MODELS_PATH
-              value: /models
+              value: /localai/models
+            - name: LOCALAI_BACKENDS_PATH
+              value: /localai/backends
             - name: JETSON_JETPACK
               value: "6"
           volumeMounts:
-            - name: localai-models
-              mountPath: /models
+            - name: localai-volume
+              mountPath: /localai
           ports:
-            - name: http
-              containerPort: 8080
+            - name: grpc
+              containerPort: 50051
       volumes:
-        - name: localai-models
+        - name: localai-volume
           hostPath:
-            path: /mnt/mfs/k8s/localai/models
+            path: /mnt/mfs/k8s/localai
             type: Directory
+---
