@@ -18,7 +18,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: localai
-          image: localai/localai:v3.1.1-nvidia-l4t
+          image: localai/localai:v3.3.1-nvidia-l4t-arm64
           args:
             - "--models-path"
             - "/models"
