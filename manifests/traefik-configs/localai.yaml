@@ -10,7 +10,7 @@ spec:
       match: Host(`localai.ig.ingtra.net`)
       services:
         - kind: Service
-          name: localai
+          name: localai-server
           namespace: llm-serving
           port: 80
   tls:
