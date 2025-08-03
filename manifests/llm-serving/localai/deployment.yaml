@@ -22,7 +22,7 @@ spec:
           image: localai/localai:v3.3.1-nvidia-l4t-arm64
           args:
             - "run"
-            - "--loglevel=debug"
+            - "--log-level=debug"
             - "--preload-backend-only"
           env:
             - name: NVIDIA_VISIBLE_DEVICES
