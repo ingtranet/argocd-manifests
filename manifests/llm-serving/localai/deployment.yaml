@@ -19,6 +19,11 @@ spec:
       containers:
         - name: localai
           image: localai/localai:v3.1.1-nvidia-l4t
+          args:
+            - "--models-path"
+            - "/models"
+            - "--threads"
+            - "4"
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
@@ -36,4 +41,4 @@ spec:
         - name: localai-models
           hostPath:
             path: /mnt/mfs/k8s/localai/models
-            type: DirectoryOrCreate
+            type: Directory
