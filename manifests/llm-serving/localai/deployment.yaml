@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: localai
+  labels:
+    app: localai
+spec:
+  selector:
+    matchLabels:
+      app: localai
+  template:
+    metadata:
+      labels:
+        app: localai
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      runtimeClassName: nvidia
+      containers:
+        - name: localai
+          image: localai/localai:v3.1.1-nvidia-l4t
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: LOCALAI_MODELS_PATH
+              value: /models
+            - name: JETSON_JETPACK
+              value: "6"
+          volumeMounts:
+            - name: localai-models
+              mountPath: /models
+          ports:
+            - name: http
+              containerPort: 8080
+      volumes:
+        - name: localai-models
+          hostPath:
+            path: /mnt/mfs/k8s/localai/models
+            type: DirectoryOrCreate

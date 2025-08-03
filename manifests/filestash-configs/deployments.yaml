@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filestash
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filestash
+  template:
+    metadata:
+      labels:
+        app: filestash
+    spec:
+      containers:
+      - name: filestash
+        image: machines/filestash:latest
+        ports:
+        - containerPort: 8334
+        env:
+        - name: APPLICATION_URL
+          value: "https://filestash.ig.ingtra.net"
+        - name: CANARY
+          value: "true"
+        - name: OFFICE_URL
+          value: "http://filestash-wopi:9980"
+        - name: OFFICE_FILESTASH_URL
+          value: "http://filestash:8334"
+        - name: OFFICE_REWRITE_URL
+          value: "https://filestash-wopi.ig.ingtra.net"
+        volumeMounts:
+        - name: filestash-host-volume
+          mountPath: /app/data/state/
+      volumes:
+      - name: filestash-host-volume
+        hostPath:
+          path: /mnt/mfs/filestash/state
+          type: DirectoryOrCreate
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: filestash-wopi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: filestash-wopi
+  template:
+    metadata:
+      labels:
+        app: filestash-wopi
+    spec:
+      containers:
+      - name: collabora
+        image: collabora/code:24.04.10.2.1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9980
+        env:
+        - name: extra_params
+          value: "--o:ssl.enable=false"
+        - name: aliasgroup1
+          value: "https://.*:443"
+        command: ["/bin/bash", "-c"]
+        args:
+          - |
+            curl -o /usr/share/coolwsd/browser/dist/branding-desktop.css https://gist.githubusercontent.com/mickael-kerjean/bc1f57cd312cf04731d30185cc4e7ba2/raw/d706dcdf23c21441e5af289d871b33defc2770ea/destop.css
+            /bin/su -s /bin/bash -c '/start-collabora-online.sh' cool
+        securityContext:
+          runAsUser: 0
