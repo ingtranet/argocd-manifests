@@ -31,11 +31,17 @@ spec:
         volumeMounts:
         - name: filestash-host-volume
           mountPath: /app/data/state/
+        - name: moosefs
+          mountPath: /mnt/mfs
       volumes:
       - name: filestash-host-volume
         hostPath:
           path: /mnt/mfs/k8s/filestash/state
-          type: DirectoryOrCreate
+          type: Directory
+      - name: moosefs
+        hostPath:
+          path: /mnt/mfs
+          type: Directory
 ---
 apiVersion: apps/v1
 kind: Deployment
