@@ -24,7 +24,7 @@ spec:
               value: /localai/models
             - name: LOCALAI_BACKENDS_PATH
               value: /localai/backends
-            - name: LLAMACPP_GRPC_SERVERS
+            - name: LOCALAI_EXTERNAL_GRPC_BACKENDS
               value: "localai-worker-0.localai-worker:50051,localai-worker-1.localai-worker:50051,localai-worker-2.localai-worker:50051"
           volumeMounts:
             - name: localai-volume
