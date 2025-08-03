@@ -19,7 +19,7 @@ spec:
         - containerPort: 8334
         env:
         - name: APPLICATION_URL
-          value: "https://filestash.ig.ingtra.net"
+          value: "filestash.ig.ingtra.net"
         - name: CANARY
           value: "true"
         - name: OFFICE_URL
