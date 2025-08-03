@@ -34,7 +34,7 @@ spec:
       volumes:
       - name: filestash-host-volume
         hostPath:
-          path: /mnt/mfs/filestash/state
+          path: /mnt/mfs/k8s/filestash/state
           type: DirectoryOrCreate
 ---
 apiVersion: apps/v1
