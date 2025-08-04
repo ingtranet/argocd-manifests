@@ -10,6 +10,10 @@ spec:
       protocol: TCP
       port: 80
       targetPort: http
+    - name: p2p
+      protocol: TCP
+      port: 40207
+      targetPort: p2p
 ---
 apiVersion: v1
 kind: Service
