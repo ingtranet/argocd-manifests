@@ -30,10 +30,8 @@ spec:
               value: /localai/models
             - name: LOCALAI_BACKENDS_PATH
               value: /localai/backends
-            - name: LOCALAI_FEDERATED
-              value: "true"
-            - name: LOCALAI_P2P
-              value: "true"
+            - name: LOCALAI_P2P_LISTEN_MADDRS
+              value: "/ip4/127.0.0.1/tcp/40207"
             - name: TOKEN
               valueFrom:
                 secretKeyRef:
@@ -45,6 +43,8 @@ spec:
           ports:
             - name: http
               containerPort: 8080
+            - name: p2p
+              containerPort: 40207
       volumes:
         - name: localai-volume
           hostPath:
@@ -97,6 +97,8 @@ spec:
               value: /localai/backends
             - name: LOCALAI_P2P
               value: "true"
+            - name: LOCALAI_P2P_BOOTSTRAP_PEERS_MADDRS
+              value: "/dns/localai-server/tcp/40207"
             - name: TOKEN
               valueFrom:
                 secretKeyRef:
