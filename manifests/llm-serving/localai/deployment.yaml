@@ -30,9 +30,15 @@ spec:
               value: /localai/models
             - name: LOCALAI_BACKENDS_PATH
               value: /localai/backends
+            - name: LOCALAI_FEDERATED
+              value: "true"
             - name: LOCALAI_P2P
               value: "true"
-  
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: localai
+                  key: TOKEN
           volumeMounts:
             - name: localai-volume
               mountPath: /localai
@@ -90,6 +96,13 @@ spec:
               value: /localai/models
             - name: LOCALAI_BACKENDS_PATH
               value: /localai/backends
+            - name: LOCALAI_P2P
+              value: "true"
+            - name: TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: localai
+                  key: TOKEN
           volumeMounts:
             - name: localai-volume
               mountPath: /localai
