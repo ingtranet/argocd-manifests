@@ -1,33 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: localai-server
+  name: localai
 spec:
   selector:
-    app: localai-server
+    app: localai
   ports:
     - name: http
       protocol: TCP
       port: 80
       targetPort: http
-    - name: p2p
-      protocol: TCP
-      port: 40207
-      targetPort: p2p
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: localai-worker
-spec:
-  clusterIP: None
-  selector:
-    app: localai-worker
-  ports:
-    - name: grpc
-      protocol: TCP
-      port: 50051
-      targetPort: 50051
-    - name: p2p
-      protocol: TCP
-      port: 40207

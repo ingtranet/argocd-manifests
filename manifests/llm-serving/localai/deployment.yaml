@@ -1,89 +1,23 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
-  name: localai-server
+  name: localai
   labels:
-    app: localai-server
+    app: localai
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      app: localai-server
+      app: localai
   template:
     metadata:
       labels:
-        app: localai-server
+        app: localai
     spec:
       nodeSelector:
         nvidia.com/gpu.product: Orin
       runtimeClassName: nvidia
       containers:
-        - name: localai-server
-          image: localai/localai:v3.3.1-nvidia-l4t-arm64
-          args:
-            - "federated"
-            - "--log-level=debug"
-          env:
-            - name: NVIDIA_VISIBLE_DEVICES
-              value: "all"
-            - name: LOCALAI_MODELS_PATH
-              value: /localai/models
-            - name: LOCALAI_BACKENDS_PATH
-              value: /localai/backends
-            - name: LOCALAI_P2P_LISTEN_MADDRS
-              value: "/ip4/0.0.0.0/tcp/40207"
-            - name: TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: localai
-                  key: TOKEN
-          volumeMounts:
-            - name: localai-volume
-              mountPath: /localai
-          ports:
-            - name: http
-              containerPort: 8080
-            - name: p2p
-              containerPort: 40207
-      volumes:
-        - name: localai-volume
-          hostPath:
-            path: /mnt/mfs/k8s/localai
-            type: Directory
----
-apiVersion: apps/v1
-kind: StatefulSet
-metadata:
-  name: localai-worker
-  labels:
-    app: localai-worker
-spec:
-  serviceName: "localai-worker"
-  replicas: 3
-  podManagementPolicy: Parallel
-  selector:
-    matchLabels:
-      app: localai-worker
-  template:
-    metadata:
-      labels:
-        app: localai-worker
-    spec:
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app
-                    operator: In
-                    values:
-                      - localai-worker
-              topologyKey: "kubernetes.io/hostname"
-      nodeSelector:
-        nvidia.com/gpu.product: Orin
-      runtimeClassName: nvidia
-      containers:
-        - name: localai-worker
+        - name: localai
           image: localai/localai:v3.3.1-nvidia-l4t-arm64
           args:
             - "run"
@@ -95,23 +29,12 @@ spec:
               value: /localai/models
             - name: LOCALAI_BACKENDS_PATH
               value: /localai/backends
-            - name: LOCALAI_P2P
-              value: "true"
-            - name: LOCALAI_P2P_LISTEN_MADDRS
-              value: "/ip4/0.0.0.0/tcp/40207"
-            - name: TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: localai
-                  key: TOKEN
           volumeMounts:
             - name: localai-volume
               mountPath: /localai
           ports:
             - name: http
               containerPort: 8080
-            - name: p2p
-              containerPort: 40207
       volumes:
         - name: localai-volume
           hostPath:
