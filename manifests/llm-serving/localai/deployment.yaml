@@ -31,7 +31,7 @@ spec:
             - name: LOCALAI_BACKENDS_PATH
               value: /localai/backends
             - name: LOCALAI_P2P_LISTEN_MADDRS
-              value: "/ip4/127.0.0.1/tcp/40207"
+              value: "/dns/localai-server/tcp/40207"
             - name: TOKEN
               valueFrom:
                 secretKeyRef:
