@@ -97,8 +97,10 @@ spec:
               value: /localai/backends
             - name: LOCALAI_P2P
               value: "true"
+            - name: LOCALAI_P2P_LISTEN_MADDRS
+              value: "/ip4/0.0.0.0/tcp/40207"
             - name: LOCALAI_P2P_BOOTSTRAP_PEERS_MADDRS
-              value: "/dns/localai-server/tcp/40207"
+              value: "/dns/localai-worker-0.localai-worker/tcp/40207"
             - name: TOKEN
               valueFrom:
                 secretKeyRef:
@@ -108,8 +110,10 @@ spec:
             - name: localai-volume
               mountPath: /localai
           ports:
-            - name: grpc
-              containerPort: 50051
+            - name: http
+              containerPort: 8080
+            - name: p2p
+              containerPort: 40207
       volumes:
         - name: localai-volume
           hostPath:
