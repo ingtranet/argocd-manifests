@@ -99,8 +99,6 @@ spec:
               value: "true"
             - name: LOCALAI_P2P_LISTEN_MADDRS
               value: "/ip4/0.0.0.0/tcp/40207"
-            - name: LOCALAI_P2P_BOOTSTRAP_PEERS_MADDRS
-              value: "/dns/localai-worker-0.localai-worker/tcp/40207"
             - name: TOKEN
               valueFrom:
                 secretKeyRef:
