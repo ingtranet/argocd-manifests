@@ -21,7 +21,7 @@ spec:
         - name: localai-server
           image: localai/localai:v3.3.1-nvidia-l4t-arm64
           args:
-            - "run"
+            - "federated"
             - "--log-level=debug"
           env:
             - name: NVIDIA_VISIBLE_DEVICES
