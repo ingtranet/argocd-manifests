@@ -86,9 +86,8 @@ spec:
         - name: localai-worker
           image: localai/localai:v3.3.1-nvidia-l4t-arm64
           args:
-            - "worker"
-            - "llama-cpp-rpc"
-            - "--llama-cpp-args=--host 0.0.0.0 --port 50051"
+            - "run"
+            - "--log-level=debug"
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
