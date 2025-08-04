@@ -17,6 +17,8 @@ spec:
         image: machines/filestash:latest
         ports:
         - containerPort: 8334
+        securityContext:
+          runAsUser: 0
         env:
         - name: APPLICATION_URL
           value: "filestash.ig.ingtra.net"
