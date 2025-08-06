@@ -6,7 +6,7 @@ metadata:
   labels:
     app: qwen3-embedding-0-6b
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: qwen3-embedding-0-6b
@@ -18,7 +18,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: qwen3-embedding
-          image: dustynv/llama_cpp:b5283-r36.4-cu128-24.04
+          image: docker.io/cookieshake/llamacpp-jetson:b6092
           args:
             - llama-server
             - --host
@@ -77,7 +77,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: qwen3-embedding-0-6b-service
+  name: qwen3-embedding-0-6b
   namespace: llm-serving
   labels:
     app: qwen3-embedding-0-6b
