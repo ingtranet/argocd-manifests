@@ -28,7 +28,8 @@ spec:
             - --parallel
             - "3"
             - --hf-repo
-            - LiquidAI/LFM2-1.2B-GGUF:Q4_K_M
+            - unsloth/LFM2-1.2B-GGUF:UD-Q4_K_XL
+            - --jinja
           ports:
             - containerPort: 8080
               name: http
