@@ -17,7 +17,7 @@ spec:
     spec:
       runtimeClassName: nvidia
       containers:
-        - name: qwen3-embedding
+        - name: llama-cpp
           image: docker.io/cookieshake/llamacpp-jetson:b6092
           imagePullPolicy: Always
           args:
@@ -25,6 +25,8 @@ spec:
             - "0.0.0.0"
             - --port
             - "8080"
+            - --parallel
+            - "3"
             - --hf-repo
             - Qwen/Qwen3-Embedding-0.6B-GGUF:Q8_0
             - --embedding
