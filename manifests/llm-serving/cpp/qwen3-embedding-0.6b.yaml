@@ -19,6 +19,7 @@ spec:
       containers:
         - name: qwen3-embedding
           image: docker.io/cookieshake/llamacpp-jetson:b6092
+          imagePullPolicy: Always
           args:
             - --host
             - "0.0.0.0"
