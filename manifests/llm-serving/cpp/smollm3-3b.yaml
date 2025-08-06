@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smollm3-3b
+  namespace: llm-serving
+  labels:
+    app: smollm3-3b
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: smollm3-3b
+  template:
+    metadata:
+      labels:
+        app: smollm3-3b
+    spec:
+      runtimeClassName: nvidia
+      containers:
+        - name: llama-cpp
+          image: docker.io/cookieshake/llamacpp-jetson:b6092
+          imagePullPolicy: Always
+          args:
+            - --host
+            - "0.0.0.0"
+            - --port
+            - "8080"
+            - --parallel
+            - "3"
+            - --hf-repo
+            - ggml-org/SmolLM3-3B-GGUF:Q4_K_M
+            - --jinja
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: LLAMA_CACHE
+              value: /opt/llama_cpp/cache
+          volumeMounts:
+            - name: cache-volume
+              mountPath: /opt/llama_cpp/cache
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 100
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+      volumes:
+        - name: cache-volume
+          hostPath:
+            path: /mnt/mfs/k8s/llama_cpp/cache
+            type: DirectoryOrCreate
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smollm3-3b
+  namespace: llm-serving
+  labels:
+    app: smollm3-3b
+spec:
+  selector:
+    app: smollm3-3b
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+    protocol: TCP
+  type: ClusterIP
