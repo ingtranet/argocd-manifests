@@ -1,0 +1,29 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: llama-cpp-models
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`llama-cpp.ig.ingtra.net`) && PathPrefix(`/qwen3-embedding-0-6b`)
+      services:
+        - kind: Service
+          name: qwen3-embedding-0-6b
+          namespace: llm-serving
+          port: 8080
+      middlewares:
+        - name: llama-cpp-stripprefix
+  tls:
+    secretName: ig-ingtra-net-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: llama-cpp-stripprefix
+spec:
+  stripPrefix:
+    prefixes:
+      - /qwen3-embedding-0-6b
+
