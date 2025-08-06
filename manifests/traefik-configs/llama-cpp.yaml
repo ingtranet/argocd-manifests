@@ -16,10 +16,28 @@ spec:
       middlewares:
         - name: llama-cpp-stripprefix
     - kind: Rule
+      match: Host(`llama-cpp.ig.ingtra.net`) && PathPrefix(`/qwen3-embedding-0.6b`)
+      services:
+        - kind: Service
+          name: qwen3-embedding-0-6b
+          namespace: llm-serving
+          port: 8080
+      middlewares:
+        - name: llama-cpp-stripprefix
+    - kind: Rule
       match: Host(`llama-cpp.ig.ingtra.net`) && PathPrefix(`/smollm3-3b`)
       services:
         - kind: Service
           name: smollm3-3b
+          namespace: llm-serving
+          port: 8080
+      middlewares:
+        - name: llama-cpp-stripprefix
+    - kind: Rule
+      match: Host(`llama-cpp.ig.ingtra.net`) && PathPrefix(`/lfm2-1.2b`)
+      services:
+        - kind: Service
+          name: lfm2-1-2b
           namespace: llm-serving
           port: 8080
       middlewares:
@@ -35,5 +53,7 @@ spec:
   stripPrefix:
     prefixes:
       - /qwen3-embedding-0-6b
+      - /qwen3-embedding-0.6b
       - /smollm3-3b
+      - /lfm2-1.2b
 

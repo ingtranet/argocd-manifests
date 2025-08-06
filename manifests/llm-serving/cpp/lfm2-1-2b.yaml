@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: smollm3-3b
+  name: lfm2-1-2b
   namespace: llm-serving
   labels:
-    app: smollm3-3b
+    app: lfm2-1-2b
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: smollm3-3b
+      app: lfm2-1-2b
   template:
     metadata:
       labels:
-        app: smollm3-3b
+        app: lfm2-1-2b
     spec:
       runtimeClassName: nvidia
       containers:
@@ -28,8 +28,7 @@ spec:
             - --parallel
             - "3"
             - --hf-repo
-            - ggml-org/SmolLM3-3B-GGUF:Q4_K_M
-            - --jinja
+            - LiquidAI/LFM2-1.2B-GGUF:Q4_K_M
           ports:
             - containerPort: 8080
               name: http
@@ -74,13 +73,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: smollm3-3b
+  name: lfm2-1-2b
   namespace: llm-serving
   labels:
-    app: smollm3-3b
+    app: lfm2-1-2b
 spec:
   selector:
-    app: smollm3-3b
+    app: lfm2-1-2b
   ports:
   - name: http
     port: 8080
