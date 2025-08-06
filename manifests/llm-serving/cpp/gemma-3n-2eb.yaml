@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: lfm2-1-2b
+  name: gemma-3n-2eb
   namespace: llm-serving
   labels:
-    app: lfm2-1-2b
+    app: gemma-3n-2eb
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: lfm2-1-2b
+      app: gemma-3n-2eb
   template:
     metadata:
       labels:
-        app: lfm2-1-2b
+        app: gemma-3n-2eb
     spec:
       runtimeClassName: nvidia
       containers:
@@ -25,9 +25,10 @@ spec:
             - "0.0.0.0"
             - --port
             - "8080"
+            - --parallel
+            - "3"
             - --hf-repo
-            - unsloth/LFM2-1.2B-GGUF:UD-Q4_K_XL
-            - --jinja
+            - unsloth/gemma-3n-E2B-it-GGUF:Q4_K_M
           ports:
             - containerPort: 8080
               name: http

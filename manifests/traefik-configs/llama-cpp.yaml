@@ -42,6 +42,15 @@ spec:
           port: 8080
       middlewares:
         - name: llama-cpp-stripprefix
+    - kind: Rule
+      match: Host(`llama-cpp.ig.ingtra.net`) && PathPrefix(`/gemma-3n-2eb`)
+      services:
+        - kind: Service
+          name: gemma-3n-2eb
+          namespace: llm-serving
+          port: 8080
+      middlewares:
+        - name: llama-cpp-stripprefix
   tls:
     secretName: ig-ingtra-net-tls
 ---
@@ -56,4 +65,5 @@ spec:
       - /qwen3-embedding-0.6b
       - /smollm3-3b
       - /lfm2-1.2b
+      - /gemma-3n-2eb
 
