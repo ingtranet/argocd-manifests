@@ -73,13 +73,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: lfm2-1-2b
+  name: gemma-3n-2eb
   namespace: llm-serving
   labels:
-    app: lfm2-1-2b
+    app: gemma-3n-2eb
 spec:
   selector:
-    app: lfm2-1-2b
+    app: gemma-3n-2eb
   ports:
   - name: http
     port: 8080
