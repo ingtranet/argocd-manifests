@@ -27,6 +27,8 @@ spec:
             - "8080"
             - --parallel
             - "3"
+            - --n-gpu-layers
+            - "999"
             - --hf-repo
             - unsloth/gemma-3n-E2B-it-GGUF:Q4_K_M
           ports:
