@@ -25,6 +25,8 @@ spec:
             - "0.0.0.0"
             - --port
             - "8080"
+            - --n-gpu-layers
+            - "999"
             - --hf-repo
             - unsloth/LFM2-1.2B-GGUF:UD-Q4_K_XL
             - --jinja

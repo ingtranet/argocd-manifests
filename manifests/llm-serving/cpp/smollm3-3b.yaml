@@ -27,6 +27,8 @@ spec:
             - "8080"
             - --parallel
             - "3"
+            - --n-gpu-layers
+            - "999"
             - --hf-repo
             - ggml-org/SmolLM3-3B-GGUF:Q4_K_M
             - --jinja
