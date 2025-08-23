@@ -64,6 +64,8 @@ spec:
         replicas: 2
         tempo:
           reportingEnabled: false
+          metricsGenerator:
+            enabled: true
           storage:
             trace:
               backend: s3
