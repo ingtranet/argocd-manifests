@@ -108,10 +108,10 @@ spec:
               }
               otelcol.processor.batch "default" {
                 output {
-                  metrics = [otelcol.exporter.oltp.signoz.input]
-                  logs = [otelcol.exporter.oltp.signoz.input]
+                  metrics = [otelcol.exporter.otlp.signoz.input]
+                  logs = [otelcol.exporter.otlp.signoz.input]
                   traces = [
-                    otelcol.exporter.oltp.signoz.input, otelcol.exporter.otlp.default.input
+                    otelcol.exporter.otlp.signoz.input, otelcol.exporter.otlp.default.input
                   ]
                 }
               }
