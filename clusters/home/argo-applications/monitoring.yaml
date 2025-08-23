@@ -112,12 +112,12 @@ spec:
                   endpoint = "tempo.monitoring.svc:4318"
                 }
               }
-            extraPorts:
-              - name: "otel-http"
-                port: 4318
-                targetPort: 4318
-                protocol: "TCP"
-                appProtocol: "http"
+          extraPorts:
+            - name: "otel-http"
+              port: 4318
+              targetPort: 4318
+              protocol: "TCP"
+              appProtocol: "http"
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
