@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: grafana
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: 9.3.4
+    helm:
+      releaseName: grafana
+      values: |
+        grafana.ini:
+          server:
+            domain: grafana.ig.ingtra.net
+            root_url: "%(protocol)s://%(domain)s"
+          database:
+            type: postgres
+            host: postgresql.vd.ingtra.net:5432
+            name: grafana
+            user: system
+            password: systemsecret
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+
