@@ -76,3 +76,21 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: alloy
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: alloy
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: 1.2.1
+    helm:
+      releaseName: alloy
+      values: |
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
