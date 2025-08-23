@@ -119,11 +119,19 @@ spec:
               otelcol.exporter.otlp "default" {
                 client {
                   endpoint = "tempo.monitoring.svc:4317"
+                  tls {
+                      insecure             = true
+                      insecure_skip_verify = true
+                  }
                 }
               }
               otelcol.exporter.otlp "signoz" {
                 client {
                   endpoint = "signoz.vd.ingtra.net:4317"
+                  tls {
+                      insecure             = true
+                      insecure_skip_verify = true
+                  }
                 }
               }
           extraPorts:
