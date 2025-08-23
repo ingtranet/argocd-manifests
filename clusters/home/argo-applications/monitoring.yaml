@@ -112,7 +112,7 @@ spec:
                   endpoint = "tempo.monitoring.svc:4318"
                 }
               }
-            extraPorts: []
+            extraPorts:
               - name: "otel-http"
                 port: 4318
                 targetPort: 4318
