@@ -91,6 +91,33 @@ spec:
     helm:
       releaseName: alloy
       values: |
+        alloy:
+          configMap:
+            content: |
+              otelcol.receiver.otlp "default" {
+                http {
+                  endpoint = "127.0.0.1:4318"
+                }
+                output {
+                  traces  = [otelcol.processor.batch.default.input]
+                }
+              }
+              otelcol.processor.batch "default" {
+                output {
+                  traces  = [otelcol.exporter.otlphttp.default.input]
+                }
+              }
+              otelcol.exporter.otlphttp "default" {
+                client {
+                  endpoint = "tempo.monitoring.svc:4318"
+                }
+              }
+            extraPorts: []
+              - name: "otel-http"
+                port: 4318
+                targetPort: 4318
+                protocol: "TCP"
+                appProtocol: "http"
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
