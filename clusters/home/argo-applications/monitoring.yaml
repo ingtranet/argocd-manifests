@@ -118,8 +118,6 @@ spec:
             - name: "otel-http"
               port: 4318
               targetPort: 4318
-              protocol: "TCP"
-              appProtocol: "http"
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
