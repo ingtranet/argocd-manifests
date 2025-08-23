@@ -92,6 +92,8 @@ spec:
       releaseName: alloy
       values: |
         alloy:
+          clustering:
+            enabled: true
           configMap:
             content: |
               otelcol.receiver.otlp "default" {
