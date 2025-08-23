@@ -20,6 +20,9 @@ spec:
       values: |
         assertNoLeakedSecrets: false
         grafana.ini:
+          analytics:
+            reporting_enabled: false
+            check_for_plugin_updates: true
           server:
             domain: grafana.ig.ingtra.net
             root_url: "%(protocol)s://%(domain)s"
