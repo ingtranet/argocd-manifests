@@ -111,7 +111,7 @@ spec:
                   metrics = [otelcol.exporter.otlp.signoz.input]
                   logs = [otelcol.exporter.otlp.signoz.input]
                   traces = [
-                    otelcol.exporter.otlp.signoz.input, otelcol.exporter.otlp.default.input
+                    "otelcol.exporter.otlp.signoz.input", "otelcol.exporter.otlp.default.input"
                   ]
                 }
               }
