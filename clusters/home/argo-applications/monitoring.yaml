@@ -55,36 +55,32 @@ metadata:
 spec:
   project: default
   source:
-    chart: tempo-distributed
+    chart: tempo
     repoURL: https://grafana.github.io/helm-charts
-    targetRevision: 1.46.4
+    targetRevision: 1.23.3
     helm:
       releaseName: tempo
       values: |
-        reportingEnabled: false
-        global:
-          clusterDomain: kd.ingtra.net
-          dnsService: rke2-coredns-rke2-coredns
-        ingester:
-          replicas: 2
-        storage:
-          trace:
-            backend: s3
-            s3:
-              bucket: tempo
-              prefix: trace/
-              endpoint: s3.ingtra.net
-              access_key: system
-              secret_key: systemsecret
-          admin:
-            backend: s3
-            s3:
-              bucket: tempo
-              prefix: admin/
-              endpoint: s3.ingtra.net
-              access_key: system
-              secret_key: systemsecret
-
+        replicas: 2
+        tempo:
+          reportingEnabled: false
+          storage:
+            trace:
+              backend: s3
+              s3:
+                bucket: tempo
+                prefix: trace/
+                endpoint: s3.ingtra.net
+                access_key: system
+                secret_key: systemsecret
+            admin:
+              backend: s3
+              s3:
+                bucket: tempo
+                prefix: admin/
+                endpoint: s3.ingtra.net
+                access_key: system
+                secret_key: systemsecret
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
