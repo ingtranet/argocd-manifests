@@ -24,6 +24,7 @@ spec:
             reporting_enabled: false
             check_for_plugin_updates: true
           auth:
+            disable_login: true
             disable_login_form: true
             disable_signout_menu: true
           auth.anonymous:
