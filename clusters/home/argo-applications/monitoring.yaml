@@ -18,6 +18,7 @@ spec:
     helm:
       releaseName: grafana
       values: |
+        assertNoLeakedSecrets: false
         grafana.ini:
           server:
             domain: grafana.ig.ingtra.net
