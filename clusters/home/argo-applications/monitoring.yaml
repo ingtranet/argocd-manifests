@@ -73,14 +73,6 @@ spec:
                 endpoint: s3.ingtra.net
                 access_key: system
                 secret_key: systemsecret
-            admin:
-              backend: s3
-              s3:
-                bucket: tempo
-                prefix: admin/
-                endpoint: s3.ingtra.net
-                access_key: system
-                secret_key: systemsecret
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
