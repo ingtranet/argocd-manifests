@@ -101,17 +101,29 @@ spec:
                   endpoint = "0.0.0.0:4318"
                 }
                 output {
+                  metrics = [otelcol.processor.batch.default.input]
+                  logs    = [otelcol.processor.batch.default.input]
                   traces  = [otelcol.processor.batch.default.input]
                 }
               }
               otelcol.processor.batch "default" {
                 output {
-                  traces  = [otelcol.exporter.otlphttp.default.input]
+                  metrics = [otelcol.exporter.oltp.signoz.input]
+                  logs = [otelcol.exporter.oltp.signoz.input]
+                  traces  = [
+                    otelcol.exporter.oltp.signoz.input,
+                    otelcol.exporter.otlp.default.input
+                  ]
                 }
               }
-              otelcol.exporter.otlphttp "default" {
+              otelcol.exporter.otlp "default" {
                 client {
-                  endpoint = "tempo.monitoring.svc:4318"
+                  endpoint = "tempo.monitoring.svc:4317"
+                }
+              }
+              otelcol.exporter.otlp "signoz" {
+                client {
+                  endpoint = "signoz.vd.ingtra.net:4317"
                 }
               }
           extraPorts:
