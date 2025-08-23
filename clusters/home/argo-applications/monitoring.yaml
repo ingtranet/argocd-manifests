@@ -98,7 +98,7 @@ spec:
             content: |
               otelcol.receiver.otlp "default" {
                 http {
-                  endpoint = "127.0.0.1:4318"
+                  endpoint = "0.0.0.0:4318"
                 }
                 output {
                   traces  = [otelcol.processor.batch.default.input]
