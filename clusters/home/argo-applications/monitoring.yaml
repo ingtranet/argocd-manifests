@@ -110,9 +110,8 @@ spec:
                 output {
                   metrics = [otelcol.exporter.oltp.signoz.input]
                   logs = [otelcol.exporter.oltp.signoz.input]
-                  traces  = [
-                    otelcol.exporter.oltp.signoz.input,
-                    otelcol.exporter.otlp.default.input
+                  traces = [
+                    otelcol.exporter.oltp.signoz.input, otelcol.exporter.otlp.default.input
                   ]
                 }
               }
