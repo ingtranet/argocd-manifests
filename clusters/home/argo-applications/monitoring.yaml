@@ -29,7 +29,9 @@ spec:
           auth.anonymous:
             enabled: true
             org_name: IngtraNet
-            org_role: Viewer
+            org_role: Admin
+          auth.basic:
+            enabled: false
           server:
             domain: grafana.ig.ingtra.net
             root_url: "%(protocol)s://%(domain)s"
