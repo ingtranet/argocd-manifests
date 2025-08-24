@@ -101,6 +101,10 @@ spec:
             enabled: true
           configMap:
             content: |
+              logging {
+                level  = "debug"
+                format = "json"
+              }
               otelcol.receiver.otlp "default" {
                 http {
                   endpoint = "0.0.0.0:4318"
