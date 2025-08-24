@@ -113,15 +113,15 @@ spec:
               }
               otelcol.processor.batch "default" {
                 output {
-                  metrics = [otelcol.exporter.otlp.signoz.input]
-                  logs = [otelcol.exporter.otlp.signoz.input]
+                  metrics = [otelcol.exporter.otlphttp.victoriametrics.input]
+                  logs = [otelcol.exporter.otlphttp.victorialogs.input]
                   traces = [
                     otelcol.exporter.otlp.signoz.input,
-                    otelcol.exporter.otlp.default.input,
+                    otelcol.exporter.otlp.tempo.input,
                   ]
                 }
               }
-              otelcol.exporter.otlp "default" {
+              otelcol.exporter.otlp "tempo" {
                 client {
                   endpoint = "tempo.monitoring.svc:4317"
                   tls {
@@ -137,6 +137,16 @@ spec:
                       insecure             = true
                       insecure_skip_verify = true
                   }
+                }
+              }
+              otelcol.exporter.otlphttp "victoriametrics" {
+                client {
+                  endpoint = "http://monitoring.vd.ingtra.net:8428/opentelemetry"
+                }
+              }
+              otelcol.exporter.otlphttp "victorialogs" {
+                client {
+                  endpoint = "http://monitoring.vd.ingtra.net:9428/insert/opentelemetry"
                 }
               }
           extraPorts:
