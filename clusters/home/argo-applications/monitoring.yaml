@@ -176,7 +176,7 @@ spec:
                   period: 24h
           storage:
             bucketNames:
-              chunk: loki-chunk
+              chunks: loki-chunk
               ruler: loki-ruler
               admin: loki-admin
             type: s3
