@@ -19,6 +19,8 @@ spec:
       releaseName: grafana
       values: |
         assertNoLeakedSecrets: false
+        plugins:
+          - victoriametrics-logs-datasource
         grafana.ini:
           analytics:
             reporting_enabled: false
