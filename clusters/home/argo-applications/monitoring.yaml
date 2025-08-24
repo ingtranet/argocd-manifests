@@ -220,7 +220,7 @@ spec:
         bloomGateway:
           replicas: 0
         lokiCanary:
-          enabled: false
+          kind: Deployment
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
