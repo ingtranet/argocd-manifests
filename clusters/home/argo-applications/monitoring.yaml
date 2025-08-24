@@ -219,6 +219,8 @@ spec:
           replicas: 0
         bloomGateway:
           replicas: 0
+        lokiCanary:
+          enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
