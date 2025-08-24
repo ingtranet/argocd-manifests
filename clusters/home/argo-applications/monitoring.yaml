@@ -64,6 +64,9 @@ spec:
         replicas: 2
         tempo:
           reportingEnabled: false
+          ingester:
+            max_block_duration: 5m
+            flush_all_on_shutdown: true
           metricsGenerator:
             enabled: true
           storage:
