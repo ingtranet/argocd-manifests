@@ -10,6 +10,9 @@ metadata:
   name: actions-runner-controller
   namespace: argocd
 spec:
+  syncPolicy:
+    syncOptions:
+      - ServerSideApply=true
   project: default
   source:
     repoURL: https://actions-runner-controller.github.io/actions-runner-controller
