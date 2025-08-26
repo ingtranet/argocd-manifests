@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: knative
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: knative-operator
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL:  https://knative.github.io/operator
+    chart: knative-operator
+    targetRevision: v1.19.0
+    helm:
+      releaseName: knative-operator
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: knative
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: knative-configs
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ingtranet/argocd-manifests.git
+    path: manifests/knative-configs
+    targetRevision: HEAD
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: knative
