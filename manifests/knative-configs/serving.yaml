@@ -13,3 +13,5 @@ spec:
       ks.ingtra.net: ""
     network:
       ingress-class: "kourier.ingress.networking.knative.dev"
+      default-external-scheme: "https"
+      domain-template: "{{.Name}}.{{.Domain}}"
