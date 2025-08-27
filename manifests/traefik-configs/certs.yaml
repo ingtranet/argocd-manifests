@@ -9,3 +9,15 @@ spec:
     name: letsencrypt
   dnsNames:
     - '*.ig.ingtra.net'
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ks-ingtra-net-tls
+spec:
+  secretName: ks-ingtra-net-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: letsencrypt
+  dnsNames:
+    - '*.ks.ingtra.net'
