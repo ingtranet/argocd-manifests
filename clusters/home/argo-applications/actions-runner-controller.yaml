@@ -7,7 +7,7 @@ metadata:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: actions-runner-controller
+  name: gha-runner-scale-set-controller
   namespace: argocd
 spec:
   syncPolicy:
@@ -15,11 +15,11 @@ spec:
       - ServerSideApply=true
   project: default
   source:
-    repoURL: https://actions-runner-controller.github.io/actions-runner-controller
-    chart: actions-runner-controller 
-    targetRevision: 0.23.7
+    path: .
+    repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
+    targetRevision: 0.12.1
     helm:
-      releaseName: actions-runner-controller        
+      releaseName: gha-runner-scale-set-controller
   destination:
     server: https://kubernetes.default.svc
     namespace: actions-runner
@@ -27,16 +27,19 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: actions-runner-configs
+  name: gha-runner-naraninyeo
   namespace: argocd
 spec:
   project: default
   source:
-    repoURL: https://github.com/ingtranet/argocd-manifests.git
-    path: manifests/actions-runner-configs
-    targetRevision: HEAD
-    directory:
-      recurse: true
+    path: .
+    repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
+    targetRevision: 0.12.1
+    helm:
+      releaseName: gha-runner-naraninyeo
+      valueObject:
+        githubConfigUrl: https://github.com/cookieshake/naraninyeo
+        githubConfigSecret: secrets
   destination:
     server: https://kubernetes.default.svc
     namespace: actions-runner
