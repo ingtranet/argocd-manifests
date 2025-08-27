@@ -2,10 +2,9 @@ apiVersion: operator.knative.dev/v1beta1
 kind: KnativeServing
 metadata:
   name: knative-serving
+  namespace: knative-serving
 spec:
   ingress:
-    istio:
-      enabled: false
     kourier:
       enabled: true
   config:
