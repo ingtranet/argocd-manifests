@@ -49,6 +49,16 @@ spec:
           spec:
             nodeSelector:
               kubernetes.io/arch: amd64
+            volumes:
+              - name: work
+                ephemeral:
+                  volumeClaimTemplate:
+                    spec:
+                      accessModes: [ "ReadWriteOnce" ]
+                      storageClassName: "local-path"
+                      resources:
+                        requests:
+                          storage: 1Gi
   destination:
     server: https://kubernetes.default.svc
     namespace: actions-runner
