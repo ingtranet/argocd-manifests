@@ -40,6 +40,9 @@ spec:
       valuesObject:
         githubConfigUrl: https://github.com/cookieshake/naraninyeo
         githubConfigSecret: secrets
+        controllerServiceAccount:
+          namespace: actions-runner
+          name: gha-runner-scale-set-controller-gha-rs-controller
   destination:
     server: https://kubernetes.default.svc
     namespace: actions-runner
