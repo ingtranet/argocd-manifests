@@ -5,7 +5,8 @@ metadata:
 spec:
   replicas: 1
   selector:
-    kubernetes.io/arch: amd64
+    matchLabels:
+      app: cookieshake-naraninyeo
   template:
     spec:
       repository: cookieshake/naraninyeo
