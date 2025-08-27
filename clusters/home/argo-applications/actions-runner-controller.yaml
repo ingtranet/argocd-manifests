@@ -43,6 +43,10 @@ spec:
         controllerServiceAccount:
           namespace: actions-runner
           name: gha-runner-scale-set-controller-gha-rs-controller
+        template:
+          spec:
+            nodeSelector:
+              kubernetes.io/arch: amd64
   destination:
     server: https://kubernetes.default.svc
     namespace: actions-runner
