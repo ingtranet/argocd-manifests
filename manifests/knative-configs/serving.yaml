@@ -8,7 +8,6 @@ spec:
       enabled: false
     kourier:
       enabled: true
-      service-type: ClusterIP
   config:
     domain:
       ks.ingtra.net: ""
