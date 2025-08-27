@@ -10,6 +10,9 @@ metadata:
   name: gha-runner-scale-set-controller
   namespace: argocd
 spec:
+  syncPolicy:
+    syncOptions:
+      - ServerSideApply=true
   project: default
   source:
     path: .
