@@ -1,0 +1,55 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: naraninyeo
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "1"
+        autoscaling.knative.dev/maxScale: "1"
+    spec:
+      containers:
+        - name: naraninyeo
+          image: ghcr.io/cookieshake/naraninyeo:develop
+          imagePullPolicy: Always
+          env:
+            - name: MONGODB_URL
+              value: mongodb.vd.ingtra.net
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: 10.3.64.49:19092
+            - name: KAFKA_GROUP_ID
+              value: naraningyeo-v1
+            - name: KAFKA_TOPIC
+              value: event.nriy.new_message
+            - name: NARANINYEO_API_URL
+              value: http://10.2.17.185:3000
+            - name: QDRANT_URL
+              value: http://qdrant.vd.ingtra.net:6333
+            - name: LLAMA_CPP_EMBEDDINGS_URL
+              value: https://llama-cpp.ig.ingtra.net/qwen3-embedding-0.6b
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: service.name=naraninyeo
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: https://alloy-otel-http.ig.ingtra.net
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: http/protobuf
+            - name: OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT
+              value: "65535"
+
+            # Secret 참조
+            - name: NAVER_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: NAVER_CLIENT_ID
+            - name: NAVER_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: NAVER_CLIENT_SECRET
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: OPENROUTER_API_KEY
