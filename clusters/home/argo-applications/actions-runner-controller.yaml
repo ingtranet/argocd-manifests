@@ -37,7 +37,7 @@ spec:
     targetRevision: 0.12.1
     helm:
       releaseName: gha-runner-naraninyeo
-      valueObject:
+      valuesObject:
         githubConfigUrl: https://github.com/cookieshake/naraninyeo
         githubConfigSecret: secrets
   destination:
