@@ -7,12 +7,12 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`knative.ig.ingtra.net`)
+      match: HostRegexp(`^.+\.ks\.ingtra\.net$`)
       services:
         - kind: Service
           name: kourier
           namespace: knative-serving
           port: 80
   tls:
-    secretName: ig-ingtra-net-tls
+    secretName: ks-ingtra-net-tls
 
