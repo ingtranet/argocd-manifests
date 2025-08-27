@@ -4,6 +4,8 @@ metadata:
   name: knative-serving
 spec:
   ingress:
+    istio:
+      enabled: false
     kourier:
       enabled: true
       service-type: ClusterIP
