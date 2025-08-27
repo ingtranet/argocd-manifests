@@ -55,7 +55,7 @@ spec:
                   volumeClaimTemplate:
                     spec:
                       accessModes: [ "ReadWriteOnce" ]
-                      storageClassName: "local-path"
+                      storageClassName: "	synology-nfs-csi"
                       resources:
                         requests:
                           storage: 1Gi
