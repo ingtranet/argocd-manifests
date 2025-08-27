@@ -1,0 +1,18 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: knative
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`knative.ig.ingtra.net`)
+      services:
+        - kind: Service
+          name: kourier
+          namespace: knative-serving
+          port: 80
+  tls:
+    secretName: ig-ingtra-net-tls
+
