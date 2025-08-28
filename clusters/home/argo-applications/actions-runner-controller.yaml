@@ -44,7 +44,7 @@ spec:
           namespace: actions-runner
           name: gha-runner-scale-set-controller-gha-rs-controller
         containerMode:
-          type: kubernetes
+          type: dind
         template:
           spec:
             initContainers:
