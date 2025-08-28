@@ -121,6 +121,8 @@ spec:
                   mountPath: /home/runner/_work
                 - name: dind-sock
                   mountPath: /run/user/1001
+            nodeSelector:
+              kubernetes.io/arch: amd64
             volumes:
             - name: work
               emptyDir: {}
