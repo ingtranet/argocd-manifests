@@ -43,10 +43,10 @@ spec:
         controllerServiceAccount:
           namespace: actions-runner
           name: gha-runner-scale-set-controller-gha-rs-controller
-        containerMode:
-          type: dind
         template:
           spec:
+            nodeSelector:
+              kubernetes.io/arch: amd64
             initContainers:
             - name: init-dind-externals
               image: ghcr.io/actions/actions-runner:latest
@@ -121,8 +121,6 @@ spec:
                   mountPath: /home/runner/_work
                 - name: dind-sock
                   mountPath: /run/user/1001
-            nodeSelector:
-              kubernetes.io/arch: amd64
             volumes:
             - name: work
               emptyDir: {}
