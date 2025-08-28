@@ -90,8 +90,9 @@ spec:
                 exec:
                   command:
                     - docker
+                    - -H
+                    - unix:///run/user/1001/docker.sock
                     - info
-                    - --host=unix:///run/user/1001/docker.sock
                 initialDelaySeconds: 0
                 failureThreshold: 24
                 periodSeconds: 5
