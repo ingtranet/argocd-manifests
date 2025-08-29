@@ -27,6 +27,7 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/hostname: k8s-da-gpu-2
+      runtimeClassName: nvidia
       containers:
         - name: comfy-ui
           image: yanwk/comfyui-boot:cu129-slim
