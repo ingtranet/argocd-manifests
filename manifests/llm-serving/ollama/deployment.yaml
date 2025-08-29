@@ -36,6 +36,18 @@ spec:
               containerPort: 11434
       volumes:
         - name: ollama
-          hostPath:
-            path: /mnt/mfs/k8s/ollama/models
-            type: DirectoryOrCreate
+          persistentVolumeClaim:
+            claimName: ollama-models-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ollama-models-pvc
+  labels:
+    app: ollama
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 300Gi

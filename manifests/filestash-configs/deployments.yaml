@@ -33,17 +33,21 @@ spec:
         volumeMounts:
         - name: filestash-host-volume
           mountPath: /app/data/state/
-        - name: moosefs
-          mountPath: /mnt/mfs
       volumes:
       - name: filestash-host-volume
-        hostPath:
-          path: /mnt/mfs/k8s/filestash/state
-          type: Directory
-      - name: moosefs
-        hostPath:
-          path: /mnt/mfs
-          type: Directory
+        persistentVolumeClaim:
+          claimName: filestash-host-volume
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: filestash-host-volume
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
