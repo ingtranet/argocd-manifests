@@ -2,31 +2,6 @@
 apiVersion: cert-manager.io/v1
 kind: ClusterIssuer
 metadata:
-  name: zerossl
-spec:
-  acme:
-    email: cookieshake.dev@gmail.com
-    server: https://acme.zerossl.com/v2/DV90
-    privateKeySecretRef:
-      name: zerossl-private-key
-    externalAccountBinding:
-      keyID: PWFc-4NQXzeKeYIrNx8X0g
-      keySecretRef:
-        name: zerossl-eab-credentials
-        key: eab-hmac-key
-      keyAlgorithm: HS256
-    solvers:
-      - dns01:
-          cloudflare:
-            email: cookieshake.dev@gmail.com
-            apiTokenSecretRef:
-              name: cloudflare-api-token
-              key: token
-
----
-apiVersion: cert-manager.io/v1
-kind: ClusterIssuer
-metadata:
   name: letsencrypt
 spec:
   acme:
