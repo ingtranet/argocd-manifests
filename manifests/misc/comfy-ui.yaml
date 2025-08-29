@@ -26,10 +26,10 @@ spec:
         app: comfy-ui
     spec:
       nodeSelector:
-        kubernetes.io/hostname: k8s-na-gpu-1
+        kubernetes.io/hostname: k8s-da-gpu-2
       containers:
         - name: comfy-ui
-          image: yanwk/comfyui-boot:cu124-slim
+          image: yanwk/comfyui-boot:cu129-slim
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: all
