@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: gpu-power-limit
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: gpu-power-limit
+  template:
+    metadata:
+      labels:
+        app: gpu-power-limit
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: k8s-da-gpu-2
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+      containers:
+        - name: nvidia-smi
+          image: nvidia/cuda:12.2.2-base-ubuntu22.04
+          securityContext:
+            privileged: true
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              # GPU 0과 GPU 1의 전력 제한을 245W로 설정
+              nvidia-smi -i 0 -pl 245
+              nvidia-smi -i 1 -pl 245
+              # 데몬셋 컨테이너가 종료되지 않도록 대기
+              sleep 60
+      hostPID: true
+      restartPolicy: Always
