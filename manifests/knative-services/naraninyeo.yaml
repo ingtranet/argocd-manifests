@@ -36,6 +36,8 @@ spec:
               value: http/protobuf
             - name: OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT
               value: "65535"
+            - name: TEST
+              value: "TEST"
 
             # Secret 참조
             - name: NAVER_CLIENT_ID
