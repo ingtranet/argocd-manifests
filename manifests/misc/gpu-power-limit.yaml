@@ -12,6 +12,7 @@ spec:
       labels:
         app: gpu-power-limit
     spec:
+      runtimeClassName: nvidia
       nodeSelector:
         kubernetes.io/hostname: k8s-da-gpu-2
       tolerations:
@@ -20,7 +21,7 @@ spec:
           effect: "NoSchedule"
       containers:
         - name: nvidia-smi
-          image: nvidia/cuda:12.2.2-base-ubuntu22.04
+          image: nvidia/cuda:12.2.2-runtime-ubuntu22.04 
           securityContext:
             privileged: true
           command: ["/bin/bash", "-c"]
