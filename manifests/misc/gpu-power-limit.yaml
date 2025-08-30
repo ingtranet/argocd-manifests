@@ -27,10 +27,10 @@ spec:
           command: ["/bin/bash", "-c"]
           args:
             - |
-              # GPU 0과 GPU 1의 전력 제한을 245W로 설정
-              nvidia-smi -i 0 -pl 245
-              nvidia-smi -i 1 -pl 245
-              # 데몬셋 컨테이너가 종료되지 않도록 대기
-              sleep 60
+              while true; do
+                nvidia-smi -i 0 -pl 245
+                nvidia-smi -i 1 -pl 245
+                sleep 300
+              done
       hostPID: true
       restartPolicy: Always
