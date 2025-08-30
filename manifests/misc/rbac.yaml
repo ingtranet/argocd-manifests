@@ -1,0 +1,21 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: knative-service-admin
+rules:
+  - apiGroups: ["serving.knative.dev"]
+    resources: ["services"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: knative-service-admin-binding
+subjects:
+  - kind: ServiceAccount
+    name: gha-runner-naraninyeo-gha-rs-no-permission
+    namespace: actions-runner
+roleRef:
+  kind: ClusterRole
+  name: knative-service-admin
+  apiGroup: rbac.authorization.k8s.io
