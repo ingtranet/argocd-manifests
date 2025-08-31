@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: naraninyeo
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: naraninyeo-configs
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ingtranet/argocd-manifests.git
+    path: manifests/naraninyeo-configs
+    targetRevision: HEAD
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: naraninyeo
+  ignoreDifferences:
+    - group: serving.knative.dev
+      kind: Service
+      jsonPointers:
+        - /spec/template/spec/containers/0/image
