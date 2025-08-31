@@ -39,3 +39,5 @@ spec:
               value: http/protobuf
             - name: OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT
               value: "65535"
+            - name: NARANINYEO_NEW_MESSAGE_API 
+              value: https://naraninyeo-handler.ig.ingtra.net/
