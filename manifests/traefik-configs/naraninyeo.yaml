@@ -1,17 +1,45 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: naraninyeo
+  name: naraninyeo-handler
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`naraninyeo.ig.ingtra.net`)
+      match: Host(`naraninyeo-handler.ig.ingtra.net`)
       services:
-        - kind: Service
-          name: naraninyeo
-          namespace: consistent
-          port: 80
+        - name: naraninyeo-external
+          kind: TraefikService
   tls:
     secretName: ig-ingtra-net-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: TraefikService
+metadata:
+  name: naraninyeo-external
+spec:
+  weighted:
+    services:
+      - name: naraninyeo-main
+        weight: 5
+      - name: naraninyeo-develop
+        weight: 1
+---
+apiVersion: traefik.io/v1alpha1
+kind: TraefikService
+metadata:
+  name: naraninyeo-main
+spec:
+  loadBalancer:
+    servers:
+      - url: "https://naraninyeo-main.ks.ingtra.net"
+---
+apiVersion: traefik.io/v1alpha1
+kind: TraefikService
+metadata:
+  name: naraninyeo-develop
+spec:
+  loadBalancer:
+    servers:
+      - url: "https://naraninyeo-develop.ks.ingtra.net"
