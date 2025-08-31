@@ -1,3 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: naraninyeo-main-external
+spec:
+  type: ExternalName
+  externalName: naraninyeo-main.ks.ingtra.net
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: naraninyeo-develop-external
+spec:
+  type: ExternalName
+  externalName: naraninyeo-develop.ks.ingtra.net
+---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -9,37 +25,13 @@ spec:
     - kind: Rule
       match: Host(`naraninyeo-handler.ig.ingtra.net`)
       services:
-        - name: naraninyeo-external
-          kind: TraefikService
+        - name: naraninyeo-main-external
+          port: 443
+          scheme: https
+          weight: 5
+        - name: naraninyeo-develop-external
+          port: 443
+          scheme: https
+          weight: 1
   tls:
     secretName: ig-ingtra-net-tls
----
-apiVersion: traefik.io/v1alpha1
-kind: TraefikService
-metadata:
-  name: naraninyeo-external
-spec:
-  weighted:
-    services:
-      - name: naraninyeo-main
-        weight: 5
-      - name: naraninyeo-develop
-        weight: 1
----
-apiVersion: traefik.io/v1alpha1
-kind: TraefikService
-metadata:
-  name: naraninyeo-main
-spec:
-  loadBalancer:
-    servers:
-      - url: "https://naraninyeo-main.ks.ingtra.net"
----
-apiVersion: traefik.io/v1alpha1
-kind: TraefikService
-metadata:
-  name: naraninyeo-develop
-spec:
-  loadBalancer:
-    servers:
-      - url: "https://naraninyeo-develop.ks.ingtra.net"
