@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: naraninyeo-kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: naraninyeo-kafka
+  template:
+    metadata:
+      labels:
+        app: naraninyeo-kafka
+    spec:
+      containers:
+        - name: naraninyeo-kafka
+          image: ghcr.io/cookieshake/naraninyeo:develop
+          args: ["uv", "run", "--no-dev", "python", "main.py", "kafka"]
+          env:
+            - name: MONGODB_URL
+              value: mongodb.vd.ingtra.net
+            - name: KAFKA_BOOTSTRAP_SERVERS
+              value: 10.3.64.49:19092
+            - name: KAFKA_GROUP_ID
+              value: naraningyeo-v1
+            - name: KAFKA_TOPIC
+              value: event.nriy.new_message
+            - name: NARANINYEO_API_URL
+              value: http://10.2.17.185:3000
+            - name: QDRANT_URL
+              value: http://qdrant.vd.ingtra.net:6333
+            - name: LLAMA_CPP_EMBEDDINGS_URL
+              value: https://llama-cpp.ig.ingtra.net/qwen3-embedding-0.6b
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: service.name=naraninyeo
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: https://alloy-otel-http.ig.ingtra.net
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: http/protobuf
+            - name: OTEL_SPAN_ATTRIBUTE_VALUE_LENGTH_LIMIT
+              value: "65535"
