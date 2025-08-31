@@ -15,7 +15,7 @@ spec:
       containers:
         - name: naraninyeo-kafka
           image: ghcr.io/cookieshake/naraninyeo:develop
-          args: ["uv", "run", "--no-dev", "python", "main.py", "kafka"]
+          args: ["kafka"]
           env:
             - name: MONGODB_URL
               value: mongodb.vd.ingtra.net
