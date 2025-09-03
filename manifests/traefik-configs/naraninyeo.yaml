@@ -9,15 +9,29 @@ spec:
     - kind: Rule
       match: Host(`naraninyeo-handler.ig.ingtra.net`)
       services:
-        - name: naraninyeo-main
-          namespace: naraninyeo
+        - name: naraninyeo-main-ks
           port: 80
+          passHostHeader: false
           weight: 1
-          passHostHeader: false
-        - name: naraninyeo-develop
-          namespace: naraninyeo
+        - name: naraninyeo-develop-ks
           port: 80
-          weight: 5
           passHostHeader: false
+          weight: 5
   tls:
     secretName: ig-ingtra-net-tls
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: naraninyeo-main-ks
+spec:
+  type: ExternalName
+  externalName: naraninyeo-main.ks.ingtra.net
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: naraninyeo-develop-ks
+spec:
+  type: ExternalName
+  externalName: naraninyeo-develop.ks.ingtra.net
