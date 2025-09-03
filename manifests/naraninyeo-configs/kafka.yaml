@@ -15,6 +15,7 @@ spec:
       containers:
         - name: naraninyeo-kafka
           image: ghcr.io/cookieshake/naraninyeo:develop
+          imagePullPolicy: Always
           args: ["kafka"]
           env:
             - name: MONGODB_URL
