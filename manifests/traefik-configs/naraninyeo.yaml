@@ -13,11 +13,11 @@ spec:
           namespace: naraninyeo
           port: 80
           weight: 1
-          serversTransport: naraninyeo-transport
+          passHostHeader: false
         - name: naraninyeo-develop
           namespace: naraninyeo
           port: 80
           weight: 5
-          serversTransport: naraninyeo-transport
+          passHostHeader: false
   tls:
     secretName: ig-ingtra-net-tls
