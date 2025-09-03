@@ -13,12 +13,12 @@ spec:
           port: 443
           scheme: https
           passHostHeader: false
-          weight: 1
+          weight: 5
         - name: naraninyeo-develop-ks
           port: 443
           scheme: https
           passHostHeader: false
-          weight: 5
+          weight: 1
   tls:
     secretName: ig-ingtra-net-tls
 ---
