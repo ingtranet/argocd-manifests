@@ -11,7 +11,7 @@ spec:
     spec:
       containers:
         - name: naraninyeo
-          image: ghcr.io/cookieshake/naraninyeo:sha-fac5a8e
+          image: ghcr.io/cookieshake/naraninyeo:sha-7a692f0
           imagePullPolicy: Always
           env:
             - name: MONGODB_URL
@@ -67,7 +67,7 @@ spec:
     spec:
       containers:
         - name: naraninyeo
-          image: ghcr.io/cookieshake/naraninyeo:sha-fac5a8e
+          image: ghcr.io/cookieshake/naraninyeo:sha-7a692f0
           imagePullPolicy: Always
           env:
             - name: MONGODB_URL
