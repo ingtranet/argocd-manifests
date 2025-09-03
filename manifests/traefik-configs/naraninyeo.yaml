@@ -9,11 +9,11 @@ spec:
     - kind: Rule
       match: Host(`naraninyeo-handler.ig.ingtra.net`)
       services:
-        - name: naraninyeo-main
+        - name: naraninyeo-main-private
           namespace: naraninyeo
           port: 80
           weight: 1
-        - name: naraninyeo-develop
+        - name: naraninyeo-develop-private
           namespace: naraninyeo
           port: 80
           weight: 5
