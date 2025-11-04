@@ -60,6 +60,15 @@ spec:
           port: 8080
       middlewares:
         - name: llama-cpp-stripprefix
+    - kind: Rule
+      match: Host(`llama-cpp.ig.ingtra.net`) && PathPrefix(`/embeddinggemma-300m`)
+      services:
+        - kind: Service
+          name: embeddinggemma-300m
+          namespace: llm-serving
+          port: 8080
+      middlewares:
+        - name: llama-cpp-stripprefix
   tls:
     secretName: ig-ingtra-net-tls
 ---
