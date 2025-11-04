@@ -19,6 +19,8 @@ spec:
           env:
             - name: NRIY_ENTRYPOINT
               value: router
+            - name: BOT_ID
+              value: mxYek7YjPi
             - name: KAFKA_BOOTSTRAP_SERVERS
               value: 10.3.64.49:19092
             - name: KAFKA_GROUP_ID
