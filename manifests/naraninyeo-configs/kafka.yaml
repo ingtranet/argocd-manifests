@@ -45,3 +45,8 @@ spec:
                   key: AWS_SECRET_ACCESS_KEY
             - name: S3_ENDPOINT_URL
               value: https://s3.ingtra.net
+            - name: OPENROUTER_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: OPENROUTER_API_KEY
