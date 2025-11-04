@@ -6,7 +6,7 @@ metadata:
   labels:
     app: embeddinggemma-300m
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: embeddinggemma-300m
@@ -18,8 +18,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: llama-cpp
-          # image: docker.io/cookieshake/llamacpp-jetson:b6092
-          image: ghcr.io/ggml-org/llama.cpp:full-cuda-b6941
+          image: docker.io/cookieshake/llamacpp-jetson:b6941 
           imagePullPolicy: Always
           args:
             - --host
