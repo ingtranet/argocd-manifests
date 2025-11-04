@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: naraninyeo-kafka
-          image: ghcr.io/cookieshake/naraninyeo:2025-11-04-9bbd14e
+          image: ghcr.io/cookieshake/naraninyeo:2025-11-04-f21fb9e
           imagePullPolicy: Always
           env:
             - name: NRIY_ENTRYPOINT
