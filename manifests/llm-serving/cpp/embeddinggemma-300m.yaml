@@ -6,7 +6,7 @@ metadata:
   labels:
     app: embeddinggemma-300m
 spec:
-  replicas: 1
+  replicas: 5
   selector:
     matchLabels:
       app: embeddinggemma-300m
