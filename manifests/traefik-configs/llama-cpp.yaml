@@ -85,3 +85,5 @@ spec:
       - /lfm2-1.2b
       - /gemma-3n-2eb
       - /qwen3-4b-2507
+      - /embeddinggemma-300m
+
