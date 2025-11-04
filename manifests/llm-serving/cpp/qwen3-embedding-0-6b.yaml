@@ -6,7 +6,7 @@ metadata:
   labels:
     app: qwen3-embedding-0-6b
 spec:
-  replicas: 2
+  replicas: 0
   selector:
     matchLabels:
       app: qwen3-embedding-0-6b

@@ -62,7 +62,7 @@ spec:
           imagePullPolicy: Always
           env:
             - name: LLAMA_CPP_EMBEDDINGS_URI
-              value: https://llama-cpp.ig.ingtra.net/qwen3-embedding-0.6b
+              value: https://llama-cpp.ig.ingtra.net/embeddinggemma-300m
             - name: OTEL_RESOURCE_ATTRIBUTES
               value: service.name=naraninyeo
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
