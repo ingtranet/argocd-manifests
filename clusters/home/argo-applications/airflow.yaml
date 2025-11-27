@@ -26,6 +26,8 @@ spec:
         fernetKeySecretName: "fernet-key"
         apiSecretKeySecretName: "api-secret-key"
         jwtSecretName: "jwt"
+        postgresql:
+          enabled: false
         config:
           dag_processor:
             dag_bundle_config_list: '[{"name": "example_bundles", "classpath": "airflow.providers.git.bundles.git.GitDagBundle", "kwargs": {"tracking_ref": "main", "git_conn_id": "test"}}]'
