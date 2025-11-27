@@ -17,7 +17,7 @@ spec:
     targetRevision: 3928c9d
     helm:
       releaseName: airflow
-      values: |
+      valuesObject:
         executor: "KubernetesExecutor"
         allowPodLaunching: true
         allowJobLaunching: false
@@ -28,7 +28,7 @@ spec:
         jwtSecretName: "jwt"
         config:
           dag_processor:
-            dag_bundle_config_list: |
+            dag_bundle_config_list: >
               {
                 "name": "example_bundles",
                 "classpath": "airflow.providers.git.bundles.git.GitDagBundle",
