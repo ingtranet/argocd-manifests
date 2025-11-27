@@ -17,7 +17,7 @@ spec:
     targetRevision: 3928c9d
     helm:
       releaseName: airflow
-      valuesObject:
+      values: |
         executor: "KubernetesExecutor"
         allowPodLaunching: true
         allowJobLaunching: false
