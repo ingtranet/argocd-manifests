@@ -25,6 +25,8 @@ spec:
           metadataSecretName: "metadata"
         fernetKeySecretName: "fernet-key"
         apiSecretKeySecretName: "api-secret-key"
+        migrateDatabaseJob:
+          enabled: true
         jwtSecretName: "jwt"
         postgresql:
           enabled: false
