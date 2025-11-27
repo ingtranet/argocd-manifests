@@ -23,10 +23,13 @@ spec:
         allowJobLaunching: true
         data:
           metadataSecretName: "secrets"
+        triggerer:
+          persistence:
+            enabled: false
         fernetKeySecretName: "secrets"
         apiSecretKeySecretName: "secrets"
         migrateDatabaseJob:
-          enabled: true
+          useHelmHooks: false
         jwtSecretName: "secrets"
         postgresql:
           enabled: false
