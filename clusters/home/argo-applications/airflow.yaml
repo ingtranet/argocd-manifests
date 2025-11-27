@@ -22,12 +22,12 @@ spec:
         allowPodLaunching: true
         allowJobLaunching: true
         data:
-          metadataSecretName: "metadata"
-        fernetKeySecretName: "metadata"
-        apiSecretKeySecretName: "metadata"
+          metadataSecretName: "secrets"
+        fernetKeySecretName: "secrets"
+        apiSecretKeySecretName: "secrets"
         migrateDatabaseJob:
           enabled: true
-        jwtSecretName: "metadata"
+        jwtSecretName: "secrets"
         postgresql:
           enabled: false
         config:
