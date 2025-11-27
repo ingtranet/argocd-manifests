@@ -13,7 +13,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/apache/airflow.git
-    path: charts
+    path: chart
     targetRevision: 3928c9d
     helm:
       releaseName: airflow
