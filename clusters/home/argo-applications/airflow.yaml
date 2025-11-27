@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: airflow
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: airflow
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/apache/airflow.git
+    path: charts
+    targetRevision: 3928c9d
+    helm:
+      releaseName: airflow
+      valuesObject:
+        executor: "KubernetesExecutor"
+        allowPodLaunching: true
+        allowJobLaunching: false
+        data:
+          metadataSecretName: "metadata"
+        fernetKeySecretName: "fernet-key"
+        apiSecretKeySecretName: "api-secret-key"
+        jwtSecretName: "jwt"
+        config:
+          dag_processor:
+            dag_bundle_config_list:
+              - name: "test_git"
+                classpath: "airflow.providers.git.bundles.git.GitDagBundle"
+                kwargs:
+                  tracking_ref: "main"
+                  git_conn_id: "test"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: airflow
