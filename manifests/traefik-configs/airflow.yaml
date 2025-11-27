@@ -10,7 +10,7 @@ spec:
       match: Host(`airflow.ig.ingtra.net`)
       services:
         - kind: Service
-          name: api-server
+          name: airflow-api-server
           namespace: airflow
           port: 8080
   tls:
