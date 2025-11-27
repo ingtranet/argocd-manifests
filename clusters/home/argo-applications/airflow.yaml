@@ -20,7 +20,7 @@ spec:
       valuesObject:
         executor: "KubernetesExecutor"
         allowPodLaunching: true
-        allowJobLaunching: false
+        allowJobLaunching: true
         data:
           metadataSecretName: "metadata"
         fernetKeySecretName: "fernet-key"
