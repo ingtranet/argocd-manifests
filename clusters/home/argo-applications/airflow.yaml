@@ -12,9 +12,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/apache/airflow.git
-    path: chart
-    targetRevision: 3928c9d
+    repoURL: https://airflow.apache.org
+    chart: airflow 
+    targetRevision: 1.18.0
     helm:
       releaseName: airflow
       valuesObject:
@@ -23,11 +23,11 @@ spec:
         allowJobLaunching: true
         data:
           metadataSecretName: "metadata"
-        fernetKeySecretName: "fernet-key"
-        apiSecretKeySecretName: "api-secret-key"
+        fernetKeySecretName: "metadata"
+        apiSecretKeySecretName: "metadata"
         migrateDatabaseJob:
           enabled: true
-        jwtSecretName: "jwt"
+        jwtSecretName: "metadata"
         postgresql:
           enabled: false
         config:
