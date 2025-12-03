@@ -13,7 +13,7 @@ metadata:
 spec:
   myASN: 64522
   peerASN: 64521
-  peerAddress: 10.0.0.2
+  peerAddress: 10.0.0.1
   ebgpMultiHop: true
   nodeSelectors:
     - matchExpressions:
