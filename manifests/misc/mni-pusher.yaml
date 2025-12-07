@@ -16,7 +16,7 @@ spec:
         - name: mni-pusher
           image: zot.ingtra.net/library/mni-tools:latest
           imagePullPolicy: Always
-          args: ["--config", "/config/config.yaml"]
+          args: ["pusher"]
           env:
             - name: FIREFLY_TOKEN
               valueFrom:
