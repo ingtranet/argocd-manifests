@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mni-pusher
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mni-pusher
+  template:
+    metadata:
+      labels:
+        app: mni-pusher
+    spec:
+      containers:
+        - name: mni-pusher
+          image: zot.ingtra.net/library/mni-pusher:latest
+          args: ["pusher"]
