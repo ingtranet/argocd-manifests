@@ -14,5 +14,5 @@ spec:
     spec:
       containers:
         - name: mni-pusher
-          image: zot.ingtra.net/library/mni-pusher:latest
+          image: zot.ingtra.net/library/mni-tools:latest
           args: ["pusher"]
