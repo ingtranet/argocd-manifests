@@ -15,4 +15,11 @@ spec:
       containers:
         - name: mni-pusher
           image: zot.ingtra.net/library/mni-tools:latest
-          args: ["pusher"]
+          imagePullPolicy: Always
+          args: ["--config", "/config/config.yaml"]
+          env:
+            - name: FIREFLY_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: secrets
+                  key: FIREFLY_TOKEN
