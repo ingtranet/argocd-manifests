@@ -21,7 +21,7 @@ spec:
         images:
           airflow:
             repository: cookieshake/airflow
-            tag: 3.1.5-251213-z08
+            tag: 3.1.5-251213-glq
         executor: "KubernetesExecutor"
         allowPodLaunching: true
         allowJobLaunching: true
