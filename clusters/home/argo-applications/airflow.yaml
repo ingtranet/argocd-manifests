@@ -27,9 +27,6 @@ spec:
         allowJobLaunching: true
         data:
           metadataSecretName: "secrets"
-        extraEnvFrom: |
-          - secretRef:
-              name: "connections"
         triggerer:
           persistence:
             enabled: false
