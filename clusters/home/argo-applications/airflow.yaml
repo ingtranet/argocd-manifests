@@ -18,6 +18,9 @@ spec:
     helm:
       releaseName: airflow
       valuesObject:
+        image:
+          airflow:
+            tag: 3.1.5-python3.13
         executor: "KubernetesExecutor"
         allowPodLaunching: true
         allowJobLaunching: true
@@ -34,8 +37,22 @@ spec:
         postgresql:
           enabled: false
         config:
+          core:
+            simple_auth_manager_all_admins: "True"
+            xcom_backend: "airflow.providers.common.io.xcom.backend.XComObjectStorageBackend"
+          common:
+            io:
+              xcom_objectstorage_path: "s3://ingtranet_s3@airflow/xcoms"
+              xcom_objectstorage_threshold: 0
+              xcom_objectstorage_compression: "gzip"
+          logging:
+            remote_logging: "True"
+            remote_base_log_folder: "s3://airflow/logs"
+            remote_log_conn_id: "ingtranet_s3"
+            encrypt_s3_logs: "False"
           dag_processor:
-            dag_bundle_config_list: '[{"name": "example_bundles", "classpath": "airflow.providers.git.bundles.git.GitDagBundle", "kwargs": {"tracking_ref": "main", "git_conn_id": "test"}}]'
+            dag_bundle_config_list: '[{"name": "example_bundles", "classpath": "airflow.providers.git.bundles.git.GitDagBundle", "kwargs": {"tracking_ref": "main", "git_conn_id": "common_airflow_dags"}}]'  
+          
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
