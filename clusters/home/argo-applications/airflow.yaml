@@ -26,6 +26,9 @@ spec:
         allowJobLaunching: true
         data:
           metadataSecretName: "secrets"
+        extraEnvFrom:
+          - secretRef:
+              name: "connections"
         triggerer:
           persistence:
             enabled: false
@@ -36,9 +39,10 @@ spec:
         jwtSecretName: "secrets"
         postgresql:
           enabled: false
+        apiServerConfig: |
+          AUTH_ROLE_PUBLIC = 'Admin'
         config:
           core:
-            simple_auth_manager_all_admins: "True"
             xcom_backend: "airflow.providers.common.io.xcom.backend.XComObjectStorageBackend"
           "common.io":
             xcom_objectstorage_path: "s3://ingtranet_s3@airflow/xcoms"
