@@ -1,0 +1,15 @@
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: public-doguda
+spec:
+  template:
+    metadata:
+      annotations:
+        autoscaling.knative.dev/minScale: "2"
+        autoscaling.knative.dev/maxScale: "4"
+    spec:
+      containers:
+        - name: public-doguda
+          image: ghcr.io/cookieshake/public-doguda:2025-12-15-f4da6c0
+          imagePullPolicy: Always
