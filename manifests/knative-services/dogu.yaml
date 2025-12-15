@@ -13,3 +13,5 @@ spec:
         - name: public-doguda
           image: ghcr.io/cookieshake/public-doguda:2025-12-15-f4da6c0
           imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
