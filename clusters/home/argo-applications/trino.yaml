@@ -81,6 +81,7 @@ spec:
             iceberg.rest-catalog.vended-credentials-enabled=false
             iceberg.register-table-procedure.enabled=true
             iceberg.add-files-procedure.enabled=true
+            iceberg.compression-codec=ZSTD
             fs.native-s3.enabled=true
             s3.endpoint=https://s3.ingtra.net
             s3.region=us-east-1
