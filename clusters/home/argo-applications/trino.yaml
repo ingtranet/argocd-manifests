@@ -78,6 +78,7 @@ spec:
             iceberg.add-files-procedure.enabled=true
             fs.native-s3.enabled=true
             s3.endpoint=https://s3.ingtra.net
+            s3.region=us-east-1
             s3.aws-access-key=system
             s3.aws-secret-key=systemsecret
             s3.socket-connect-timeout=20s
@@ -101,6 +102,7 @@ spec:
           - exchange.s3.aws-access-key=system
           - exchange.s3.aws-secret-key=systemsecret
           - exchange.s3.endpoint=https://s3.ingtra.net
+          - exchange.s3.region=us-east-1
   destination:
     server: https://kubernetes.default.svc
     namespace: trino
