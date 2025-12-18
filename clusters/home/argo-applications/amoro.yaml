@@ -20,7 +20,7 @@ spec:
       values: |
         clusterDomain: kn.ingtra.net
         image:
-          tag: "0.7.1-incubating"
+          tag: "0.8.1-incubating"
         jvmOptions: |
           xms=3072
           xmx=3072
