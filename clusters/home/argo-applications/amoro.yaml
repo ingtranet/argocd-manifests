@@ -14,7 +14,7 @@ spec:
   source:
     repoURL: https://github.com/apache/amoro.git
     path: charts/amoro
-    targetRevision: ccda634
+    targetRevision: 2f8d9d0
     helm:
       releaseName: amoro
       values: |
@@ -28,61 +28,24 @@ spec:
         amoroConf:
           amoroDefaults: |
             ams:
-              server-bind-host: "0.0.0.0"
-              server-expose-host: "127.0.0.1"
-              thrift-server:
-                max-message-size: 104857600 # 100MB
-                selector-thread-count: 2
-                selector-queue-size: 4
-                table-service:
-                  bind-port: 1260
-                  worker-thread-count: 20
-                optimizing-service:
-                  bind-port: 1261
-              http-server:
-                session-timeout: 7d
-                bind-port: 1630
-                rest-auth-type: token
-              refresh-external-catalogs:
-                interval: 180000 # 3min
-                thread-count: 10
-                queue-size: 1000000
-              refresh-tables:
-                thread-count: 10
-                interval: 60000 # 1min
-                max-pending-partition-count: 100 # default 100
               self-optimizing:
                 enabled: true
               expire-snapshots:
-                enabled: false
-                thread-count: 10
+                enabled: true
               clean-orphan-files:
-                enabled: false
-                thread-count: 10
+                enabled: true
                 interval: 1d
               clean-dangling-delete-files:
-                enabled: false
-                thread-count: 10
-              sync-hive-tables:
-                enabled: false
-                thread-count: 10
+                enabled: true
               data-expiration:
-                enabled: false
-                thread-count: 10
+                enabled: true
                 interval: 1d
-              auto-create-tags:
-                enabled: false
-                thread-count: 3
-                interval: 60000 # 1min
               database:
-                type: mysql
+                type: postgres
                 jdbc-driver-class: org.postgresql.Driver
                 url: jdbc:postgresql://postgresql.vd.ingtra.net:5432/amoro
                 username: system
                 password: systemsecret
-                connection-pool-max-total: 20
-                connection-pool-max-idle: 16
-                connection-pool-max-wait-millis: 1000
         optimizer:
           local:
             enabled: false
