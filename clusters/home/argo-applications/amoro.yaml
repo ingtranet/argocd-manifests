@@ -64,25 +64,18 @@ spec:
               "flink-conf.kubernetes.service-account": "amoro"
           spark:
             properties:
-              "master": "local[1]"
-              # "master": "k8s://https://kubernetes.default.kd.ingtra.net"
-              # "deploy-mode": "client"
-              # "spark-conf.spark.dynamicAllocation.enabled": "true"
-              # "spark-conf.spark.shuffle.service.enabled": "false"
-              # "spark-conf.spark.dynamicAllocation.shuffleTracking.enabled": "true"
-              # "spark-conf.spark.kubernetes.namespace": "amoro"
-              # "spark-conf.spark.kubernetes.authenticate.driver.serviceAccountName": "amoro"
+              "master": "k8s://https://kubernetes.default.kd.ingtra.net"
+              "deploy-mode": "cluster"
+              "spark-conf.spark.dynamicAllocation.enabled": "true"
+              "spark.dynamicAllocation.initialExecutors": "1"
+              "spark.dynamicAllocation.maxExecutors": "3"
+              "spark-conf.spark.shuffle.service.enabled": "false"
+              "spark-conf.spark.dynamicAllocation.shuffleTracking.enabled": "true"
+              "spark-conf.spark.kubernetes.namespace": "amoro"
+              "spark-conf.spark.kubernetes.authenticate.driver.serviceAccountName": "amoro"
         resources:
           limits:
             memory: 4Gi
-        volumes:
-          - name: kubeconfig
-            configMap:
-              name: kubeconfig
-        volumeMounts:
-          - name: kubeconfig
-            mountPath: /etc/kubeconfig
-            readOnly: true
   destination:
     server: https://kubernetes.default.svc
     namespace: amoro
