@@ -54,7 +54,11 @@ spec:
           local:
             enabled: false
           kubernetes:
-            enabled: false # it needs kubeconfig file
+            enabled: true
+            properties:
+              namespace: "amoro"
+              kube-config-path: "/etc/kubeconfig/config"
+              image: "apache/amoro:0.8.1-incubating"
           flink:
             properties:
               "flink-conf.taskmanager.memory.managed.size": "32mb"
@@ -74,7 +78,14 @@ spec:
         resources:
           limits:
             memory: 4Gi
-
+        volumes:
+          - name: kubeconfig
+            configMap:
+              name: kubeconfig
+        volumeMounts:
+          - name: kubeconfig
+            mountPath: /etc/kubeconfig
+            readOnly: true
   destination:
     server: https://kubernetes.default.svc
     namespace: amoro
