@@ -30,6 +30,10 @@ spec:
           config:
             query:
               maxMemory: 15GB
+          exchangeManager:
+            name: "filesystem"
+            baseDir:
+              - "s3://temp/trino-exchange"
         coordinator:
           config:
             query:
@@ -81,8 +85,7 @@ spec:
             s3.region=us-east-1
             s3.aws-access-key=system
             s3.aws-secret-key=systemsecret
-            s3.socket-connect-timeout=20s
-            s3.socket-read-timeout=20s
+            s3.socket-timeout=20s
         additionalConfigProperties:
           - sql.default-catalog=iceberg
           - spill-enabled=true
@@ -97,8 +100,6 @@ spec:
           - fault-tolerant-execution.exchange-encryption-enabled=false
           - fault-tolerant-execution-task-memory=1GB
         additionalExchangeManagerProperties:
-          - exchange-manager.name=filesystem
-          - exchange.base-directories=s3://temp/trino-exchange
           - exchange.s3.aws-access-key=system
           - exchange.s3.aws-secret-key=systemsecret
           - exchange.s3.endpoint=https://s3.ingtra.net
