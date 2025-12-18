@@ -14,13 +14,13 @@ spec:
   source:
     chart: trino
     repoURL: https://trinodb.github.io/charts
-    targetRevision: 0.28.0
+    targetRevision: 1.41.0
     helm:
       releaseName: trino
       values: |
         image:
           repository: trinodb/trino
-          tag: "457"
+          tag: "478"
         server:
           workers: 2
           coordinatorExtraConfig: |
@@ -43,25 +43,6 @@ spec:
           resources:
             limits:
               memory: 3Gi
-          livenessProbe:
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 6
-            successThreshold: 1
-          readinessProbe:
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 6
-            successThreshold: 1
-          additionalVolumes:
-            - name: trino-exchange
-              persistentVolumeClaim:
-                claimName: trino-exchange
-          additionalVolumeMounts:
-            - name: trino-exchange
-              mountPath: /mnt/trino-exchange
         worker:
           config:
             query:
@@ -75,25 +56,6 @@ spec:
           resources:
             limits:
               memory: 3Gi
-          livenessProbe:
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 6
-            successThreshold: 1
-          readinessProbe:
-            initialDelaySeconds: 20
-            periodSeconds: 10
-            timeoutSeconds: 5
-            failureThreshold: 6
-            successThreshold: 1
-          additionalVolumes:
-            - name: trino-exchange
-              persistentVolumeClaim:
-                claimName: trino-exchange
-          additionalVolumeMounts:
-            - name: trino-exchange
-              mountPath: /mnt/trino-exchange
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
@@ -108,47 +70,14 @@ spec:
         additionalCatalogs:
           iceberg: |
             connector.name=iceberg
-            iceberg.catalog.type=nessie
-            iceberg.nessie-catalog.uri=https://nessie.ig.ingtra.net/api/v2
-            iceberg.nessie-catalog.ref=main
-            iceberg.nessie-catalog.default-warehouse-dir=s3://iceberg
-            iceberg.target-max-file-size=64MB
-            fs.native-s3.enabled=true
-            s3.endpoint=https://s3.sf.ingtra.net
-            s3.region=us-west-1
-            s3.aws-access-key=system
-            s3.aws-secret-key=systemsecret
-            s3.socket-connect-timeout=20s
-            s3.socket-read-timeout=20s
-          iceberg_rest: |
-            connector.name=iceberg
             iceberg.catalog.type=rest
             iceberg.rest-catalog.security=NONE
-            iceberg.rest-catalog.uri=https://nessie.ig.ingtra.net/iceberg/
+            iceberg.rest-catalog.uri=https://amoro.ig.ingtra.net/api/iceberg/rest
             iceberg.rest-catalog.vended-credentials-enabled=false
             iceberg.register-table-procedure.enabled=true
-            iceberg.target-max-file-size=64MB
+            iceberg.add-files-procedure.enabled=true
             fs.native-s3.enabled=true
-            s3.endpoint=https://s3.sf.ingtra.net
-            s3.path-style-access=false
-            s3.region=us-west-2
-            s3.aws-access-key=system
-            s3.aws-secret-key=systemsecret
-            s3.socket-connect-timeout=20s
-            s3.socket-read-timeout=20s
-          iceberg_lk: |
-            connector.name=iceberg
-            iceberg.catalog.type=rest
-            iceberg.rest-catalog.security=NONE
-            iceberg.rest-catalog.uri=https://lakekeeper.ig.ingtra.net/catalog/
-            iceberg.rest-catalog.warehouse=00000000-0000-0000-0000-000000000000/iceberg
-            iceberg.rest-catalog.vended-credentials-enabled=false
-            iceberg.register-table-procedure.enabled=true
-            iceberg.target-max-file-size=64MB
-            fs.native-s3.enabled=true
-            s3.endpoint=https://s3.sf.ingtra.net
-            s3.path-style-access=false
-            s3.region=us-west-2
+            s3.endpoint=https://s3.ingtra.net
             s3.aws-access-key=system
             s3.aws-secret-key=systemsecret
             s3.socket-connect-timeout=20s
@@ -157,7 +86,7 @@ spec:
           - sql.default-catalog=iceberg
           - spill-enabled=true
           - spiller-spill-path=/tmp
-          - spill-compression-codec=LZ4
+          - spill-compression-codec=ZSTD
           - query-max-spill-per-node=30GB
           - query.client.timeout=2d
           - task.concurrency=1
@@ -168,7 +97,10 @@ spec:
           - fault-tolerant-execution-task-memory=1GB
         additionalExchangeManagerProperties:
           - exchange-manager.name=filesystem
-          - exchange.base-directories=/mnt/trino-exchange
+          - exchange.base-directories=s3://temp/trino-exchange
+          - exchange.s3.aws-access-key=system
+          - exchange.s3.aws-secret-key=systemsecret
+          - exchange.s3.endpoint=https://s3.ingtra.net
   destination:
     server: https://kubernetes.default.svc
     namespace: trino
