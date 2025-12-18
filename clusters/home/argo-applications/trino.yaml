@@ -77,7 +77,7 @@ spec:
             iceberg.catalog.type=rest
             iceberg.rest-catalog.security=NONE
             iceberg.rest-catalog.uri=https://amoro.ig.ingtra.net/api/iceberg/rest
-            iceberg.rest-catalog.warehouse=s3://iceberg
+            iceberg.rest-catalog.warehouse=iceberg
             iceberg.rest-catalog.vended-credentials-enabled=false
             iceberg.register-table-procedure.enabled=true
             iceberg.add-files-procedure.enabled=true
