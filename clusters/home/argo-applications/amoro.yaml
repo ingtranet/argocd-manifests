@@ -54,11 +54,7 @@ spec:
           local:
             enabled: false
           kubernetes:
-            enabled: true
-            properties:
-              namespace: "amoro"
-              kube-config-path: "/etc/kubeconfig/config"
-              image: "apache/amoro:0.8.1-incubating"
+            enabled: false
           flink:
             properties:
               "flink-conf.taskmanager.memory.managed.size": "32mb"
@@ -68,13 +64,14 @@ spec:
               "flink-conf.kubernetes.service-account": "amoro"
           spark:
             properties:
-              "master": "k8s://https://kubernetes.default.svc"
-              "deploy-mode": "cluster"
-              "spark-conf.spark.dynamicAllocation.enabled": "true"
-              "spark-conf.spark.shuffle.service.enabled": "false"
-              "spark-conf.spark.dynamicAllocation.shuffleTracking.enabled": "true"
-              "spark-conf.spark.kubernetes.namespace": "amoro"
-              "spark-conf.spark.kubernetes.authenticate.driver.serviceAccountName": "amoro"
+              "master: "local[1]"
+              # "master": "k8s://https://kubernetes.default.kd.ingtra.net"
+              # "deploy-mode": "client"
+              # "spark-conf.spark.dynamicAllocation.enabled": "true"
+              # "spark-conf.spark.shuffle.service.enabled": "false"
+              # "spark-conf.spark.dynamicAllocation.shuffleTracking.enabled": "true"
+              # "spark-conf.spark.kubernetes.namespace": "amoro"
+              # "spark-conf.spark.kubernetes.authenticate.driver.serviceAccountName": "amoro"
         resources:
           limits:
             memory: 4Gi
