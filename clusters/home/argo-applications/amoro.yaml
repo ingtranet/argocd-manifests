@@ -34,6 +34,7 @@ spec:
                 bind-port: 1630
               self-optimizing:
                 enabled: true
+                target-size: 268435456
               expire-snapshots:
                 enabled: true
               clean-orphan-files:
