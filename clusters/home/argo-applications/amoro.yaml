@@ -64,7 +64,7 @@ spec:
               "flink-conf.kubernetes.service-account": "amoro"
           spark:
             properties:
-              "master: "local[1]"
+              "master": "local[1]"
               # "master": "k8s://https://kubernetes.default.kd.ingtra.net"
               # "deploy-mode": "client"
               # "spark-conf.spark.dynamicAllocation.enabled": "true"
