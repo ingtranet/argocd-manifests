@@ -27,6 +27,9 @@ spec:
         allowJobLaunching: true
         data:
           metadataSecretName: "secrets"
+        webserver:
+          defaultUser:
+            enabled: false
         triggerer:
           persistence:
             enabled: false
