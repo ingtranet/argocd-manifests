@@ -26,11 +26,11 @@ spec:
                   name: secrets
                   key: coder-db-url
             - name: CODER_ACCESS_URL
-              value: "https://cdr.ing.gg"
+              value: "https://coder.ingtra.net"
             - name: CODER_OAUTH2_GITHUB_DEFAULT_PROVIDER_ENABLE
               value: "false"
             - name: CODER_OIDC_ISSUER_URL
-              value: "https://att.ing.gg/application/o/coder/"
+              value: "https://authentik.ingtra.net/application/o/coder/"
             - name: CODER_OIDC_EMAIL_DOMAIN
               value: "gmail.com"
             - name: CODER_OIDC_SCOPES
