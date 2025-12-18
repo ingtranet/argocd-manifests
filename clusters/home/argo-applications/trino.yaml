@@ -82,6 +82,7 @@ spec:
             iceberg.register-table-procedure.enabled=true
             iceberg.add-files-procedure.enabled=true
             iceberg.target-max-file-size=256MB
+            iceberg.file-format=PARQUET
             iceberg.compression-codec=ZSTD
             fs.native-s3.enabled=true
             s3.endpoint=https://s3.ingtra.net
