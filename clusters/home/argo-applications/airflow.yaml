@@ -55,7 +55,7 @@ spec:
             remote_log_conn_id: "ingtranet_s3"
             encrypt_s3_logs: "False"
           dag_processor:
-            dag_bundle_config_list: '[{"name": "general_airflow_dags", "classpath": "airflow.providers.git.bundles.git.GitDagBundle", "kwargs": {"tracking_ref": "main", "git_conn_id": "general_airflow_dags"}}]'  
+            dag_bundle_config_list: '[{"name": "general_airflow_dags", "classpath": "airflow.providers.git.bundles.git.GitDagBundle", "kwargs": {"tracking_ref": "main", "git_conn_id": "general_airflow_dags"}}, {"name": "private_airflow_dags", "classpath": "airflow.providers.git.bundles.git.GitDagBundle", "kwargs": {"tracking_ref": "main", "git_conn_id": "private_airflow_dags"}}]'  
           
   destination:
     server: https://kubernetes.default.svc
