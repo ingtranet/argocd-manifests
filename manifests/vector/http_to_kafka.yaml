@@ -34,6 +34,14 @@ data:
     uri = "ws://10.2.17.205:3000/ws"
     framing.method = "bytes"
 
+    [sinks.kafka_nriy_out]
+    type = "kafka"
+    inputs = ["ws_input"]
+    bootstrap_servers = "10.3.64.49:19092"
+    topic = "event.nriy.new_message"
+    encoding.codec = "text"
+    compression = "zstd"
+
 ---
 apiVersion: apps/v1
 kind: Deployment
