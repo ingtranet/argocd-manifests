@@ -18,7 +18,7 @@ data:
 
     [sinks.console]
     type = "console"
-    inputs = ["http_input"]
+    inputs = ["http_input", "ws_input"]
     encoding.codec = "text"
 
     [sinks.kafka_out]
@@ -28,6 +28,12 @@ data:
     topic = "{{ topic }}" # remap에서 추출한 필드 사용
     encoding.codec = "text"
     compression = "zstd"
+
+    [sources.ws_input]
+    type = "websocket"
+    uri = "ws://10.2.17.205:3000/ws"
+    framing.method = "bytes"
+
 ---
 apiVersion: apps/v1
 kind: Deployment
