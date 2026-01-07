@@ -33,7 +33,8 @@ data:
     type = "websocket"
     uri = "ws://10.2.17.205:3000/ws"
     framing.method = "bytes"
-
+    ping_interval = 10
+    
     [sinks.kafka_nriy_out]
     type = "kafka"
     inputs = ["ws_input"]
