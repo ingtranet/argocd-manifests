@@ -14,7 +14,7 @@ spec:
   source:
     repoURL: ghcr.io/immich-app/immich-charts
     chart: immich
-    targetRevision: 0.9.3
+    targetRevision: 0.10.3
     helm:
       releaseName: immich
       values: |
