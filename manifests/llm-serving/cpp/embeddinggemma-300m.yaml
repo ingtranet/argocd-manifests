@@ -40,12 +40,6 @@ spec:
           ports:
             - containerPort: 8080
               name: http
-          env:
-            - name: LLAMA_CACHE
-              value: /opt/llama_cpp/cache
-          volumeMounts:
-            - name: cache-volume
-              mountPath: /opt/llama_cpp/cache
           startupProbe:
             httpGet:
               path: /health
@@ -70,10 +64,6 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
-      volumes:
-        - name: cache-volume
-          persistentVolumeClaim:
-            claimName: llama-cpp-cache-pvc
       nodeSelector:
         nvidia.com/gpu.product: Orin
 ---
