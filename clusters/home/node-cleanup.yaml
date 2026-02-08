@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: node-cleanup
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: node-cleanup
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    verbs: ["get", "list", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: node-cleanup
+subjects:
+  - kind: ServiceAccount
+    name: node-cleanup
+    namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: node-cleanup
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: node-cleanup
+  namespace: kube-system
+spec:
+  schedule: "*/2 * * * *"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  concurrencyPolicy: Forbid
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          serviceAccountName: node-cleanup
+          restartPolicy: Never
+          containers:
+            - name: cleanup
+              image: bitnami/kubectl:latest
+              command:
+                - /bin/bash
+                - -c
+                - |
+                  echo "Checking for disconnected nodes..."
+                  THRESHOLD_SECONDS=300  # 5 minutes
+                  
+                  kubectl get nodes -o json | jq -r '
+                    .items[] | 
+                    select(.status.conditions[] | 
+                      select(.type == "Ready" and .status != "True")
+                    ) |
+                    .metadata.name + " " + 
+                    (.status.conditions[] | select(.type == "Ready") | .lastTransitionTime)
+                  ' | while read -r NODE LAST_TRANSITION; do
+                    if [ -z "$NODE" ]; then
+                      continue
+                    fi
+                    
+                    TRANSITION_EPOCH=$(date -d "$LAST_TRANSITION" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$LAST_TRANSITION" +%s)
+                    CURRENT_EPOCH=$(date +%s)
+                    DIFF=$((CURRENT_EPOCH - TRANSITION_EPOCH))
+                    
+                    echo "Node: $NODE, Not Ready for: ${DIFF}s"
+                    
+                    if [ "$DIFF" -ge "$THRESHOLD_SECONDS" ]; then
+                      echo "Deleting node $NODE (disconnected for ${DIFF}s, threshold: ${THRESHOLD_SECONDS}s)"
+                      kubectl delete node "$NODE"
+                    else
+                      echo "Node $NODE not yet past threshold (${DIFF}s < ${THRESHOLD_SECONDS}s)"
+                    fi
+                  done
+                  
+                  echo "Node cleanup check completed."
