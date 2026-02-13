@@ -30,7 +30,7 @@ spec:
       runtimeClassName: nvidia
       initContainers:
         - name: setup-directories
-          image: docker.io/library/alpine:latest
+          image: ghcr.io/linuxcontainers/alpine
           command:
             - sh
             - -c
