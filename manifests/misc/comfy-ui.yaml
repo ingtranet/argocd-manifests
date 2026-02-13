@@ -30,7 +30,7 @@ spec:
       runtimeClassName: nvidia
       initContainers:
         - name: setup-directories
-          image: busybox:latest
+          image: docker.io/library/busybox:latest
           command:
             - sh
             - -c
