@@ -41,6 +41,13 @@ spec:
       containers:
         - name: comfy-ui
           image: yanwk/comfyui-boot:cu128-slim
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - mkdir -p /usr/local/lib/python3.12/site-packages/comfyui_workflow_templates/templates
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: all
