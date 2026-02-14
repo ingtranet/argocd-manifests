@@ -30,14 +30,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: comfy-ui
-          image: yanwk/comfyui-boot:cu128-slim
-          lifecycle:
-            postStart:
-              exec:
-                command:
-                  - sh
-                  - -c
-                  - pip uninstall comfyui-workflow-templates && pip install -r requirements.txt
+          image: yanwk/comfyui-boot:cu126-slim
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: all
