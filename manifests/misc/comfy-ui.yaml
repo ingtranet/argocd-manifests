@@ -28,16 +28,6 @@ spec:
       nodeSelector:
         kubernetes.io/hostname: k8s-da-gpu-2
       runtimeClassName: nvidia
-      initContainers:
-        - name: setup-directories
-          image: ghcr.io/linuxcontainers/alpine
-          command:
-            - sh
-            - -c
-            - mkdir -p /usr/local/lib/python3.12/site-packages/comfyui_workflow_templates/templates
-          volumeMounts:
-            - mountPath: /root
-              name: pvc-comfy-ui
       containers:
         - name: comfy-ui
           image: yanwk/comfyui-boot:cu128-slim
@@ -47,7 +37,7 @@ spec:
                 command:
                   - sh
                   - -c
-                  - mkdir -p /usr/local/lib/python3.12/site-packages/comfyui_workflow_templates/templates
+                  - pip uninstall comfyui-workflow-templates && pip install -r requirements.txt
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: all
