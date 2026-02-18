@@ -17,8 +17,7 @@ spec:
   ebgpMultiHop: true
   nodeSelectors:
     - matchExpressions:
-      - key: kubernetes.io/hostname
+      - key: kubernetes.io/arch
         operator: In
         values:
-          - k8s-la-worker-1
-          - k8s-la-worker-2
+          - amd64

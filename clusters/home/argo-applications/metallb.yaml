@@ -20,7 +20,7 @@ spec:
       values: |
         speaker:
           nodeSelector:
-            kubernetes.io/hostname : k8s-la-worker-1
+            kubernetes.io/arch: amd64
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb
