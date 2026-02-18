@@ -21,3 +21,4 @@ spec:
         operator: In
         values:
           - k8s-la-worker-1
+          - k8s-la-worker-2
