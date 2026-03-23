@@ -16,12 +16,12 @@ spec:
           env:
             - name: LLAMA_CPP_EMBEDDINGS_URI
               value: https://llama-cpp.ig.ingtra.net/embeddinggemma-300m
-            - name: OTEL_RESOURCE_ATTRIBUTES
-              value: service.name=naraninyeo
-            - name: OTEL_EXPORTER_OTLP_ENDPOINT
-              value: https://alloy-otel-http.ig.ingtra.net
-            - name: OTEL_EXPORTER_OTLP_PROTOCOL
-              value: http/protobuf
+            # - name: OTEL_RESOURCE_ATTRIBUTES
+            #   value: service.name=naraninyeo
+            # - name: OTEL_EXPORTER_OTLP_ENDPOINT
+            #   value: https://alloy-otel-http.ig.ingtra.net
+            # - name: OTEL_EXPORTER_OTLP_PROTOCOL
+            #   value: http/protobuf
 
             # Secret 참조
             - name: VCHORD_URI
