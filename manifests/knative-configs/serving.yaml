@@ -15,3 +15,5 @@ spec:
       ingress-class: "kourier.ingress.networking.knative.dev"
       default-external-scheme: "https"
       domain-template: "{{.Name}}.{{.Domain}}"
+    features:
+      tag-header-based-routing: "enabled"
