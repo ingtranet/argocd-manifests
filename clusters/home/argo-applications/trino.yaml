@@ -22,7 +22,7 @@ spec:
           repository: trinodb/trino
           tag: "480"
         server:
-          workers: 2
+          workers: 1
           coordinatorExtraConfig: |
             web-ui.user=admin
             web-ui.authentication.type=fixed
