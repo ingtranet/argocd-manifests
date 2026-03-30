@@ -14,13 +14,13 @@ spec:
   source:
     chart: trino
     repoURL: https://trinodb.github.io/charts
-    targetRevision: 1.41.0
+    targetRevision: 1.42.1
     helm:
       releaseName: trino
       values: |
         image:
           repository: trinodb/trino
-          tag: "478"
+          tag: "480"
         server:
           workers: 2
           coordinatorExtraConfig: |
