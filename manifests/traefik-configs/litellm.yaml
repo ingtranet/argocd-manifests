@@ -1,17 +1,17 @@
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: ollama
+  name: litellm
 spec:
   entryPoints:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`ollama.ig.ingtra.net`)
+      match: Host(`litellm.ig.ingtra.net`)
       services:
         - kind: Service
-          name: ollama
+          name: litellm
           namespace: llm-serving
-          port: 80
+          port: 4000
   tls:
     secretName: ig-ingtra-net-tls
