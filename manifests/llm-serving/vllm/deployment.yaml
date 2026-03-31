@@ -1,0 +1,104 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qwen3-vl-embedding-2b
+  labels:
+    app: qwen3-vl-embedding-2b
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qwen3-vl-embedding-2b
+  template:
+    metadata:
+      labels:
+        app: qwen3-vl-embedding-2b
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      runtimeClassName: nvidia
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      initContainers:
+        - name: download-model
+          image: python:3.11-slim
+          command:
+            - sh
+            - -c
+            - |
+              if [ -f /models/Qwen3-VL-Embedding-2B/config.json ]; then
+                echo "Model already downloaded, skipping."
+              else
+                pip install huggingface_hub && \
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('Qwen/Qwen3-VL-Embedding-2B', local_dir='/models/Qwen3-VL-Embedding-2B')"
+              fi
+          volumeMounts:
+            - name: models
+              mountPath: /models
+      containers:
+        - name: vllm
+          image: ghcr.io/nvidia-ai-iot/vllm:0.16.0-g15d76f74e-r36.4-tegra-aarch64-cu126-22.04
+          args:
+            - --model
+            - /models/Qwen3-VL-Embedding-2B
+            - --task
+            - embedding
+            - --gpu-memory-utilization
+            - "0.35"
+            - --max-model-len
+            - "2048"
+            - --host
+            - "0.0.0.0"
+            - --port
+            - "8000"
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+          ports:
+            - containerPort: 8000
+              name: http
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: models
+              mountPath: /models
+      volumes:
+        - name: models
+          persistentVolumeClaim:
+            claimName: vllm-models-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vllm-models-pvc
+  labels:
+    app: qwen3-vl-embedding-2b
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
