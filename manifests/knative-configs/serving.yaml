@@ -15,7 +15,6 @@ spec:
       ingress-class: "kourier.ingress.networking.knative.dev"
       default-external-scheme: "https"
       domain-template: "{{.Name}}.{{.Domain}}"
-    defaults:
-      revision-template-spec-node-selector: '{"kubernetes.io/arch": "amd64"}'
     features:
       tag-header-based-routing: "enabled"
+      kubernetes.podspec-nodeselector: "enabled"
