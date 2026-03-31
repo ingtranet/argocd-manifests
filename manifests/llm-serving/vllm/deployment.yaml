@@ -47,7 +47,7 @@ spec:
           args:
             - /models/Qwen3-VL-Embedding-2B-FP8-DYNAMIC
             - --gpu-memory-utilization
-            - "0.35"
+            - "0.4"
             - --max-model-len
             - "2048"
             - --host
