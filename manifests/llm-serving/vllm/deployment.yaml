@@ -85,6 +85,9 @@ spec:
           volumeMounts:
             - name: models
               mountPath: /models
+            - name: models
+              mountPath: /root/.cache/vllm
+              subPath: vllm-cache
       volumes:
         - name: models
           persistentVolumeClaim:
