@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-config
+  labels:
+    app: litellm
+data:
+  config.yaml: |
+    model_list:
+      - model_name: Qwen/Qwen3-VL-Embedding-2B
+        litellm_params:
+          model: openai/Qwen/Qwen3-VL-Embedding-2B
+          api_base: http://qwen3-vl-embedding-2b:8000/v1
