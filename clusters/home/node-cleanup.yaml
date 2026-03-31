@@ -35,7 +35,7 @@ spec:
   schedule: "*/2 * * * *"
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3
-  concurrencyPolicy: Allow
+  concurrencyPolicy: Replace
   jobTemplate:
     spec:
       backoffLimit: 0
@@ -50,6 +50,7 @@ spec:
                 - /bin/bash
                 - -c
                 - |
+                  set -euo pipefail
                   echo "Checking for disconnected nodes..."
                   THRESHOLD_SECONDS=300  # 5 minutes
                   
