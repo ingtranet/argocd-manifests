@@ -18,3 +18,5 @@ spec:
     features:
       tag-header-based-routing: "enabled"
       kubernetes.podspec-nodeselector: "enabled"
+    gc:
+      min-non-active-revisions: "3"
