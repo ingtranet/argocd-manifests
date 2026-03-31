@@ -46,8 +46,6 @@ spec:
             - serve
           args:
             - /models/Qwen3-VL-Embedding-2B
-            - --task
-            - embedding
             - --gpu-memory-utilization
             - "0.35"
             - --max-model-len
