@@ -6,6 +6,8 @@ metadata:
     app: litellm
 data:
   config.yaml: |
+    litellm_settings:
+      drop_params: true
     model_list:
       - model_name: Qwen/Qwen3-VL-Embedding-2B
         litellm_params:
