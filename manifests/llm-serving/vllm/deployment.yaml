@@ -29,11 +29,11 @@ spec:
             - sh
             - -c
             - |
-              if [ -f /models/Qwen3-VL-Embedding-2B-FP8-DYNAMIC-FP8-DYNAMIC/config.json ]; then
+              if [ -f /models/Qwen3-VL-Embedding-2B-FP8-DYNAMIC/config.json ]; then
                 echo "Model already downloaded, skipping."
               else
                 pip install huggingface_hub && \
-                python -c "from huggingface_hub import snapshot_download; snapshot_download('alexliap/Qwen3-VL-Embedding-2B-FP8-DYNAMIC', local_dir='/models/Qwen3-VL-Embedding-2B-FP8-DYNAMIC-FP8-DYNAMIC')"
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('alexliap/Qwen3-VL-Embedding-2B-FP8-DYNAMIC', local_dir='/models/Qwen3-VL-Embedding-2B-FP8-DYNAMIC')"
               fi
           volumeMounts:
             - name: models
