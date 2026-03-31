@@ -18,7 +18,7 @@ spec:
     helm:
       releaseName: amoro
       values: |
-        clusterDomain: kd.ingtra.net
+        clusterDomain: kl.ingtra.net
         image:
           tag: "0.8.1-incubating"
         jvmOptions: |
