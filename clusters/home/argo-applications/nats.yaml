@@ -27,7 +27,9 @@ spec:
               enabled: true
               maxSize: 1Gi
         service:
-          type: LoadBalancer
+          merge:
+            spec:
+              type: LoadBalancer
   destination:
     server: https://kubernetes.default.svc
     namespace: nats
