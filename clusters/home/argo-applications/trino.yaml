@@ -37,26 +37,30 @@ spec:
         coordinator:
           config:
             query:
-              maxMemoryPerNode: 1GB
+              maxMemoryPerNode: 700MB
           jvm:
-            maxHeapSize: 2G
+            maxHeapSize: 1800M
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
             - "-XX:ShenandoahGCHeuristics=adaptive"
+            - "-XX:MaxDirectMemorySize=512m"
+            - "-XX:MaxMetaspaceSize=256m"
           resources:
             limits:
               memory: 3Gi
         worker:
           config:
             query:
-              maxMemoryPerNode: 1GB
+              maxMemoryPerNode: 700MB
           jvm:
-            maxHeapSize: 2G
+            maxHeapSize: 1800M
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
             - "-XX:ShenandoahGCHeuristics=adaptive"
+            - "-XX:MaxDirectMemorySize=512m"
+            - "-XX:MaxMetaspaceSize=256m"
           resources:
             limits:
               memory: 3Gi
@@ -92,17 +96,16 @@ spec:
             s3.socket-timeout=20s
         additionalConfigProperties:
           - sql.default-catalog=iceberg
-          - spill-enabled=true
-          - spiller-spill-path=/tmp
-          - spill-compression-codec=ZSTD
-          - query-max-spill-per-node=30GB
+          - query.low-memory-killer.policy=total-reservation-on-blocked-nodes
+          - query.low-memory-killer.delay=2m
+          - memory.heap-headroom-per-node=0.4
           - query.client.timeout=2d
           - task.concurrency=1
           - task.max-worker-threads=2
           - retry-policy=TASK
-          - task-retry-attempts-per-task=15
+          - task-retry-attempts-per-task=4
           - fault-tolerant-execution-exchange-encryption-enabled=false
-          - fault-tolerant-execution-task-memory=1GB
+          - fault-tolerant-execution-task-memory=512MB
         additionalExchangeManagerProperties:
           - exchange.s3.aws-access-key=system
           - exchange.s3.aws-secret-key=systemsecret
