@@ -97,14 +97,13 @@ spec:
         additionalConfigProperties:
           - sql.default-catalog=iceberg
           - query.low-memory-killer.policy=total-reservation-on-blocked-nodes
-          - query.low-memory-killer.delay=2m
-          - memory.heap-headroom-per-node=0.4
+          - memory.heap-headroom-per-node=720MB
           - query.client.timeout=2d
           - task.concurrency=1
           - task.max-worker-threads=2
           - retry-policy=TASK
           - task-retry-attempts-per-task=4
-          - fault-tolerant-execution-exchange-encryption-enabled=false
+          - external-exchange-encryption-enabled=false
           - fault-tolerant-execution-task-memory=512MB
         additionalExchangeManagerProperties:
           - exchange.s3.aws-access-key=system
