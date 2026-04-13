@@ -23,20 +23,16 @@ spec:
           - victoriametrics-logs-datasource
         extraInitContainers:
           - name: install-openobserve-plugin
-            image: alpine:3.19
-            securityContext:
-              runAsUser: 0
+            image: curlimages/curl:8.10.1
             command:
               - sh
               - -c
               - |
                 set -e
-                apk add --no-cache curl tar
                 mkdir -p /var/lib/grafana/plugins
                 cd /var/lib/grafana/plugins
                 rm -rf openobserve
                 curl -sSL https://zincsearch-releases.s3.us-west-2.amazonaws.com/zo_gp/zo_gp.tar.gz | tar xz
-                chown -R 472:472 /var/lib/grafana/plugins
             volumeMounts:
               - name: storage
                 mountPath: /var/lib/grafana
