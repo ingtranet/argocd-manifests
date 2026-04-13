@@ -176,7 +176,7 @@ spec:
               }
               otelcol.exporter.otlphttp "openobserve" {
                 client {
-                  endpoint = "http://openobserve.vd.ingtra.net/api/default"
+                  endpoint = "http://openobserve.vd.ingtra.net:5080/api/default"
                   auth     = otelcol.auth.basic.openobserve.handler
                 }
               }
@@ -223,7 +223,7 @@ spec:
 
               loki.write "openobserve" {
                 endpoint {
-                  url = "http://openobserve.vd.ingtra.net/api/default/loki/api/v1/push"
+                  url = "http://openobserve.vd.ingtra.net:5080/api/default/loki/api/v1/push"
                   basic_auth {
                     username = "system@ingtra.net"
                     password = sys.env("OPENOBSERVE_PASSWORD")
@@ -274,7 +274,7 @@ spec:
               discovery.relabel "kubelet" {
                 targets = discovery.kubernetes.nodes.targets
                 rule {
-                  replacement  = "https://kubernetes.default.svc:443"
+                  replacement  = "kubernetes.default.svc:443"
                   target_label = "__address__"
                 }
                 rule {
@@ -287,7 +287,7 @@ spec:
               discovery.relabel "cadvisor" {
                 targets = discovery.kubernetes.nodes.targets
                 rule {
-                  replacement  = "https://kubernetes.default.svc:443"
+                  replacement  = "kubernetes.default.svc:443"
                   target_label = "__address__"
                 }
                 rule {
@@ -320,7 +320,7 @@ spec:
 
               prometheus.remote_write "openobserve" {
                 endpoint {
-                  url = "http://openobserve.vd.ingtra.net/api/default/prometheus/api/v1/write"
+                  url = "http://openobserve.vd.ingtra.net:5080/api/default/prometheus/api/v1/write"
                   basic_auth {
                     username = "system@ingtra.net"
                     password = sys.env("OPENOBSERVE_PASSWORD")
