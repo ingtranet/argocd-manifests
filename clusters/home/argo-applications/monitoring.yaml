@@ -21,6 +21,7 @@ spec:
         assertNoLeakedSecrets: false
         plugins:
           - victoriametrics-logs-datasource
+          - https://zincsearch-releases.s3.us-west-2.amazonaws.com/zo_gp/zo_gp.tar.gz;openobserve
         grafana.ini:
           analytics:
             reporting_enabled: false
@@ -44,6 +45,23 @@ spec:
             name: grafana
             user: system
             password: systemsecret
+          plugins:
+            enable_alpha: true
+            app_tls_skip_verify_insecure: false
+            allow_loading_unsigned_plugins: openobserve
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+              - name: OpenObserve
+                type: openobserve
+                access: proxy
+                url: http://openobserve.vd.ingtra.net/api/default/
+                basicAuth: true
+                basicAuthUser: system@ingtra.net
+                secureJsonData:
+                  basicAuthPassword: REDACTED
+                editable: true
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
