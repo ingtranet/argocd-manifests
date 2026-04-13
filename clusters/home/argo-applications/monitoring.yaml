@@ -21,7 +21,22 @@ spec:
         assertNoLeakedSecrets: false
         plugins:
           - victoriametrics-logs-datasource
-          - https://zincsearch-releases.s3.us-west-2.amazonaws.com/zo_gp/zo_gp.tar.gz;openobserve
+        extraInitContainers:
+          - name: install-openobserve-plugin
+            image: alpine:3.19
+            command:
+              - sh
+              - -c
+              - |
+                set -e
+                apk add --no-cache curl tar
+                mkdir -p /var/lib/grafana/plugins
+                cd /var/lib/grafana/plugins
+                rm -rf openobserve
+                curl -sSL https://zincsearch-releases.s3.us-west-2.amazonaws.com/zo_gp/zo_gp.tar.gz | tar xz
+            volumeMounts:
+              - name: storage
+                mountPath: /var/lib/grafana
         grafana.ini:
           analytics:
             reporting_enabled: false
@@ -49,19 +64,6 @@ spec:
             enable_alpha: true
             app_tls_skip_verify_insecure: false
             allow_loading_unsigned_plugins: openobserve
-        datasources:
-          datasources.yaml:
-            apiVersion: 1
-            datasources:
-              - name: OpenObserve
-                type: openobserve
-                access: proxy
-                url: http://openobserve.vd.ingtra.net/api/default/
-                basicAuth: true
-                basicAuthUser: system@ingtra.net
-                secureJsonData:
-                  basicAuthPassword: REDACTED
-                editable: true
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
@@ -119,6 +121,9 @@ spec:
         alloy:
           clustering:
             enabled: true
+          envFrom:
+            - secretRef:
+                name: openobserve-credentials
           configMap:
             content: |
               logging {
@@ -146,7 +151,7 @@ spec:
               }
               otelcol.auth.basic "openobserve" {
                 username = "system@ingtra.net"
-                password = "REDACTED"
+                password = sys.env("OPENOBSERVE_PASSWORD")
               }
               otelcol.exporter.otlphttp "openobserve" {
                 client {
@@ -200,7 +205,7 @@ spec:
                   url = "http://openobserve.vd.ingtra.net/api/default/loki/api/v1/push"
                   basic_auth {
                     username = "system@ingtra.net"
-                    password = "REDACTED"
+                    password = sys.env("OPENOBSERVE_PASSWORD")
                   }
                 }
               }
@@ -297,7 +302,7 @@ spec:
                   url = "http://openobserve.vd.ingtra.net/api/default/prometheus/api/v1/write"
                   basic_auth {
                     username = "system@ingtra.net"
-                    password = "REDACTED"
+                    password = sys.env("OPENOBSERVE_PASSWORD")
                   }
                 }
               }
