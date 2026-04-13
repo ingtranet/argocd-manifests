@@ -94,7 +94,7 @@ spec:
   source:
     chart: alloy
     repoURL: https://grafana.github.io/helm-charts
-    targetRevision: 1.2.1
+    targetRevision: 1.7.0
     helm:
       releaseName: alloy
       values: |
@@ -104,9 +104,11 @@ spec:
           configMap:
             content: |
               logging {
-                level  = "debug"
+                level  = "info"
                 format = "json"
               }
+
+              // ---------- OTLP receiver (push from apps) ----------
               otelcol.receiver.otlp "default" {
                 http {
                   endpoint = "0.0.0.0:4318"
@@ -119,40 +121,166 @@ spec:
               }
               otelcol.processor.batch "default" {
                 output {
-                  metrics = [otelcol.exporter.otlphttp.victoriametrics.input]
-                  logs = [otelcol.exporter.otlphttp.victorialogs.input]
-                  traces = [
-                    otelcol.exporter.otlp.signoz.input,
-                    otelcol.exporter.otlp.tempo.input,
-                  ]
+                  metrics = [otelcol.exporter.otlphttp.openobserve.input]
+                  logs    = [otelcol.exporter.otlphttp.openobserve.input]
+                  traces  = [otelcol.exporter.otlphttp.openobserve.input]
                 }
               }
-              otelcol.exporter.otlp "tempo" {
+              otelcol.auth.basic "openobserve" {
+                username = "system@ingtra.net"
+                password = "REDACTED"
+              }
+              otelcol.exporter.otlphttp "openobserve" {
                 client {
-                  endpoint = "tempo.monitoring.svc:4317"
-                  tls {
-                      insecure             = true
-                      insecure_skip_verify = true
+                  endpoint = "http://openobserve.vd.ingtra.net/api/default"
+                  auth     = otelcol.auth.basic.openobserve.handler
+                }
+              }
+
+              // ---------- Kubernetes Pod logs ----------
+              discovery.kubernetes "pods" {
+                role = "pod"
+              }
+              discovery.relabel "pod_logs" {
+                targets = discovery.kubernetes.pods.targets
+                rule {
+                  source_labels = ["__meta_kubernetes_namespace"]
+                  target_label  = "namespace"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_name"]
+                  target_label  = "pod"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_container_name"]
+                  target_label  = "container"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+                  target_label  = "app"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_name"]
+                  separator     = "/"
+                  target_label  = "job"
+                }
+              }
+              loki.source.kubernetes "pod_logs" {
+                targets    = discovery.relabel.pod_logs.output
+                forward_to = [loki.write.openobserve.receiver]
+              }
+
+              // ---------- Kubernetes cluster events ----------
+              loki.source.kubernetes_events "cluster_events" {
+                job_name   = "integrations/kubernetes/eventhandler"
+                log_format = "logfmt"
+                forward_to = [loki.write.openobserve.receiver]
+              }
+
+              loki.write "openobserve" {
+                endpoint {
+                  url = "http://openobserve.vd.ingtra.net/api/default/loki/api/v1/push"
+                  basic_auth {
+                    username = "system@ingtra.net"
+                    password = "REDACTED"
                   }
                 }
               }
-              otelcol.exporter.otlp "signoz" {
-                client {
-                  endpoint = "signoz.vd.ingtra.net:4317"
-                  tls {
-                      insecure             = true
-                      insecure_skip_verify = true
+
+              // ---------- Prometheus scraping (pod annotations) ----------
+              discovery.kubernetes "scrape_pods" {
+                role = "pod"
+              }
+              discovery.relabel "scrape_pods" {
+                targets = discovery.kubernetes.scrape_pods.targets
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_scrape"]
+                  regex         = "true"
+                  action        = "keep"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_annotation_prometheus_io_path"]
+                  regex         = "(.+)"
+                  target_label  = "__metrics_path__"
+                }
+                rule {
+                  source_labels = ["__address__", "__meta_kubernetes_pod_annotation_prometheus_io_port"]
+                  regex         = "([^:]+)(?::\\d+)?;(\\d+)"
+                  replacement   = "$1:$2"
+                  target_label  = "__address__"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_namespace"]
+                  target_label  = "namespace"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_pod_name"]
+                  target_label  = "pod"
+                }
+              }
+              prometheus.scrape "pods" {
+                targets    = discovery.relabel.scrape_pods.output
+                forward_to = [prometheus.remote_write.openobserve.receiver]
+              }
+
+              // ---------- Kubernetes node/cAdvisor/kubelet metrics ----------
+              discovery.kubernetes "nodes" {
+                role = "node"
+              }
+              discovery.relabel "kubelet" {
+                targets = discovery.kubernetes.nodes.targets
+                rule {
+                  replacement  = "https://kubernetes.default.svc:443"
+                  target_label = "__address__"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_node_name"]
+                  regex         = "(.+)"
+                  replacement   = "/api/v1/nodes/$1/proxy/metrics"
+                  target_label  = "__metrics_path__"
+                }
+              }
+              discovery.relabel "cadvisor" {
+                targets = discovery.kubernetes.nodes.targets
+                rule {
+                  replacement  = "https://kubernetes.default.svc:443"
+                  target_label = "__address__"
+                }
+                rule {
+                  source_labels = ["__meta_kubernetes_node_name"]
+                  regex         = "(.+)"
+                  replacement   = "/api/v1/nodes/$1/proxy/metrics/cadvisor"
+                  target_label  = "__metrics_path__"
+                }
+              }
+              prometheus.scrape "kubelet" {
+                targets    = discovery.relabel.kubelet.output
+                scheme     = "https"
+                bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+                tls_config {
+                  ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  insecure_skip_verify = true
+                }
+                forward_to = [prometheus.remote_write.openobserve.receiver]
+              }
+              prometheus.scrape "cadvisor" {
+                targets    = discovery.relabel.cadvisor.output
+                scheme     = "https"
+                bearer_token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+                tls_config {
+                  ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+                  insecure_skip_verify = true
+                }
+                forward_to = [prometheus.remote_write.openobserve.receiver]
+              }
+
+              prometheus.remote_write "openobserve" {
+                endpoint {
+                  url = "http://openobserve.vd.ingtra.net/api/default/prometheus/api/v1/write"
+                  basic_auth {
+                    username = "system@ingtra.net"
+                    password = "REDACTED"
                   }
-                }
-              }
-              otelcol.exporter.otlphttp "victoriametrics" {
-                client {
-                  endpoint = "http://monitoring.vd.ingtra.net:8428/opentelemetry"
-                }
-              }
-              otelcol.exporter.otlphttp "victorialogs" {
-                client {
-                  endpoint = "http://monitoring.vd.ingtra.net:9428/insert/opentelemetry"
                 }
               }
           extraPorts:
