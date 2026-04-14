@@ -57,7 +57,7 @@ spec:
             - '{"image":1}'
             - --enforce-eager
             - --max-num-seqs
-            - "100"
+            - "20"
             - --gpu-memory-utilization
             - "0.5"
             - --max-model-len
@@ -84,9 +84,9 @@ spec:
             httpGet:
               path: /health
               port: 8000
-            periodSeconds: 30
-            timeoutSeconds: 10
-            failureThreshold: 3
+            periodSeconds: 60
+            timeoutSeconds: 30
+            failureThreshold: 10
           readinessProbe:
             httpGet:
               path: /health
