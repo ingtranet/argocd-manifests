@@ -46,8 +46,16 @@ spec:
             - serve
           args:
             - /models/Qwen3-VL-Embedding-2B-FP8-DYNAMIC
+            - --runner
+            - pooling
+            - --convert
+            - embed
+            - --hf-overrides 
+            - '{"is_matryoshka": true}'
+            - --quantization
+            - compressed-tensors
             - --gpu-memory-utilization
-            - "0.6"
+            - "0.5"
             - --max-model-len
             - "2048"
             - --host
