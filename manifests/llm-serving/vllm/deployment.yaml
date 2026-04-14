@@ -6,6 +6,8 @@ metadata:
     app: qwen3-vl-embedding-2b
 spec:
   replicas: 2
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: qwen3-vl-embedding-2b
