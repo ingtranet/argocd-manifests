@@ -58,7 +58,7 @@ spec:
             - fp8
             - --enforce-eager
             - --max-num-seqs
-            - 100
+            - "100"
             - --gpu-memory-utilization
             - "0.4"
             - --max-model-len
