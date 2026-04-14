@@ -54,8 +54,13 @@ spec:
             - '{"is_matryoshka": true}'
             - --quantization
             - compressed-tensors
+            - --kv-cache-dtype
+            - fp8
+            - --enforce-eager
+            - --max-num-seqs
+            - 100
             - --gpu-memory-utilization
-            - "0.7"
+            - "0.4"
             - --max-model-len
             - "2048"
             - --host
