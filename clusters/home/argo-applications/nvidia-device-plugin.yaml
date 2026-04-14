@@ -31,7 +31,7 @@ spec:
                       - orin-nx-2
                       - orin-nx-3
         tolerations:
-          - key: ingtra.net/gpu
+          - key: nvidia.com/gpu
             operator: Equal
             value: "true"
             effect: NoSchedule
@@ -40,7 +40,7 @@ spec:
         nfd:
           worker:
             tolerations:
-              - key: ingtra.net/gpu
+              - key: nvidia.com/gpu
                 operator: Equal
                 value: "true"
                 effect: NoSchedule
