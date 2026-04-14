@@ -14,3 +14,4 @@ data:
           model: hosted_vllm//models/Qwen3-VL-Embedding-2B-AWQ-4bit
           api_base: http://qwen3-vl-embedding-2b:8000/v1
           api_key: dummy
+          max_parallel_requests: 20
