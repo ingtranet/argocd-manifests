@@ -54,11 +54,9 @@ spec:
             - --hf-overrides
             - '{"is_matryoshka": true}'
             - --quantization
-            - compressed-tensors
+            - awq_marlin
             - --limit-mm-per-prompt
             - '{"image":1}'
-            - --kv-cache-dtype
-            - fp8
             - --enforce-eager
             - --max-num-seqs
             - "100"
