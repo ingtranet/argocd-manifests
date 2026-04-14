@@ -66,11 +66,12 @@ spec:
             - '{"is_matryoshka": true}'
             - --limit-mm-per-prompt
             - '{"image":1}'
-            - --enforce-eager
             - --max-num-seqs
-            - "20"
+            - "60"
+            - --max-num-batched-tokens
+            - "8192"
             - --gpu-memory-utilization
-            - "0.4"
+            - "0.5"
             - --max-model-len
             - "2048"
             - --host
