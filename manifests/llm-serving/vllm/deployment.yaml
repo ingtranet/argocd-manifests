@@ -53,8 +53,6 @@ spec:
             - --trust-remote-code
             - --hf-overrides
             - '{"is_matryoshka": true}'
-            - --quantization
-            - awq_marlin
             - --limit-mm-per-prompt
             - '{"image":1}'
             - --enforce-eager
