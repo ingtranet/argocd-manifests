@@ -51,8 +51,10 @@ spec:
         - name: vllm
           image: ghcr.io/nvidia-ai-iot/vllm:0.16.0-g15d76f74e-r36.4-tegra-aarch64-cu126-22.04
           command:
-            - vllm
-            - serve
+            - sh
+            - -c
+            - 'pip install --quiet orjson && exec vllm serve "$@"'
+            - sh
           args:
             - /models/Qwen3-VL-Embedding-2B-AWQ-4bit
             - --runner
