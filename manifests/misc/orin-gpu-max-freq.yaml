@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: orin-gpu-max-freq
+  namespace: misc
+spec:
+  selector:
+    matchLabels:
+      app: orin-gpu-max-freq
+  template:
+    metadata:
+      labels:
+        app: orin-gpu-max-freq
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      tolerations:
+        - key: "nvidia.com/gpu"
+          operator: "Exists"
+          effect: "NoSchedule"
+      hostPID: true
+      containers:
+        - name: setter
+          image: busybox:1.36
+          securityContext:
+            privileged: true
+          command: ["sh", "-c"]
+          args:
+            - |
+              while true; do
+                echo 612000000 > /host/sys/class/devfreq/17000000.gpu/max_freq 2>/dev/null || true
+                sleep 60
+              done
+          volumeMounts:
+            - name: sys
+              mountPath: /host/sys
+      volumes:
+        - name: sys
+          hostPath:
+            path: /sys
+            type: Directory
+      restartPolicy: Always
