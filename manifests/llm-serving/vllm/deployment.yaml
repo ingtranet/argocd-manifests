@@ -68,7 +68,7 @@ spec:
             - --max-num-seqs
             - "20"
             - --gpu-memory-utilization
-            - "0.3"
+            - "0.4"
             - --max-model-len
             - "2048"
             - --host
