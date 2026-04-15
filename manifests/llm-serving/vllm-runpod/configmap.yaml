@@ -8,7 +8,7 @@ data:
   task.yaml: |
     resources:
       cloud: runpod
-      accelerators: RTX3090:1
+      accelerators: RTXA5000:1
       ports: 8000
       max_hourly_cost: 0.60
       autostop:
