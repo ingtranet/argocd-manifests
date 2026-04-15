@@ -22,7 +22,7 @@ spec:
             - /etc/litellm/config.yaml
             - --port
             - "4000"
-            - --workers
+            - --num_workers
             - "4"
           ports:
             - containerPort: 4000
