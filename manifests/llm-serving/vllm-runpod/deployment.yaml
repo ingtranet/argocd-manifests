@@ -52,6 +52,17 @@ spec:
                 sky serve up -n "$SERVICE_NAME" -y /task/task.yaml
               fi
 
+              (
+                while ! sky serve status "$SERVICE_NAME" 2>/dev/null | grep -qE "READY[[:space:]]+[1-9]"; do
+                  sleep 15
+                done
+                while true; do
+                  sky serve logs "$SERVICE_NAME" 1 2>&1 | sed 's/^/[replica] /' || true
+                  echo "[controller] replica log stream ended, retrying in 10s"
+                  sleep 10
+                done
+              ) &
+
               ever_ready=0
               fail=0
               while true; do

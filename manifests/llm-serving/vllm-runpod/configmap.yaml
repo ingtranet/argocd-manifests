@@ -52,11 +52,11 @@ data:
         --convert embed \
         --trust-remote-code \
         --hf-overrides '{"is_matryoshka": true}' \
-        --limit-mm-per-prompt '{"image":1}' \
-        --max-num-seqs 60 \
-        --max-num-batched-tokens 8192 \
-        --gpu-memory-utilization 0.85 \
-        --max-model-len 2048 \
+        --limit-mm-per-prompt '{"image":4}' \
+        --max-num-seqs 256 \
+        --max-num-batched-tokens 32768 \
+        --gpu-memory-utilization 0.9 \
+        --max-model-len 4096 \
         --host 0.0.0.0 \
         --port 8000 2>&1 \
         | while IFS= read -r line; do
