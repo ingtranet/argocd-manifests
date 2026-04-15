@@ -10,7 +10,7 @@ data:
       cloud: runpod
       accelerators: RTX3090:1
       ports: 8000
-      max_hourly_cost: 0.35
+      max_hourly_cost: 0.60
       autostop:
         idle_minutes: 5
         down: true
