@@ -45,8 +45,6 @@ spec:
                   -d "{\"spec\":{\"replicas\":$1}}" >/dev/null
               }
 
-              sky api login -e "$SKYPILOT_API_SERVER_ENDPOINT"
-
               if ! sky serve status "$SERVICE_NAME" >/dev/null 2>&1; then
                 echo "[controller] launching $SERVICE_NAME"
                 sky serve up -n "$SERVICE_NAME" -y /task/task.yaml
@@ -77,7 +75,6 @@ spec:
                   - /bin/bash
                   - -c
                   - |
-                    sky api login -e "$SKYPILOT_API_SERVER_ENDPOINT" && \
                     sky serve down -y "$SERVICE_NAME"
           volumeMounts:
             - name: task
