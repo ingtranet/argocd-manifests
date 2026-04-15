@@ -52,11 +52,20 @@ spec:
                 sky serve up -n "$SERVICE_NAME" -y /task/task.yaml
               fi
 
+              ever_ready=0
               fail=0
               while true; do
                 sleep 60
                 if sky serve status "$SERVICE_NAME" 2>/dev/null | grep -qE "READY[[:space:]]+1/1"; then
+                  if [ $ever_ready -eq 0 ]; then
+                    echo "[controller] replica READY"
+                    ever_ready=1
+                  fi
                   fail=0
+                  continue
+                fi
+                if [ $ever_ready -eq 0 ]; then
+                  echo "[controller] waiting for first READY (still provisioning)"
                   continue
                 fi
                 fail=$((fail + 1))
