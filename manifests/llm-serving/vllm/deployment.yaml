@@ -66,9 +66,9 @@ spec:
             - embed
             - --trust-remote-code
             - --max-num-seqs
-            - "60"
+            - "256"
             - --max-num-batched-tokens
-            - "8192"
+            - "32768"
             - --gpu-memory-utilization
             - "0.5"
             - --max-model-len
