@@ -46,7 +46,7 @@ data:
     [sinks.nats_nriy_out]
     type = "nats"
     inputs = ["ws_input"]
-    url = "nats://nats.dv.ingtra.net:4222"
+    url = "nats://nats.vd.ingtra.net:4222"
     subject = "naraninyeo.msg.raw.kakaotalk"
     encoding.codec = "text"
 

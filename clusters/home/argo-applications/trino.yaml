@@ -29,7 +29,7 @@ spec:
             http-server.process-forwarded=true
           config:
             query:
-              maxMemory: 15GB
+              maxMemory: 8GB
           exchangeManager:
             name: "filesystem"
             baseDir:
@@ -37,9 +37,9 @@ spec:
         coordinator:
           config:
             query:
-              maxMemoryPerNode: 700MB
+              maxMemoryPerNode: 400MB
           jvm:
-            maxHeapSize: 1800M
+            maxHeapSize: 1024M
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
@@ -52,9 +52,9 @@ spec:
         worker:
           config:
             query:
-              maxMemoryPerNode: 700MB
+              maxMemoryPerNode: 400MB
           jvm:
-            maxHeapSize: 1800M
+            maxHeapSize: 1024M
             gcMethod:
               type: UseShenandoahGC
           additionalJVMConfig:
@@ -97,7 +97,7 @@ spec:
         additionalConfigProperties:
           - sql.default-catalog=iceberg
           - query.low-memory-killer.policy=total-reservation-on-blocked-nodes
-          - memory.heap-headroom-per-node=720MB
+          - memory.heap-headroom-per-node=410MB
           - query.client.timeout=2d
           - task.concurrency=1
           - task.max-worker-threads=2
