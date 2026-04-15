@@ -38,10 +38,16 @@ spec:
               controller:
                 resources:
                   infra: k8s
+                  cpus: 1+
+                  memory: 2+
+                  disk_size: 10
             jobs:
               controller:
                 resources:
                   infra: k8s
+                  cpus: 1+
+                  memory: 2+
+                  disk_size: 10
   destination:
     server: https://kubernetes.default.svc
     namespace: skypilot
