@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sky-serve
+  namespace: skypilot
+spec:
+  type: ClusterIP
+  selector:
+    skypilot-head-node: "1"
+    parent: skypilot
+  ports:
+    - name: http
+      port: 30001
+      targetPort: 30001
+      protocol: TCP
