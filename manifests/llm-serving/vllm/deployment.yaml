@@ -52,7 +52,7 @@ spec:
               mountPath: /models
       containers:
         - name: vllm
-          image: nvcr.io/nvidia/vllm:26.03.post1-py3
+          image: docker.io/mitakad/vllm:0.20.0-r36.5.tegra-aarch64-cp312-cu129-24.04-commit-3beb57a-TurboQuant
           command:
             - sh
             - -c
