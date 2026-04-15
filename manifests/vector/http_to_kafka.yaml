@@ -10,38 +10,16 @@ data:
     enabled = true
     address = "0.0.0.0:8686"
 
-    [sources.http_input]
-    type = "http_server"
-    address = "0.0.0.0:80"
-    framing.method = "bytes"
-    query_parameters = ["topic"]
-
-    [sinks.console]
-    type = "console"
-    inputs = ["http_input", "ws_input"]
-    encoding.codec = "text"
-
-    [sinks.kafka_out]
-    type = "kafka"
-    inputs = ["http_input"]
-    bootstrap_servers = "10.3.64.49:19092"
-    topic = "{{ topic }}" # remap에서 추출한 필드 사용
-    encoding.codec = "text"
-    compression = "zstd"
-
     [sources.ws_input]
     type = "websocket"
     uri = "ws://10.16.1.27:3000/ws"
     framing.method = "bytes"
     ping_interval = 10
-    
-    [sinks.kafka_nriy_out]
-    type = "kafka"
+
+    [sinks.console]
+    type = "console"
     inputs = ["ws_input"]
-    bootstrap_servers = "10.3.64.49:19092"
-    topic = "event.nriy.new_message"
     encoding.codec = "text"
-    compression = "zstd"
 
     [sinks.nats_nriy_out]
     type = "nats"
@@ -73,8 +51,6 @@ spec:
       - name: vector
         image: timberio/vector:0.52.0-debian
         ports:
-        - containerPort: 80
-          name: http
         - containerPort: 8686
           name: metrics
         volumeMounts:
@@ -116,10 +92,6 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 80
-    targetPort: 80
-    protocol: TCP
-    name: http
   - port: 8686
     targetPort: 8686
     protocol: TCP
