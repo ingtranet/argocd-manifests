@@ -14,7 +14,7 @@ spec:
   source:
     repoURL: https://helm.skypilot.co
     chart: skypilot-nightly
-    targetRevision: "*"
+    targetRevision: 1.0.0-dev.20260412
     helm:
       releaseName: skypilot
       valuesObject:
