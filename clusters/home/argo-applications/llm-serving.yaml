@@ -20,3 +20,9 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: llm-serving
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      name: qwen3-vl-embedding-2b-runpod
+      jsonPointers:
+        - /spec/replicas
