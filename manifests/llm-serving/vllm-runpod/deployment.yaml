@@ -20,7 +20,7 @@ spec:
       terminationGracePeriodSeconds: 600
       containers:
         - name: sky
-          image: berkeleyskypilot/skypilot-nightly:latest
+          image: berkeleyskypilot/skypilot-nightly:1.0.0.dev20260412
           env:
             - name: SKYPILOT_API_SERVER_ENDPOINT
               value: http://skypilot-api-service.skypilot.svc.cluster.local:80
