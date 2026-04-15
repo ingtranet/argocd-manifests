@@ -23,7 +23,7 @@ spec:
           image: berkeleyskypilot/skypilot-nightly:1.0.0.dev20260412
           env:
             - name: SKYPILOT_API_SERVER_ENDPOINT
-              value: http://skypilot-api-service.skypilot.svc.cluster.local:80
+              value: http://skypilot-api-service.skypilot:80
             - name: SERVICE_NAME
               value: qwen3-vl-embedding-2b
             - name: NAMESPACE
