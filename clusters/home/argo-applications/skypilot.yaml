@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: skypilot
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: skypilot
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://helm.skypilot.co
+    chart: skypilot-nightly
+    targetRevision: "*"
+    helm:
+      releaseName: skypilot
+      valuesObject:
+        ingress-nginx:
+          enabled: false
+        ingress:
+          enabled: false
+        prometheus:
+          enabled: false
+        grafana:
+          enabled: false
+        runpodCredentials:
+          enabled: true
+          runpodSecretName: runpod-credentials
+        apiService:
+          config: |
+            allowed_clouds:
+              - runpod
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: skypilot
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: skypilot-configs
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ingtranet/argocd-manifests.git
+    path: manifests/skypilot
+    targetRevision: HEAD
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: skypilot
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: runpod-credentials
+      jsonPointers:
+        - /data
+        - /stringData
