@@ -52,7 +52,7 @@ spec:
               mountPath: /models
       containers:
         - name: vllm
-          image: ghcr.io/nvidia-ai-iot/vllm:0.16.0-g15d76f74e-r36.4-tegra-aarch64-cu126-22.04
+          image: nvcr.io/nvidia/vllm:26.03.post1-py3
           command:
             - sh
             - -c
