@@ -9,7 +9,7 @@ data:
     litellm_settings:
       drop_params: true
       fallbacks:
-        - Qwen/Qwen3-VL-Embedding-2B-Auto: [Qwen/Qwen3-VL-Embedding-2B-Runpod]
+        - Qwen/Qwen3-VL-Embedding-2B-Auto: [Qwen/Qwen3-VL-Embedding-2B]
     model_list:
       - model_name: Qwen/Qwen3-VL-Embedding-2B
         litellm_params:
@@ -19,10 +19,10 @@ data:
           max_parallel_requests: 20
       - model_name: Qwen/Qwen3-VL-Embedding-2B-Auto
         litellm_params:
-          model: hosted_vllm//models/Qwen3-VL-Embedding-2B-AWQ-4bit
-          api_base: http://qwen3-vl-embedding-2b:8000/v1
+          model: hosted_vllm//workspace/Qwen3-VL-Embedding-2B-AWQ-4bit
+          api_base: http://sky-serve.skypilot:30001/v1
           api_key: dummy
-          max_parallel_requests: 20
+          timeout: 900
       - model_name: Qwen/Qwen3-VL-Embedding-2B-Runpod
         litellm_params:
           model: hosted_vllm//workspace/Qwen3-VL-Embedding-2B-AWQ-4bit
