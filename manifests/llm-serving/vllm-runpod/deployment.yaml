@@ -45,11 +45,11 @@ spec:
                   -d "{\"spec\":{\"replicas\":$1}}" >/dev/null
               }
 
-              if ! sky serve status "$SERVICE_NAME" >/dev/null 2>&1; then
+              if sky serve status "$SERVICE_NAME" 2>&1 | grep -qE "^$SERVICE_NAME[[:space:]]"; then
+                echo "[controller] reattaching to existing $SERVICE_NAME"
+              else
                 echo "[controller] launching $SERVICE_NAME"
                 sky serve up -n "$SERVICE_NAME" -y /task/task.yaml
-              else
-                echo "[controller] reattaching to existing $SERVICE_NAME"
               fi
 
               fail=0
