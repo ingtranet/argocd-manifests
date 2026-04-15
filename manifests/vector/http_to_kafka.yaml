@@ -49,6 +49,7 @@ data:
     url = "nats://nats.vd.ingtra.net:4222"
     subject = "naraninyeo.msg.raw.kakaotalk"
     encoding.codec = "text"
+    jetstream.enabled = true
 
 ---
 apiVersion: apps/v1
