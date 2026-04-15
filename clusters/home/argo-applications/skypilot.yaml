@@ -33,6 +33,15 @@ spec:
           config: |
             allowed_clouds:
               - runpod
+              - kubernetes
+            serve:
+              controller:
+                resources:
+                  infra: k8s
+            jobs:
+              controller:
+                resources:
+                  infra: k8s
   destination:
     server: https://kubernetes.default.svc
     namespace: skypilot
