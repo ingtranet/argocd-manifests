@@ -41,11 +41,11 @@ spec:
             - sh
             - -c
             - |
-              if [ -f /models/harrier-oss-v1-270m/config.json ]; then
+              if [ -f /models/harrier-oss-v1-0.6b/config.json ]; then
                 echo "Model already downloaded, skipping."
               else
                 pip install huggingface_hub && \
-                python -c "from huggingface_hub import snapshot_download; snapshot_download('microsoft/harrier-oss-v1-270m', local_dir='/models/harrier-oss-v1-270m')"
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('microsoft/harrier-oss-v1-0.6b', local_dir='/models/harrier-oss-v1-0.6b')"
               fi
           volumeMounts:
             - name: models
@@ -59,7 +59,7 @@ spec:
             - 'pip install --quiet orjson || true && exec vllm serve "$@"'
             - sh
           args:
-            - /models/harrier-oss-v1-270m
+            - /models/harrier-oss-v1-0.6b
             - --runner
             - pooling
             - --convert
