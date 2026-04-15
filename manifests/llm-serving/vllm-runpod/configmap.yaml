@@ -10,6 +10,7 @@ data:
       cloud: runpod
       accelerators: RTXA5000:1
       ports: 8000
+      disk_size: 40
       max_hourly_cost: 0.60
       autostop:
         idle_minutes: 5
