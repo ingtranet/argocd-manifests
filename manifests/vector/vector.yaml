@@ -1,11 +1,10 @@
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
   name: vector-config
   namespace: vector
 data:
-  http_to_kafka.toml: |
+  vector.toml: |
     [api]
     enabled = true
     address = "0.0.0.0:8686"
@@ -33,19 +32,19 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vector-http-to-kafka
+  name: vector
   namespace: vector
   labels:
-    app: vector-http-to-kafka
+    app: vector
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: vector-http-to-kafka
+      app: vector
   template:
     metadata:
       labels:
-        app: vector-http-to-kafka
+        app: vector
     spec:
       containers:
       - name: vector
@@ -74,7 +73,7 @@ spec:
         command:
         - vector
         - --config
-        - /etc/vector/http_to_kafka.toml
+        - /etc/vector/vector.toml
       volumes:
       - name: vector-config
         configMap:
@@ -85,10 +84,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: vector-http-to-kafka
+  name: vector
   namespace: vector
   labels:
-    app: vector-http-to-kafka
+    app: vector
 spec:
   type: ClusterIP
   ports:
@@ -97,4 +96,4 @@ spec:
     protocol: TCP
     name: metrics
   selector:
-    app: vector-http-to-kafka
+    app: vector
