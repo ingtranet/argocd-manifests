@@ -5,7 +5,7 @@ metadata:
   labels:
     app: qwen3-vl-embedding-2b
 spec:
-  replicas: 2
+  replicas: 3
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -41,11 +41,11 @@ spec:
             - sh
             - -c
             - |
-              if [ -f /models/Qwen3-VL-Embedding-2B-AWQ-4bit/config.json ]; then
+              if [ -f /models/harrier-oss-v1-0.6b/config.json ]; then
                 echo "Model already downloaded, skipping."
               else
                 pip install huggingface_hub && \
-                python -c "from huggingface_hub import snapshot_download; snapshot_download('LifetimeMistake/Qwen3-VL-Embedding-2B-AWQ-4bit', local_dir='/models/Qwen3-VL-Embedding-2B-AWQ-4bit')"
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('microsoft/harrier-oss-v1-0.6b', local_dir='/models/harrier-oss-v1-0.6b')"
               fi
           volumeMounts:
             - name: models
@@ -59,16 +59,12 @@ spec:
             - 'pip install --quiet orjson || true && exec vllm serve "$@"'
             - sh
           args:
-            - /models/Qwen3-VL-Embedding-2B-AWQ-4bit
+            - /models/harrier-oss-v1-0.6b
             - --runner
             - pooling
             - --convert
             - embed
             - --trust-remote-code
-            - --hf-overrides
-            - '{"is_matryoshka": true}'
-            - --limit-mm-per-prompt
-            - '{"image":1}'
             - --max-num-seqs
             - "256"
             - --max-num-batched-tokens
