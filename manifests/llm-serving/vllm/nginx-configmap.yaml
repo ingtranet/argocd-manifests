@@ -11,6 +11,8 @@ data:
       worker_connections 1024;
     }
     http {
+      log_format main '$remote_addr "$request" $status $body_bytes_sent gzip=$gzip_ratio';
+      access_log /dev/stdout main;
       gzip on;
       gzip_types application/json;
       gzip_min_length 1000;
