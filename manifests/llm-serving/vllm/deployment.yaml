@@ -70,7 +70,7 @@ spec:
             - --max-num-batched-tokens
             - "131072"
             - --gpu-memory-utilization
-            - "0.7"
+            - "0.6"
             - --max-model-len
             - "2048"
             - --host
