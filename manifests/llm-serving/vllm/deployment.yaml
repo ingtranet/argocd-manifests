@@ -111,7 +111,7 @@ spec:
               mountPath: /root/.cache/vllm
               subPath: vllm-cache
         - name: nginx
-          image: nginx:alpine
+          image: nginx:1.27-alpine
           ports:
             - containerPort: 8000
               name: http
