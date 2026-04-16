@@ -76,17 +76,16 @@ spec:
             - --host
             - "0.0.0.0"
             - --port
-            - "8000"
+            - "8080"
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
           ports:
-            - containerPort: 8000
-              name: http
+            - containerPort: 8080
           startupProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: 8080
             initialDelaySeconds: 30
             periodSeconds: 10
             timeoutSeconds: 5
@@ -94,14 +93,14 @@ spec:
           livenessProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: 8080
             periodSeconds: 60
             timeoutSeconds: 30
             failureThreshold: 10
           readinessProbe:
             httpGet:
               path: /health
-              port: 8000
+              port: 8080
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 3
@@ -111,8 +110,20 @@ spec:
             - name: models
               mountPath: /root/.cache/vllm
               subPath: vllm-cache
+        - name: nginx
+          image: nginx:alpine
+          ports:
+            - containerPort: 8000
+              name: http
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
       volumes:
         - name: models
           hostPath:
             path: /data/cache/hf-models
             type: DirectoryOrCreate
+        - name: nginx-config
+          configMap:
+            name: vllm-nginx-config
