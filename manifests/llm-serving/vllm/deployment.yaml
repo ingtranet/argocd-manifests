@@ -69,8 +69,10 @@ spec:
             - "256"
             - --max-num-batched-tokens
             - "32768"
+            - --tokenizer-pool-size
+            - "4"
             - --gpu-memory-utilization
-            - "0.5"
+            - "0.7"
             - --max-model-len
             - "2048"
             - --host
