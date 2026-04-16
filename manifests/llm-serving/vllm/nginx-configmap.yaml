@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vllm-nginx-config
+  labels:
+    app: qwen3-vl-embedding-2b
+data:
+  nginx.conf: |
+    worker_processes auto;
+    events {
+      worker_connections 1024;
+    }
+    http {
+      gzip on;
+      gzip_types application/json;
+      gzip_min_length 1000;
+      gzip_proxied any;
+      server {
+        listen 8000;
+        location / {
+          proxy_pass http://localhost:8080;
+          proxy_set_header Host $host;
+          proxy_read_timeout 900s;
+        }
+      }
+    }
