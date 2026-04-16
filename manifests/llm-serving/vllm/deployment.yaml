@@ -56,7 +56,7 @@ spec:
           command:
             - sh
             - -c
-            - 'pip install --quiet orjson || true && exec vllm serve "$@"'
+            - 'pip install --quiet --index-url https://pypi.org/simple/ orjson uvloop || true && exec vllm serve "$@"'
             - sh
           args:
             - /models/harrier-oss-v1-0.6b
@@ -80,6 +80,8 @@ spec:
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
+            - name: TOKENIZERS_PARALLELISM
+              value: "true"
           ports:
             - containerPort: 8080
           startupProbe:
