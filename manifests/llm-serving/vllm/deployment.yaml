@@ -69,8 +69,6 @@ spec:
             - "1024"
             - --max-num-batched-tokens
             - "131072"
-            - --tokenizer-pool-size
-            - "4"
             - --gpu-memory-utilization
             - "0.7"
             - --max-model-len
