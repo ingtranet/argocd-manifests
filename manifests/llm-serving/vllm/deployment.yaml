@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: embeddinggemma-300m
+  name: qwen3-embedding-0-6b
   labels:
-    app: embeddinggemma-300m
+    app: qwen3-embedding-0-6b
 spec:
   replicas: 3
   strategy:
@@ -13,11 +13,11 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: embeddinggemma-300m
+      app: qwen3-embedding-0-6b
   template:
     metadata:
       labels:
-        app: embeddinggemma-300m
+        app: qwen3-embedding-0-6b
     spec:
       nodeSelector:
         nvidia.com/gpu.product: Orin
@@ -33,7 +33,7 @@ spec:
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
-              app: embeddinggemma-300m
+              app: qwen3-embedding-0-6b
       initContainers:
         - name: download-model
           image: python:3.11-slim
@@ -41,11 +41,11 @@ spec:
             - sh
             - -c
             - |
-              if [ -f /models/embeddinggemma-300m/config.json ]; then
+              if [ -f /models/qwen3-embedding-0-6b/config.json ]; then
                 echo "Model already downloaded, skipping."
               else
                 pip install huggingface_hub && \
-                python -c "from huggingface_hub import snapshot_download; snapshot_download('google/embeddinggemma-300m', local_dir='/models/embeddinggemma-300m')"
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('Qwen/Qwen3-Embedding-0.6B', local_dir='/models/qwen3-embedding-0-6b')"
               fi
           volumeMounts:
             - name: models
@@ -59,7 +59,7 @@ spec:
             - 'pip install --quiet --index-url https://pypi.org/simple/ orjson uvloop || true && exec vllm serve "$@"'
             - sh
           args:
-            - /models/embeddinggemma-300m
+            - /models/qwen3-embedding-0-6b
             - --runner
             - pooling
             - --convert

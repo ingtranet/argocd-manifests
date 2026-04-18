@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: vllm-nginx-config
   labels:
-    app: embeddinggemma-300m
+    app: qwen3-embedding-0-6b
 data:
   nginx.conf: |
     worker_processes auto;
