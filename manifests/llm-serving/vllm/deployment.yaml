@@ -62,19 +62,17 @@ spec:
             - /models/qwen3-embedding-0-6b
             - --runner
             - pooling
-            - --convert
-            - embed
             - --trust-remote-code
             - --override-pooler-config
             - '{"pooling_type":"LAST","normalize":true,"is_matryoshka":true}'
             - --max-num-seqs
-            - "1024"
+            - "256"
             - --max-num-batched-tokens
-            - "131072"
+            - "65536"
             - --gpu-memory-utilization
             - "0.6"
             - --max-model-len
-            - "2048"
+            - "8192"
             - --host
             - "0.0.0.0"
             - --port
