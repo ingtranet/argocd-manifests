@@ -63,7 +63,7 @@ spec:
               mountPath: /models
       containers:
         - name: vllm
-          image: docker.io/mitakad/vllm:0.20.0-r36.5.tegra-aarch64-cp312-cu129-24.04-commit-1174723-TurboQuant
+          image: zot.ingtra.net/library/vllm:0.20.0-r36.5.tegra-aarch64-cp312-cu129-24.04-commit-1174723-TurboQuant
           command:
             - sh
             - -c
