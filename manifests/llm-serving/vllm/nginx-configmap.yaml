@@ -3,7 +3,7 @@ kind: ConfigMap
 metadata:
   name: vllm-nginx-config
   labels:
-    app: harrier-oss-v1-270m
+    app: embeddinggemma-300m
 data:
   nginx.conf: |
     worker_processes auto;
