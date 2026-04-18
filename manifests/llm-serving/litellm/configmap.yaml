@@ -9,7 +9,7 @@ data:
     litellm_settings:
       drop_params: true
     model_list:
-      - model_name: Qwen/Qwen3-Embedding-0.6B
+      - model_name: qwen/qwen3-embedding-0.6b
         litellm_params:
           model: hosted_vllm//models/qwen3-embedding-0-6b
           api_base: http://qwen3-embedding-0-6b:8000/v1
