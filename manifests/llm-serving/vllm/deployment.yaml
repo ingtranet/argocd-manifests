@@ -18,6 +18,10 @@ spec:
     metadata:
       labels:
         app: qwen3-embedding-0-6b
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
     spec:
       nodeSelector:
         nvidia.com/gpu.product: Orin
