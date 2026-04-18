@@ -65,6 +65,8 @@ spec:
             - --convert
             - embed
             - --trust-remote-code
+            - --override-pooler-config
+            - '{"pooling_type":"LAST","normalize":true,"is_matryoshka":true}'
             - --max-num-seqs
             - "1024"
             - --max-num-batched-tokens
