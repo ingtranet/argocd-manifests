@@ -57,6 +57,7 @@ spec:
                 secretKeyRef:
                   name: hf-token
                   key: token
+                  optional: true
           volumeMounts:
             - name: models
               mountPath: /models
