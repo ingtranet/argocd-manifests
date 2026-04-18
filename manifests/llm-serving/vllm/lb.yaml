@@ -5,7 +5,7 @@ metadata:
   namespace: llm-serving
 spec:
   type: ExternalName
-  externalName: traefik.traefik.svc.cluster.local
+  externalName: traefik.traefik.svc.kl.ingtra.net
   ports:
     - port: 80
       targetPort: 8000
