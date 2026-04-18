@@ -12,6 +12,6 @@ data:
       - model_name: qwen/qwen3-embedding-0.6b
         litellm_params:
           model: hosted_vllm//models/qwen3-embedding-0-6b
-          api_base: http://qwen3-embedding-0-6b:8000/v1
+          api_base: http://qwen3-embedding-lb/v1
           api_key: dummy
           max_parallel_requests: 256
