@@ -63,8 +63,6 @@ spec:
             - --runner
             - pooling
             - --trust-remote-code
-            - --override-pooler-config
-            - '{"pooling_type":"LAST","normalize":true,"is_matryoshka":true}'
             - --max-num-seqs
             - "256"
             - --max-num-batched-tokens
