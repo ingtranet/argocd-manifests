@@ -75,11 +75,11 @@ spec:
             - pooling
             - --trust-remote-code
             - --max-num-seqs
-            - "512"
+            - "128"
             - --max-num-batched-tokens
-            - "131072"
+            - "16384"
             - --gpu-memory-utilization
-            - "0.55"
+            - "0.25"
             - --max-model-len
             - "2048"
             - --host
