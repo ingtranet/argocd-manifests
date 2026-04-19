@@ -28,10 +28,7 @@ data:
             self.tokenizer = AutoTokenizer.from_pretrained(
                 "/models/embeddinggemma-300m-trt-onnx"
             )
-            # Fixed-length padding so Triton dynamic_batching can group
-            # concurrent requests with identical shapes on the embedding step.
-            # 256 covers typical retrieval queries; longer texts get truncated.
-            self.max_length = 256
+            self.max_length = 2048
 
         def execute(self, requests):
             responses = []
@@ -40,7 +37,7 @@ data:
                 texts = [t.decode("utf-8") if isinstance(t, bytes) else str(t)
                         for t in text_in.reshape(-1)]
                 enc = self.tokenizer(
-                    texts, padding="max_length", truncation=True,
+                    texts, padding=True, truncation=True,
                     max_length=self.max_length, return_tensors="np",
                 )
                 out_ids  = pb_utils.Tensor("input_ids",      enc["input_ids"].astype(np.int64))
@@ -51,33 +48,15 @@ data:
   embedding.pbtxt: |
     name: "embedding"
     backend: "onnxruntime"
-    max_batch_size: 32
+    max_batch_size: 0
     input [
-      { name: "input_ids",      data_type: TYPE_INT64, dims: [ -1 ] },
-      { name: "attention_mask", data_type: TYPE_INT64, dims: [ -1 ] }
+      { name: "input_ids",      data_type: TYPE_INT64, dims: [ -1, -1 ] },
+      { name: "attention_mask", data_type: TYPE_INT64, dims: [ -1, -1 ] }
     ]
     output [
-      { name: "sentence_embedding", data_type: TYPE_FP32, dims: [ 768 ] }
+      { name: "sentence_embedding", data_type: TYPE_FP32, dims: [ -1, 768 ] }
     ]
     instance_group [{ kind: KIND_GPU, count: 1 }]
-    optimization {
-      execution_accelerators {
-        gpu_execution_accelerator : [{
-          name: "tensorrt"
-          parameters { key: "precision_mode"           value: "FP32" }
-          parameters { key: "max_workspace_size_bytes" value: "268435456" }
-          parameters { key: "trt_engine_cache_enable"  value: "true" }
-          parameters { key: "trt_engine_cache_path"    value: "/models/trt-cache/embedding" }
-          parameters { key: "trt_profile_min_shapes"   value: "input_ids:1x256,attention_mask:1x256" }
-          parameters { key: "trt_profile_opt_shapes"   value: "input_ids:8x256,attention_mask:8x256" }
-          parameters { key: "trt_profile_max_shapes"   value: "input_ids:32x256,attention_mask:32x256" }
-        }]
-      }
-    }
-    dynamic_batching {
-      preferred_batch_size: [ 4, 8, 16 ]
-      max_queue_delay_microseconds: 2000
-    }
 
   ensemble.pbtxt: |
     name: "embeddinggemma"
