@@ -21,3 +21,9 @@ data:
           api_base: http://triton:8000/v2/models/embeddinggemma/infer
           api_key: dummy
           max_parallel_requests: 256
+      - model_name: google/embeddinggemma-300m-tei
+        litellm_params:
+          model: openai/google/embeddinggemma-300m
+          api_base: http://tei/v1
+          api_key: dummy
+          max_parallel_requests: 256

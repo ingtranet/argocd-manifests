@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tei
+  labels:
+    app: tei
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: tei
+  template:
+    metadata:
+      labels:
+        app: tei
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "80"
+        prometheus.io/path: "/metrics"
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      runtimeClassName: nvidia
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      containers:
+        - name: tei
+          image: docker.io/ingtranet/orin-ml-tei:1.9.3-l4t36.4.0
+          args:
+            - --model-id=google/embeddinggemma-300m
+            - --dtype=float32
+            - --port=80
+            - --hostname=0.0.0.0
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: HF_HOME
+              value: /data/hf
+            - name: HUGGING_FACE_HUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
+          ports:
+            - containerPort: 80
+              name: http
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 80
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: hf-cache
+              mountPath: /data
+      volumes:
+        - name: hf-cache
+          hostPath:
+            path: /data/cache/tei
+            type: DirectoryOrCreate
