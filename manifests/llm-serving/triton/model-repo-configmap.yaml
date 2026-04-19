@@ -8,15 +8,19 @@ data:
   tokenizer.pbtxt: |
     name: "tokenizer"
     backend: "python"
-    max_batch_size: 0
+    max_batch_size: 32
     input [
-      { name: "input_text", data_type: TYPE_STRING, dims: [ -1 ] }
+      { name: "input_text", data_type: TYPE_STRING, dims: [] }
     ]
     output [
-      { name: "input_ids",      data_type: TYPE_INT64, dims: [ -1, -1 ] },
-      { name: "attention_mask", data_type: TYPE_INT64, dims: [ -1, -1 ] }
+      { name: "input_ids",      data_type: TYPE_INT64, dims: [ -1 ] },
+      { name: "attention_mask", data_type: TYPE_INT64, dims: [ -1 ] }
     ]
     instance_group [{ kind: KIND_CPU, count: 1 }]
+    dynamic_batching {
+      preferred_batch_size: [ 4, 8, 16 ]
+      max_queue_delay_microseconds: 2000
+    }
 
   tokenizer_model.py: |
     import numpy as np
@@ -48,13 +52,13 @@ data:
   embedding.pbtxt: |
     name: "embedding"
     backend: "onnxruntime"
-    max_batch_size: 0
+    max_batch_size: 32
     input [
-      { name: "input_ids",      data_type: TYPE_INT64, dims: [ -1, -1 ] },
-      { name: "attention_mask", data_type: TYPE_INT64, dims: [ -1, -1 ] }
+      { name: "input_ids",      data_type: TYPE_INT64, dims: [ -1 ] },
+      { name: "attention_mask", data_type: TYPE_INT64, dims: [ -1 ] }
     ]
     output [
-      { name: "sentence_embedding", data_type: TYPE_FP32, dims: [ -1, 768 ] }
+      { name: "sentence_embedding", data_type: TYPE_FP32, dims: [ 768 ] }
     ]
     instance_group [{ kind: KIND_GPU, count: 1 }]
     optimization {
@@ -68,16 +72,20 @@ data:
         }]
       }
     }
+    dynamic_batching {
+      preferred_batch_size: [ 4, 8, 16 ]
+      max_queue_delay_microseconds: 2000
+    }
 
   ensemble.pbtxt: |
     name: "embeddinggemma"
     platform: "ensemble"
-    max_batch_size: 0
+    max_batch_size: 32
     input [
-      { name: "input_text", data_type: TYPE_STRING, dims: [ -1 ] }
+      { name: "input_text", data_type: TYPE_STRING, dims: [] }
     ]
     output [
-      { name: "sentence_embedding", data_type: TYPE_FP32, dims: [ -1, 768 ] }
+      { name: "sentence_embedding", data_type: TYPE_FP32, dims: [ 768 ] }
     ]
     ensemble_scheduling {
       step [
