@@ -48,26 +48,25 @@ spec:
               set -e
               DEST=/models/embeddinggemma-300m-trt-onnx
               PY_DEPS=/models/py-deps-triton
-              if [ ! -f "$PY_DEPS/.ok" ]; then
+              # Fresh deps (marker versioned to invalidate broken prior installs)
+              if [ ! -f "$PY_DEPS/.v2-ok" ]; then
+                rm -rf "$PY_DEPS"
                 mkdir -p "$PY_DEPS"
-                pip install --quiet --target "$PY_DEPS" \
-                  --extra-index-url https://download.pytorch.org/whl/cpu \
-                  "torch==2.4.*" \
-                  "optimum[exporters]" \
-                  transformers tokenizers sentencepiece \
-                  onnx onnxruntime huggingface_hub
-                touch "$PY_DEPS/.ok"
+                pip install --target "$PY_DEPS" \
+                  huggingface_hub transformers tokenizers sentencepiece
+                touch "$PY_DEPS/.v2-ok"
               fi
               export PYTHONPATH="$PY_DEPS"
               export PATH="$PY_DEPS/bin:$PATH"
               if [ -f "$DEST/model.onnx" ]; then
-                echo "ONNX already exported, skipping."
+                echo "ONNX already downloaded, skipping."
               else
-                python -m optimum.exporters.onnx \
-                  --model google/embeddinggemma-300m \
-                  --library sentence_transformers \
-                  --opset 17 \
-                  "$DEST"
+                python -c "
+              from huggingface_hub import snapshot_download
+              snapshot_download(
+                'cookieshake/embeddinggemma-300m-onnx',
+                local_dir='$DEST',
+              )"
               fi
           volumeMounts:
             - name: models
