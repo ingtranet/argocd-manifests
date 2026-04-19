@@ -16,7 +16,7 @@ data:
       { name: "input_ids",      data_type: TYPE_INT64, dims: [ -1, -1 ] },
       { name: "attention_mask", data_type: TYPE_INT64, dims: [ -1, -1 ] }
     ]
-    instance_group [{ kind: KIND_CPU, count: 2 }]
+    instance_group [{ kind: KIND_CPU, count: 1 }]
 
   tokenizer_model.py: |
     import numpy as np
@@ -62,7 +62,7 @@ data:
         gpu_execution_accelerator : [{
           name: "tensorrt"
           parameters { key: "precision_mode"           value: "FP32" }
-          parameters { key: "max_workspace_size_bytes" value: "1073741824" }
+          parameters { key: "max_workspace_size_bytes" value: "268435456" }
           parameters { key: "trt_engine_cache_enable"  value: "true" }
           parameters { key: "trt_engine_cache_path"    value: "/models/trt-cache/embedding" }
         }]
