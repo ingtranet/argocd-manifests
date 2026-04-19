@@ -93,7 +93,7 @@ spec:
               mountPath: /cfg
       containers:
         - name: triton
-          image: nvcr.io/nvidia/tritonserver:25.08-py3-igpu
+          image: nvcr.io/nvidia/tritonserver:26.03-vllm-python-py3
           command:
             - sh
             - -c
