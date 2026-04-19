@@ -152,4 +152,3 @@ spec:
         - name: model-repo-cfg
           configMap:
             name: triton-model-repo
-l-repo
