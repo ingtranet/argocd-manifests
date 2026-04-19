@@ -5,8 +5,8 @@ metadata:
   labels:
     app: hf-cache-cleanup
 spec:
-  # Every Sunday 03:00 KST
-  schedule: "0 3 * * 0"
+  # Daily 03:00 KST
+  schedule: "0 3 * * *"
   timeZone: Asia/Seoul
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 3
