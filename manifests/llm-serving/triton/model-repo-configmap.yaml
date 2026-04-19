@@ -23,14 +23,24 @@ data:
     import triton_python_backend_utils as pb_utils
     from transformers import AutoTokenizer
 
+    # Pad each request to the smallest bucket >= longest tokenized input.
+    # Requests landing in the same bucket share tensor shape and can be
+    # merged by Triton dynamic_batching on the embedding sub-model.
+    BUCKETS = [32, 64, 128, 256, 512, 1024, 2048]
+
     class TritonPythonModel:
         def initialize(self, args):
             self.tokenizer = AutoTokenizer.from_pretrained(
                 "/models/embeddinggemma-300m-trt-onnx-v2"
             )
-            # Fixed-length padding so cross-request dynamic_batching on the
-            # embedding sub-model can merge concurrent calls (uniform [B, 256]).
-            self.max_length = 256
+            self.pad_id = self.tokenizer.pad_token_id or 0
+            self.max_length = BUCKETS[-1]
+
+        def _bucket_of(self, length):
+            for b in BUCKETS:
+                if length <= b:
+                    return b
+            return BUCKETS[-1]
 
         def execute(self, requests):
             responses = []
@@ -39,11 +49,21 @@ data:
                 texts = [t.decode("utf-8") if isinstance(t, bytes) else str(t)
                         for t in text_in.reshape(-1)]
                 enc = self.tokenizer(
-                    texts, padding="max_length", truncation=True,
-                    max_length=self.max_length, return_tensors="np",
+                    texts, truncation=True, max_length=self.max_length,
                 )
-                out_ids  = pb_utils.Tensor("input_ids",      enc["input_ids"].astype(np.int64))
-                out_mask = pb_utils.Tensor("attention_mask", enc["attention_mask"].astype(np.int64))
+                ids_list = enc["input_ids"]
+                mask_list = enc["attention_mask"]
+                actual_max = max((len(x) for x in ids_list), default=0)
+                bucket = self._bucket_of(actual_max)
+                bsz = len(ids_list)
+                ids_arr  = np.full((bsz, bucket), self.pad_id, dtype=np.int64)
+                mask_arr = np.zeros((bsz, bucket), dtype=np.int64)
+                for i, (ids, mask) in enumerate(zip(ids_list, mask_list)):
+                    L = len(ids)
+                    ids_arr[i, :L]  = ids
+                    mask_arr[i, :L] = mask
+                out_ids  = pb_utils.Tensor("input_ids",      ids_arr)
+                out_mask = pb_utils.Tensor("attention_mask", mask_arr)
                 responses.append(pb_utils.InferenceResponse(output_tensors=[out_ids, out_mask]))
             return responses
 
