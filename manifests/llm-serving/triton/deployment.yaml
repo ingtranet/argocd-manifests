@@ -80,6 +80,7 @@ spec:
                 exit 1
               fi
               # ORT rejects symlinks whose target escapes the model dir, so copy
+              rm -f "$REPO/embedding/1/model.onnx" "$REPO/embedding/1/model.onnx_data"
               cp -f "$SRC/model.onnx" "$REPO/embedding/1/model.onnx"
               if [ -f "$SRC/model.onnx_data" ]; then
                 cp -f "$SRC/model.onnx_data" "$REPO/embedding/1/model.onnx_data"
