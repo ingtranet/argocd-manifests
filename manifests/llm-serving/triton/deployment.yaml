@@ -40,11 +40,17 @@ spec:
             - |
               set -e
               DEST=/models/embeddinggemma-300m-onnx
+              PY_DEPS=/models/py-deps-triton
+              if [ ! -f "$PY_DEPS/.ok" ]; then
+                mkdir -p "$PY_DEPS"
+                pip install --quiet --target "$PY_DEPS" \
+                  huggingface_hub transformers tokenizers sentencepiece
+                touch "$PY_DEPS/.ok"
+              fi
               if [ -f "$DEST/onnx/model.onnx" ]; then
                 echo "ONNX model already downloaded, skipping."
               else
-                pip install --quiet huggingface_hub
-                python -c "
+                PYTHONPATH="$PY_DEPS" python -c "
               from huggingface_hub import snapshot_download
               snapshot_download(
                 'onnx-community/embeddinggemma-300m-ONNX',
@@ -99,7 +105,6 @@ spec:
             - sh
             - -c
             - |
-              pip install --quiet transformers tokenizers sentencepiece || true
               exec tritonserver \
                 --model-repository=/models/triton-repo \
                 --log-verbose=0 \
@@ -113,6 +118,8 @@ spec:
               value: "all"
             - name: LD_PRELOAD
               value: ""
+            - name: PYTHONPATH
+              value: "/models/py-deps-triton"
           ports:
             - containerPort: 8000
               name: http
