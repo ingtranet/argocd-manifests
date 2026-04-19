@@ -46,7 +46,7 @@ spec:
             - -c
             - |
               set -e
-              DEST=/models/embeddinggemma-300m-trt-onnx
+              DEST=/models/embeddinggemma-300m-trt-onnx-v2
               PY_DEPS=/models/py-deps-triton
               # Fresh deps (marker versioned to invalidate broken prior installs)
               if [ ! -f "$PY_DEPS/.v3-py312-ok" ]; then
@@ -79,7 +79,7 @@ spec:
             - |
               set -e
               REPO=/models/triton-repo
-              SRC=/models/embeddinggemma-300m-trt-onnx
+              SRC=/models/embeddinggemma-300m-trt-onnx-v2
               mkdir -p "$REPO/tokenizer/1" "$REPO/embedding/1" "$REPO/embeddinggemma/1" /models/trt-cache/embedding
 
               # pbtxt files
