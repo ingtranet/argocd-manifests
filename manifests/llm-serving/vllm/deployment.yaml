@@ -75,13 +75,13 @@ spec:
             - pooling
             - --trust-remote-code
             - --max-num-seqs
-            - "128"
+            - "256"
             - --max-num-batched-tokens
             - "16384"
             - --gpu-memory-utilization
-            - "0.25"
+            - "0.35"
             - --max-model-len
-            - "2048"
+            - "1024"
             - --host
             - "0.0.0.0"
             - --port
