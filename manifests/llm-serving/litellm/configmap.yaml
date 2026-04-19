@@ -15,9 +15,9 @@ data:
           api_base: http://embedding-lb/v1
           api_key: dummy
           max_parallel_requests: 256
-      - model_name: qwen/qwen3-embedding-0.6b
+      - model_name: google/embeddinggemma-300m-trt
         litellm_params:
-          model: hosted_vllm//models/embeddinggemma-300m
-          api_base: http://embedding-lb/v1
+          model: triton/embeddinggemma
+          api_base: http://triton:8000
           api_key: dummy
           max_parallel_requests: 256

@@ -1,0 +1,154 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: triton
+  labels:
+    app: triton
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: triton
+  template:
+    metadata:
+      labels:
+        app: triton
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8002"
+        prometheus.io/path: "/metrics"
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      runtimeClassName: nvidia
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      initContainers:
+        - name: download-model
+          image: python:3.11-slim
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              DEST=/models/embeddinggemma-300m-onnx
+              if [ -f "$DEST/onnx/model.onnx" ]; then
+                echo "ONNX model already downloaded, skipping."
+              else
+                pip install --quiet huggingface_hub
+                python -c "
+              from huggingface_hub import snapshot_download
+              snapshot_download(
+                'onnx-community/embeddinggemma-300m-ONNX',
+                local_dir='$DEST',
+                allow_patterns=['*.json','*.txt','tokenizer*','onnx/model.onnx','onnx/model.onnx_data','*.model','*.spm']
+              )"
+              fi
+          volumeMounts:
+            - name: models
+              mountPath: /models
+        - name: build-repo
+          image: busybox:1.37
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              REPO=/models/triton-repo
+              SRC=/models/embeddinggemma-300m-onnx/onnx
+              mkdir -p "$REPO/tokenizer/1" "$REPO/embedding/1" "$REPO/embeddinggemma/1" /models/trt-cache/embedding
+
+              # pbtxt files
+              cp /cfg/tokenizer.pbtxt  "$REPO/tokenizer/config.pbtxt"
+              cp /cfg/embedding.pbtxt  "$REPO/embedding/config.pbtxt"
+              cp /cfg/ensemble.pbtxt   "$REPO/embeddinggemma/config.pbtxt"
+
+              # python backend script
+              cp /cfg/tokenizer_model.py "$REPO/tokenizer/1/model.py"
+
+              if [ ! -f "$SRC/model.onnx" ]; then
+                echo "FP32 ONNX not found at $SRC/model.onnx" >&2
+                ls -la "$SRC" >&2
+                exit 1
+              fi
+              # use symlinks so external weights (model.onnx_data) resolve correctly
+              ln -sf "$SRC/model.onnx" "$REPO/embedding/1/model.onnx"
+              if [ -f "$SRC/model.onnx_data" ]; then
+                ln -sf "$SRC/model.onnx_data" "$REPO/embedding/1/model.onnx_data"
+              fi
+              echo "Model repository ready:"
+              find "$REPO" -maxdepth 3
+          volumeMounts:
+            - name: models
+              mountPath: /models
+            - name: model-repo-cfg
+              mountPath: /cfg
+      containers:
+        - name: triton
+          image: nvcr.io/nvidia/tritonserver:24.08-py3-igpu
+          command:
+            - sh
+            - -c
+            - |
+              pip install --quiet transformers tokenizers sentencepiece || true
+              exec tritonserver \
+                --model-repository=/models/triton-repo \
+                --log-verbose=0 \
+                --strict-model-config=false \
+                --allow-metrics=true \
+                --metrics-port=8002 \
+                --http-port=8000 \
+                --grpc-port=8001
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: LD_PRELOAD
+              value: ""
+          ports:
+            - containerPort: 8000
+              name: http
+            - containerPort: 8001
+              name: grpc
+            - containerPort: 8002
+              name: metrics
+          startupProbe:
+            httpGet:
+              path: /v2/health/ready
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 90
+          livenessProbe:
+            httpGet:
+              path: /v2/health/live
+              port: 8000
+            periodSeconds: 60
+            timeoutSeconds: 10
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /v2/health/ready
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: models
+              mountPath: /models
+      volumes:
+        - name: models
+          hostPath:
+            path: /data/cache/hf-models
+            type: DirectoryOrCreate
+        - name: model-repo-cfg
+          configMap:
+            name: triton-model-repo

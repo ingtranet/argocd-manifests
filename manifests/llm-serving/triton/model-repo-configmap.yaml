@@ -1,0 +1,105 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: triton-model-repo
+  labels:
+    app: triton-embeddinggemma
+data:
+  tokenizer.pbtxt: |
+    name: "tokenizer"
+    backend: "python"
+    max_batch_size: 32
+    input [
+      { name: "TEXT", data_type: TYPE_STRING, dims: [ 1 ] }
+    ]
+    output [
+      { name: "input_ids",      data_type: TYPE_INT64, dims: [ -1 ] },
+      { name: "attention_mask", data_type: TYPE_INT64, dims: [ -1 ] }
+    ]
+    instance_group [{ kind: KIND_CPU, count: 2 }]
+    parameters: { key: "EXECUTION_ENV_PATH" value: { string_value: "" } }
+
+  tokenizer_model.py: |
+    import json
+    import numpy as np
+    import triton_python_backend_utils as pb_utils
+    from transformers import AutoTokenizer
+
+    class TritonPythonModel:
+        def initialize(self, args):
+            self.tokenizer = AutoTokenizer.from_pretrained(
+                "/models/embeddinggemma-300m-onnx"
+            )
+            self.max_length = 2048
+
+        def execute(self, requests):
+            responses = []
+            for request in requests:
+                text_in = pb_utils.get_input_tensor_by_name(request, "TEXT").as_numpy()
+                texts = [t.decode("utf-8") if isinstance(t, bytes) else str(t)
+                        for t in text_in.reshape(-1)]
+                enc = self.tokenizer(
+                    texts, padding=True, truncation=True,
+                    max_length=self.max_length, return_tensors="np",
+                )
+                out_ids  = pb_utils.Tensor("input_ids",      enc["input_ids"].astype(np.int64))
+                out_mask = pb_utils.Tensor("attention_mask", enc["attention_mask"].astype(np.int64))
+                responses.append(pb_utils.InferenceResponse(output_tensors=[out_ids, out_mask]))
+            return responses
+
+  embedding.pbtxt: |
+    name: "embedding"
+    backend: "onnxruntime"
+    max_batch_size: 32
+    input [
+      { name: "input_ids",      data_type: TYPE_INT64, dims: [ -1 ] },
+      { name: "attention_mask", data_type: TYPE_INT64, dims: [ -1 ] }
+    ]
+    output [
+      { name: "sentence_embedding", data_type: TYPE_FP32, dims: [ 768 ] }
+    ]
+    instance_group [{ kind: KIND_GPU, count: 1 }]
+    optimization {
+      execution_accelerators {
+        gpu_execution_accelerator : [{
+          name: "tensorrt"
+          parameters { key: "precision_mode"           value: "FP32" }
+          parameters { key: "max_workspace_size_bytes" value: "1073741824" }
+          parameters { key: "trt_engine_cache_enable"  value: "true" }
+          parameters { key: "trt_engine_cache_path"    value: "/models/trt-cache/embedding" }
+        }]
+      }
+    }
+    dynamic_batching {
+      preferred_batch_size: [ 4, 8, 16 ]
+      max_queue_delay_microseconds: 2000
+    }
+
+  ensemble.pbtxt: |
+    name: "embeddinggemma"
+    platform: "ensemble"
+    max_batch_size: 32
+    input [
+      { name: "TEXT", data_type: TYPE_STRING, dims: [ 1 ] }
+    ]
+    output [
+      { name: "sentence_embedding", data_type: TYPE_FP32, dims: [ 768 ] }
+    ]
+    ensemble_scheduling {
+      step [
+        {
+          model_name: "tokenizer"
+          model_version: -1
+          input_map  { key: "TEXT"           value: "TEXT" }
+          output_map { key: "input_ids"      value: "ids" }
+          output_map { key: "attention_mask" value: "mask" }
+        },
+        {
+          model_name: "embedding"
+          model_version: -1
+          input_map  { key: "input_ids"         value: "ids" }
+          input_map  { key: "attention_mask"    value: "mask" }
+          output_map { key: "sentence_embedding" value: "sentence_embedding" }
+        }
+      ]
+    }
