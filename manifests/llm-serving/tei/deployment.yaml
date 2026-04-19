@@ -34,6 +34,7 @@ spec:
       containers:
         - name: tei
           image: docker.io/ingtranet/orin-ml-tei:1.9.3-l4t36.4.0
+          imagePullPolicy: Always
           args:
             - --model-id=google/embeddinggemma-300m
             - --dtype=float32
