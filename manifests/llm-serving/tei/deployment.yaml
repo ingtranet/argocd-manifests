@@ -44,12 +44,16 @@ spec:
               value: "all"
             - name: HF_HOME
               value: /data/hf
-            - name: HUGGING_FACE_HUB_TOKEN
+            - name: HF_API_TOKEN
               valueFrom:
                 secretKeyRef:
                   name: hf-token
                   key: token
-                  optional: true
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
           ports:
             - containerPort: 80
               name: http
