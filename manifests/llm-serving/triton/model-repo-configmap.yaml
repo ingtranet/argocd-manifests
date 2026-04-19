@@ -68,6 +68,9 @@ data:
           parameters { key: "max_workspace_size_bytes" value: "268435456" }
           parameters { key: "trt_engine_cache_enable"  value: "true" }
           parameters { key: "trt_engine_cache_path"    value: "/models/trt-cache/embedding" }
+          parameters { key: "trt_profile_min_shapes"   value: "input_ids:1x256,attention_mask:1x256" }
+          parameters { key: "trt_profile_opt_shapes"   value: "input_ids:8x256,attention_mask:8x256" }
+          parameters { key: "trt_profile_max_shapes"   value: "input_ids:32x256,attention_mask:32x256" }
         }]
       }
     }
