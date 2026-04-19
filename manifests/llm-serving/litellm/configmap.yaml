@@ -18,6 +18,6 @@ data:
       - model_name: google/embeddinggemma-300m-trt
         litellm_params:
           model: triton/embeddinggemma
-          api_base: http://triton:8000
+          api_base: http://triton:8000/v2/models/embeddinggemma/infer
           api_key: dummy
           max_parallel_requests: 256
