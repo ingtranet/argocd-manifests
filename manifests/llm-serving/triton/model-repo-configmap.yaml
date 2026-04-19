@@ -28,7 +28,7 @@ data:
     class TritonPythonModel:
         def initialize(self, args):
             self.tokenizer = AutoTokenizer.from_pretrained(
-                "/models/embeddinggemma-300m-onnx"
+                "/models/embeddinggemma-300m-trt-onnx"
             )
             self.max_length = 2048
 

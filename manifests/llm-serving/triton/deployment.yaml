@@ -34,29 +34,40 @@ spec:
       initContainers:
         - name: download-model
           image: python:3.11-slim
+          env:
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
           command:
             - sh
             - -c
             - |
               set -e
-              DEST=/models/embeddinggemma-300m-onnx
+              DEST=/models/embeddinggemma-300m-trt-onnx
               PY_DEPS=/models/py-deps-triton
               if [ ! -f "$PY_DEPS/.ok" ]; then
                 mkdir -p "$PY_DEPS"
                 pip install --quiet --target "$PY_DEPS" \
-                  huggingface_hub transformers tokenizers sentencepiece
+                  --extra-index-url https://download.pytorch.org/whl/cpu \
+                  "torch==2.4.*" \
+                  "optimum[exporters]" \
+                  transformers tokenizers sentencepiece \
+                  onnx onnxruntime huggingface_hub
                 touch "$PY_DEPS/.ok"
               fi
-              if [ -f "$DEST/onnx/model.onnx" ]; then
-                echo "ONNX model already downloaded, skipping."
+              export PYTHONPATH="$PY_DEPS"
+              export PATH="$PY_DEPS/bin:$PATH"
+              if [ -f "$DEST/model.onnx" ]; then
+                echo "ONNX already exported, skipping."
               else
-                PYTHONPATH="$PY_DEPS" python -c "
-              from huggingface_hub import snapshot_download
-              snapshot_download(
-                'onnx-community/embeddinggemma-300m-ONNX',
-                local_dir='$DEST',
-                allow_patterns=['*.json','*.txt','tokenizer*','onnx/model.onnx','onnx/model.onnx_data','*.model','*.spm']
-              )"
+                python -m optimum.exporters.onnx \
+                  --model google/embeddinggemma-300m \
+                  --library sentence_transformers \
+                  --opset 17 \
+                  "$DEST"
               fi
           volumeMounts:
             - name: models
@@ -69,7 +80,7 @@ spec:
             - |
               set -e
               REPO=/models/triton-repo
-              SRC=/models/embeddinggemma-300m-onnx/onnx
+              SRC=/models/embeddinggemma-300m-trt-onnx
               mkdir -p "$REPO/tokenizer/1" "$REPO/embedding/1" "$REPO/embeddinggemma/1" /models/trt-cache/embedding
 
               # pbtxt files
