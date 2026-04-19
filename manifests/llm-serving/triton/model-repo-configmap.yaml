@@ -70,7 +70,7 @@ data:
   embedding.pbtxt: |
     name: "embedding"
     backend: "onnxruntime"
-    max_batch_size: 32
+    max_batch_size: 128
     input [
       { name: "input_ids",      data_type: TYPE_INT64, dims: [ -1 ] },
       { name: "attention_mask", data_type: TYPE_INT64, dims: [ -1 ] }
@@ -80,8 +80,8 @@ data:
     ]
     instance_group [{ kind: KIND_GPU, count: 1 }]
     dynamic_batching {
-      preferred_batch_size: [ 8, 16, 32 ]
-      max_queue_delay_microseconds: 10000
+      preferred_batch_size: [ 32, 64, 128 ]
+      max_queue_delay_microseconds: 1000000
     }
 
   ensemble.pbtxt: |
