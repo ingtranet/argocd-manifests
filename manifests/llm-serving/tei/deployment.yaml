@@ -44,11 +44,6 @@ spec:
               value: "all"
             - name: HF_HOME
               value: /data/hf
-            - name: HF_API_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: hf-token
-                  key: token
             - name: HF_TOKEN
               valueFrom:
                 secretKeyRef:
