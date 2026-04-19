@@ -79,10 +79,10 @@ spec:
                 ls -la "$SRC" >&2
                 exit 1
               fi
-              # use symlinks so external weights (model.onnx_data) resolve correctly
-              ln -sf "$SRC/model.onnx" "$REPO/embedding/1/model.onnx"
+              # ORT rejects symlinks whose target escapes the model dir, so copy
+              cp -f "$SRC/model.onnx" "$REPO/embedding/1/model.onnx"
               if [ -f "$SRC/model.onnx_data" ]; then
-                ln -sf "$SRC/model.onnx_data" "$REPO/embedding/1/model.onnx_data"
+                cp -f "$SRC/model.onnx_data" "$REPO/embedding/1/model.onnx_data"
               fi
               echo "Model repository ready:"
               find "$REPO" -maxdepth 3
