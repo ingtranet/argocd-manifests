@@ -37,6 +37,7 @@ spec:
           imagePullPolicy: Always
           args:
             - --model-id=google/embeddinggemma-300m
+            - --dense-path=2_Dense
             - --dtype=float32
             - --port=80
             - --hostname=0.0.0.0
