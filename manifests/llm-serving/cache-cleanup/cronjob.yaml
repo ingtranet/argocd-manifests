@@ -1,0 +1,83 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: hf-cache-cleanup
+  labels:
+    app: hf-cache-cleanup
+spec:
+  # Every Sunday 03:00 KST
+  schedule: "0 3 * * 0"
+  timeZone: Asia/Seoul
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      # One pod per Orin node
+      parallelism: 3
+      completions: 3
+      backoffLimit: 1
+      template:
+        metadata:
+          labels:
+            app: hf-cache-cleanup
+        spec:
+          restartPolicy: OnFailure
+          nodeSelector:
+            nvidia.com/gpu.product: Orin
+          tolerations:
+            - key: nvidia.com/gpu
+              operator: Equal
+              value: "true"
+              effect: NoSchedule
+          # Force one pod per Orin node
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: DoNotSchedule
+              labelSelector:
+                matchLabels:
+                  app: hf-cache-cleanup
+          containers:
+            - name: cleanup
+              image: busybox:1.37
+              env:
+                # +30 = not accessed in 30 days. Tune here.
+                - name: ATIME_DAYS
+                  value: "30"
+                # "1" = print only, "0" = actually delete
+                - name: DRY_RUN
+                  value: "0"
+              command:
+                - sh
+                - -c
+                - |
+                  set -e
+                  CACHE=/host/hf-models
+                  echo "Node: $(hostname)  path: $CACHE  atime>$ATIME_DAYS days  dry_run=$DRY_RUN"
+                  echo "--- candidates (top-level dirs not accessed recently) ---"
+                  CANDIDATES=$(find "$CACHE" -mindepth 1 -maxdepth 1 -type d -atime "+$ATIME_DAYS")
+                  if [ -z "$CANDIDATES" ]; then
+                    echo "(none)"
+                    exit 0
+                  fi
+                  echo "$CANDIDATES" | while read -r d; do
+                    SZ=$(du -sh "$d" 2>/dev/null | cut -f1)
+                    A=$(stat -c '%x' "$d" 2>/dev/null | cut -d. -f1)
+                    echo "  $d  size=$SZ  atime=$A"
+                  done
+                  if [ "$DRY_RUN" = "1" ]; then
+                    echo "--- DRY_RUN=1, not deleting ---"
+                  else
+                    echo "--- deleting ---"
+                    echo "$CANDIDATES" | xargs -I{} rm -rf "{}"
+                    echo "done"
+                  fi
+              volumeMounts:
+                - name: cache
+                  mountPath: /host/hf-models
+          volumes:
+            - name: cache
+              hostPath:
+                path: /data/cache/hf-models
+                type: Directory
