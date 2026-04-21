@@ -1,0 +1,101 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gemma4-e2b
+  labels:
+    app: gemma4-e2b
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: gemma4-e2b
+  template:
+    metadata:
+      labels:
+        app: gemma4-e2b
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      nodeName: orin-nx-2
+      runtimeClassName: nvidia
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      containers:
+        - name: vllm
+          image: ghcr.io/nvidia-ai-iot/vllm:gemma4-jetson-orin
+          command:
+            - vllm
+            - serve
+          args:
+            - google/gemma-4-E2B-it
+            - --enable-auto-tool-choice
+            - --reasoning-parser
+            - gemma4
+            - --tool-call-parser
+            - gemma4
+            - --gpu-memory-utilization
+            - "0.85"
+            - --max-model-len
+            - "8192"
+            - --max-num-seqs
+            - "64"
+            - --host
+            - "0.0.0.0"
+            - --port
+            - "8080"
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+            - name: HF_HOME
+              value: /root/.cache/huggingface
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 120
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 60
+            timeoutSeconds: 30
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: hf-cache
+              mountPath: /root/.cache/huggingface
+            - name: shm
+              mountPath: /dev/shm
+      volumes:
+        - name: hf-cache
+          hostPath:
+            path: /data/cache/hf-models/huggingface
+            type: DirectoryOrCreate
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: 2Gi

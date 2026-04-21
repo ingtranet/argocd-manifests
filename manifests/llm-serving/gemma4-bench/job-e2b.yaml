@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: gemma4-bench-e2b
+  labels:
+    app: gemma4-bench
+    target: e2b
+spec:
+  ttlSecondsAfterFinished: 86400
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: gemma4-bench
+        target: e2b
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: bench
+          image: ghcr.io/nvidia-ai-iot/vllm:gemma4-jetson-orin
+          command:
+            - sh
+            - -c
+            - |
+              set -eux
+              vllm bench serve \
+                --backend openai-chat \
+                --base-url http://gemma4-e2b.llm-serving.svc.cluster.local:8000 \
+                --endpoint /v1/chat/completions \
+                --model google/gemma-4-E2B-it \
+                --dataset-name random \
+                --random-input-len 512 \
+                --random-output-len 256 \
+                --num-prompts 200 \
+                --max-concurrency 16 \
+                --percentile-metrics ttft,tpot,itl,e2el
