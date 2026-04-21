@@ -11,7 +11,7 @@ data:
 
     [sources.ws_input]
     type = "websocket"
-    uri = "ws://10.16.1.27:3000/ws"
+    uri = "ws://10.3.64.50:3000/ws"
     framing.method = "bytes"
     ping_interval = 10
 
