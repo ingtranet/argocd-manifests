@@ -288,7 +288,7 @@ spec:
               }
               prometheus.scrape "pods" {
                 targets    = discovery.relabel.scrape_pods.output
-                forward_to = [prometheus.remote_write.openobserve.receiver]
+                forward_to = [prometheus.relabel.drop_noisy.receiver]
               }
 
               // ---------- Kubernetes node/cAdvisor/kubelet metrics ----------
@@ -329,7 +329,7 @@ spec:
                   ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
                   insecure_skip_verify = true
                 }
-                forward_to = [prometheus.remote_write.openobserve.receiver]
+                forward_to = [prometheus.relabel.drop_noisy.receiver]
               }
               prometheus.scrape "cadvisor" {
                 targets    = discovery.relabel.cadvisor.output
@@ -339,7 +339,19 @@ spec:
                   ca_file              = "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
                   insecure_skip_verify = true
                 }
+                forward_to = [prometheus.relabel.drop_noisy.receiver]
+              }
+
+              // ---------- Drop high-cardinality / low-value metrics ----------
+              // See incidents/2026-04-23: OpenObserve LXC filled to 100% from unfiltered
+              // ingest (~2095 streams). Start conservative; expand list if disk still grows.
+              prometheus.relabel "drop_noisy" {
                 forward_to = [prometheus.remote_write.openobserve.receiver]
+                rule {
+                  action        = "drop"
+                  source_labels = ["__name__"]
+                  regex         = "go_.*|process_.*|reflector_.*|workqueue_.*_bucket|rest_client_request_duration_seconds_bucket|apiserver_.*_bucket|etcd_request_duration_seconds_bucket"
+                }
               }
 
               prometheus.remote_write "openobserve" {
