@@ -81,7 +81,7 @@ spec:
             - --gpu-memory-utilization
             - "0.35"
             - --max-model-len
-            - "1024"
+            - "2048"
             - --host
             - "0.0.0.0"
             - --port
