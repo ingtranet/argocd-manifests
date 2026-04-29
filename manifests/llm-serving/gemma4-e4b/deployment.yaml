@@ -41,10 +41,10 @@ spec:
             - --tool-call-parser
             - gemma4
             - --quantization
-            - gptq
+            - gptq_marlin
             - --enforce-eager
             - --gpu-memory-utilization
-            - "0.60"
+            - "0.35"
             - --max-model-len
             - "4096"
             - --max-num-seqs
