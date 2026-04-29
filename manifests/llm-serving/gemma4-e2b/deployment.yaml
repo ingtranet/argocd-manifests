@@ -41,7 +41,7 @@ spec:
             - --tool-call-parser
             - gemma4
             - --quantization
-            - awq_marlin
+            - awq
             - --enforce-eager
             - --gpu-memory-utilization
             - "0.45"
