@@ -34,14 +34,14 @@ spec:
             - vllm
             - serve
           args:
-            - Chunity/gemma-4-E2B-it-AWQ-4bit
+            - unsloth/gemma-4-E2B-it-unsloth-bnb-4bit
             - --enable-auto-tool-choice
             - --reasoning-parser
             - gemma4
             - --tool-call-parser
             - gemma4
             - --quantization
-            - awq
+            - bitsandbytes
             - --enforce-eager
             - --gpu-memory-utilization
             - "0.45"
