@@ -27,7 +27,7 @@ spec:
                 --backend openai-chat \
                 --base-url http://gemma4-e4b.llm-serving.svc.cluster.local:8000 \
                 --endpoint /v1/chat/completions \
-                --model google/gemma-4-E4B-it \
+                --model ciocan/gemma-4-E4B-it-W4A16 \
                 --dataset-name random \
                 --random-input-len 512 \
                 --random-output-len 256 \
