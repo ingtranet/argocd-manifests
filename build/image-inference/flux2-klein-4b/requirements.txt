@@ -1,11 +1,5 @@
 diffusers>=0.38,<0.39
-transformers>=4.46
-accelerate>=1.0
-bitsandbytes @ https://github.com/bitsandbytes-foundation/bitsandbytes/releases/download/continuous-release_main/bitsandbytes-1.33.7.preview-py3-none-manylinux_2_24_aarch64.whl
-safetensors
-sentencepiece
-einops
-huggingface_hub
+sdnq>=0.1.4
 fastapi
 uvicorn[standard]
 pillow

@@ -1,4 +1,4 @@
-ARG BASE=dustynv/pytorch:2.7-r36.4.0-cu128-24.04
+ARG BASE=dustynv/vllm:r36.4-cu129-24.04
 FROM ${BASE} AS runtime
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -7,10 +7,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PYTHONDONTWRITEBYTECODE=1
 
-RUN apt-get update \
- && apt-get install -y --no-install-recommends git libsndfile1 \
- && rm -rf /var/lib/apt/lists/*
-
+# Base image already has Jetson-built torch 2.8 / triton 3.4 / bitsandbytes
+# 0.47 (cuda129) / torchao / transformers / accelerate / huggingface_hub.
+# Only Flux2 classes need diffusers >=0.38, and sdnq is not bundled.
 COPY requirements.txt /tmp/requirements.txt
 RUN pip install --no-cache-dir --index-url https://pypi.org/simple/ -r /tmp/requirements.txt
 
