@@ -64,7 +64,7 @@ spec:
               mountPath: /models
       containers:
         - name: flux2-klein
-          image: zot.ingtra.net/library/image-inference:flux2-klein-4b-1e6dbe9
+          image: zot.ingtra.net/library/image-inference:flux2-klein-4b-d7998b9
           env:
             - name: MODEL_ID
               value: black-forest-labs/FLUX.2-klein-4B
