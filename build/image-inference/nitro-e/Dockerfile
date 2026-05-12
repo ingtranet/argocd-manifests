@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONDONTWRITEBYTECODE=1
 
 RUN apt-get update \
- && apt-get install -y --no-install-recommends git \
+ && apt-get install -y --no-install-recommends git libsndfile1 \
  && rm -rf /var/lib/apt/lists/*
 
 # Pin AMD-AGI/Nitro-E to a known commit.
