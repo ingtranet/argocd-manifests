@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flux2-klein
+  labels:
+    app: flux2-klein-4b
+spec:
+  type: ClusterIP
+  selector:
+    app: flux2-klein-4b
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
