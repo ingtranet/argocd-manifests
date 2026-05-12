@@ -1,0 +1,78 @@
+import asyncio
+import os
+
+
+class Flux2KleinPipeline:
+    """Wraps diffusers Flux2KleinPipeline with NF4 quantization for both the
+    transformer and the Qwen3 text encoder. Single-GPU serialization via
+    asyncio.Lock. One instance per process."""
+
+    def __init__(self, pipe):
+        self._pipe = pipe
+        self._lock = None  # created lazily inside the running event loop
+
+    @classmethod
+    def load(cls) -> "Flux2KleinPipeline":
+        import torch
+        from diffusers import Flux2KleinPipeline as DiffusersFlux2Klein
+        from diffusers import Flux2Transformer2DModel
+        from diffusers import BitsAndBytesConfig as DiffusersBnbConfig
+        from transformers import AutoModelForCausalLM
+        from transformers import BitsAndBytesConfig as TransformersBnbConfig
+
+        model_id = os.environ.get("FLUX_MODEL", "black-forest-labs/FLUX.2-klein-4B")
+
+        nf4_kwargs = dict(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16,
+        )
+        diffusers_quant = DiffusersBnbConfig(**nf4_kwargs)
+        transformers_quant = TransformersBnbConfig(**nf4_kwargs)
+
+        transformer = Flux2Transformer2DModel.from_pretrained(
+            model_id,
+            subfolder="transformer",
+            quantization_config=diffusers_quant,
+            torch_dtype=torch.bfloat16,
+        )
+        text_encoder = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            subfolder="text_encoder",
+            quantization_config=transformers_quant,
+            torch_dtype=torch.bfloat16,
+        )
+
+        pipe = DiffusersFlux2Klein.from_pretrained(
+            model_id,
+            transformer=transformer,
+            text_encoder=text_encoder,
+            torch_dtype=torch.bfloat16,
+        )
+        pipe.to("cuda")
+        return cls(pipe)
+
+    async def generate(self, *, prompt, n, steps, guidance, seed, width, height):
+        if self._lock is None:
+            self._lock = asyncio.Lock()
+        loop = asyncio.get_running_loop()
+        async with self._lock:
+            return await loop.run_in_executor(
+                None, self._run, prompt, n, steps, guidance, seed, width, height
+            )
+
+    def _run(self, prompt, n, steps, guidance, seed, width, height):
+        import torch
+
+        generator = (
+            torch.Generator(device="cuda").manual_seed(seed) if seed is not None else None
+        )
+        out = self._pipe(
+            prompt=[prompt] * n,
+            width=width,
+            height=height,
+            num_inference_steps=steps,
+            guidance_scale=guidance,
+            generator=generator,
+        )
+        return out.images
