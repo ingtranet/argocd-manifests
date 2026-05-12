@@ -22,7 +22,7 @@ spec:
     spec:
       nodeSelector:
         nvidia.com/gpu.product: Orin
-        kubernetes.io/hostname: orin-nx-1
+        kubernetes.io/hostname: orin-nx-3
       runtimeClassName: nvidia
       tolerations:
         - key: nvidia.com/gpu
