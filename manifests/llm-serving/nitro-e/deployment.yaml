@@ -55,7 +55,7 @@ spec:
               mountPath: /models
       containers:
         - name: nitro-e
-          image: zot.ingtra.net/library/image-inference:nitro-e-dist-1aec3a9
+          image: zot.ingtra.net/library/image-inference:nitro-e-dist-64a86ca
           env:
             - name: MODEL_ID
               value: amd/Nitro-E-dist
