@@ -1,4 +1,4 @@
-ARG BASE=nvcr.io/nvidia/l4t-pytorch:r36.4.0-pth2.5-py3
+ARG BASE=dustynv/pytorch:2.7-r36.4.0-cu128-24.04
 FROM ${BASE} AS runtime
 
 ENV DEBIAN_FRONTEND=noninteractive \
