@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir --index-url https://pypi.org/simple/ -r /tmp/requ
 COPY server/ /opt/server/
 
 WORKDIR /opt/nitro-e
-ENV PYTHONPATH=/opt/nitro-e:/opt/server
+ENV PYTHONPATH=/opt/nitro-e:/opt
 
 EXPOSE 8080
 CMD ["uvicorn", "server.app:app", "--host", "0.0.0.0", "--port", "8080"]
