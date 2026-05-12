@@ -61,17 +61,37 @@ def _png_b64(img) -> str:
 async def generations(req: ImageRequest, request: Request):
     pipe = request.app.state.pipe
     width, height = (int(x) for x in req.size.split("x"))
+
+    src_image = None
+    if req.image_b64:
+        try:
+            src_image = Image.open(io.BytesIO(base64.b64decode(req.image_b64))).convert("RGB")
+        except Exception as e:
+            raise HTTPException(status_code=422, detail=f"invalid image_b64: {e}")
+
     try:
         with GEN_LATENCY.time():
-            images = await pipe.generate(
-                prompt=req.prompt,
-                n=req.n,
-                steps=DEFAULT_STEPS,
-                guidance=DEFAULT_GUIDANCE,
-                seed=req.seed,
-                width=width,
-                height=height,
-            )
+            if src_image is not None:
+                images = await pipe.edit(
+                    image=src_image,
+                    prompt=req.prompt,
+                    n=req.n,
+                    steps=DEFAULT_STEPS,
+                    guidance=DEFAULT_GUIDANCE,
+                    seed=req.seed,
+                    width=width,
+                    height=height,
+                )
+            else:
+                images = await pipe.generate(
+                    prompt=req.prompt,
+                    n=req.n,
+                    steps=DEFAULT_STEPS,
+                    guidance=DEFAULT_GUIDANCE,
+                    seed=req.seed,
+                    width=width,
+                    height=height,
+                )
         GEN_TOTAL.inc(req.n)
     except Exception as e:
         GEN_ERRORS.labels(reason=type(e).__name__).inc()

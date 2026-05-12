@@ -27,9 +27,3 @@ data:
           api_base: http://flux2-klein:8000/v1
           api_key: dummy
           mode: image_generation
-      - model_name: black-forest-labs/FLUX.2-klein-4B-edit
-        litellm_params:
-          model: openai/black-forest-labs/FLUX.2-klein-4B-edit
-          api_base: http://flux2-klein:8000/v1
-          api_key: dummy
-          mode: image_edit
