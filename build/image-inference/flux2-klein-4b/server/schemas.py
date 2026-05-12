@@ -7,7 +7,7 @@ class ImageRequest(BaseModel):
     prompt: str = Field(..., max_length=2000)
     model: Optional[str] = None
     n: conint(ge=1, le=4) = 1
-    size: Literal["1024x1024", "768x768", "512x512"] = "1024x1024"
+    size: Literal["768x768", "640x640", "512x512", "384x384"] = "768x768"
     response_format: Literal["b64_json"] = "b64_json"
     seed: Optional[int] = None
 
