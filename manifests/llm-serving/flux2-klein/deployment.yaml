@@ -31,6 +31,11 @@ spec:
       initContainers:
         - name: download-model
           image: python:3.11-slim
+          resources:
+            requests:
+              memory: 2Gi
+            limits:
+              memory: 8Gi
           command: ["sh", "-c"]
           args:
             - |
@@ -41,7 +46,7 @@ spec:
               else
                 pip install --quiet huggingface_hub
                 python -c "from huggingface_hub import snapshot_download; \
-                  snapshot_download('black-forest-labs/FLUX.2-klein-4B')"
+                  snapshot_download('black-forest-labs/FLUX.2-klein-4B', max_workers=1)"
                 touch "$MARKER"
               fi
           env:
