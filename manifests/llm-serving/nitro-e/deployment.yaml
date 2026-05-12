@@ -60,7 +60,7 @@ spec:
             - name: MODEL_ID
               value: amd/Nitro-E-dist
             - name: NITRO_CKPT
-              value: /models/nitro-e/Nitro-E-512px-dist.safetensors
+              value: Nitro-E-512px-dist.safetensors
             - name: NITRO_REPO
               value: amd/Nitro-E
             - name: NITRO_STEPS
