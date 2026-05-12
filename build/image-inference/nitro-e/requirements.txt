@@ -1,0 +1,10 @@
+diffusers>=0.32,<0.39
+transformers>=4.46
+safetensors
+einops
+omegaconf
+huggingface_hub
+fastapi
+uvicorn[standard]
+pillow
+prometheus-client
