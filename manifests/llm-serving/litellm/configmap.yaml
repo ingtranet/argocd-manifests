@@ -15,12 +15,6 @@ data:
           api_base: http://embedding-lb/v1
           api_key: dummy
           max_parallel_requests: 256
-      - model_name: amd/Nitro-E-dist
-        litellm_params:
-          model: openai/amd/Nitro-E-dist
-          api_base: http://nitro-e:8000/v1
-          api_key: dummy
-          mode: image_generation
       - model_name: black-forest-labs/FLUX.2-klein-4B
         litellm_params:
           model: openai/black-forest-labs/FLUX.2-klein-4B
