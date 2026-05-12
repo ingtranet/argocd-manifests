@@ -8,6 +8,8 @@ data:
   config.yaml: |
     litellm_settings:
       drop_params: true
+    router_settings:
+      num_retries: 0
     model_list:
       - model_name: google/embeddinggemma-300m
         litellm_params:
