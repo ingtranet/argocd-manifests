@@ -8,6 +8,10 @@ data:
   config.yaml: |
     litellm_settings:
       drop_params: true
+      callbacks: []
+      success_callback: []
+      failure_callback: []
+      set_verbose: false
     router_settings:
       num_retries: 0
     model_list:
