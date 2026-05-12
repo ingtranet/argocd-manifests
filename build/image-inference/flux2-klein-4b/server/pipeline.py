@@ -3,9 +3,13 @@ import os
 
 
 class Flux2KleinPipeline:
-    """Wraps diffusers Flux2KleinPipeline with SDNQ INT4 ckpt + SDNQ's
-    Triton-backed quantized matmul kernel. Single-GPU serialization via
-    lazy asyncio.Lock. One instance per process."""
+    """Wraps diffusers Flux2KleinPipeline with on-the-fly bitsandbytes NF4
+    quantization on the transformer and the Qwen3 text encoder. Single-GPU
+    serialization via lazy asyncio.Lock. One instance per process.
+
+    Loads BFL original ckpt (FLUX.2-klein-4B) and quantizes at load time.
+    Relies on the Jetson-built bitsandbytes shipped in dustynv/vllm
+    (libbitsandbytes_cuda129.so with sm_87 cubin)."""
 
     def __init__(self, pipe):
         self._pipe = pipe
@@ -14,25 +18,40 @@ class Flux2KleinPipeline:
     @classmethod
     def load(cls) -> "Flux2KleinPipeline":
         import torch
-
-        # Side-effect: registers SDNQConfig with diffusers/transformers.
-        import sdnq  # noqa: F401
-        from sdnq.loader import apply_sdnq_options_to_model
-        from diffusers import Flux2KleinPipeline as DiffusersFlux2Klein
-
-        model_id = os.environ.get(
-            "FLUX_MODEL", "Disty0/FLUX.2-klein-4B-SDNQ-4bit-dynamic"
+        from diffusers import (
+            Flux2KleinPipeline as DiffusersFlux2Klein,
+            Flux2Transformer2DModel,
+            BitsAndBytesConfig as DiffusersBnbConfig,
+        )
+        from transformers import (
+            AutoModelForCausalLM,
+            BitsAndBytesConfig as TransformersBnbConfig,
         )
 
-        pipe = DiffusersFlux2Klein.from_pretrained(model_id, torch_dtype=torch.bfloat16)
-
-        # dustynv/vllm base ships triton 3.4 built for Jetson. SDNQ should
-        # see it and enable the INT4/INT8 matmul fast path.
-        pipe.transformer = apply_sdnq_options_to_model(
-            pipe.transformer, use_quantized_matmul=True
+        model_id = os.environ.get("FLUX_MODEL", "black-forest-labs/FLUX.2-klein-4B")
+        nf4 = dict(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16,
         )
-        pipe.text_encoder = apply_sdnq_options_to_model(
-            pipe.text_encoder, use_quantized_matmul=True
+
+        transformer = Flux2Transformer2DModel.from_pretrained(
+            model_id,
+            subfolder="transformer",
+            quantization_config=DiffusersBnbConfig(**nf4),
+            torch_dtype=torch.bfloat16,
+        )
+        text_encoder = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            subfolder="text_encoder",
+            quantization_config=TransformersBnbConfig(**nf4),
+            torch_dtype=torch.bfloat16,
+        )
+        pipe = DiffusersFlux2Klein.from_pretrained(
+            model_id,
+            transformer=transformer,
+            text_encoder=text_encoder,
+            torch_dtype=torch.bfloat16,
         )
         pipe.to("cuda")
         return cls(pipe)

@@ -1,5 +1,4 @@
 diffusers>=0.38,<0.39
-sdnq>=0.1.4
 fastapi
 uvicorn[standard]
 pillow
