@@ -2,6 +2,7 @@ diffusers>=0.38,<0.39
 transformers>=4.46
 accelerate>=1.0
 sdnq>=0.1.4
+triton>=3.7
 safetensors
 sentencepiece
 einops

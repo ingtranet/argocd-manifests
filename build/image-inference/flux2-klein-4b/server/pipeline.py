@@ -17,6 +17,7 @@ class Flux2KleinPipeline:
 
         # Side-effect import: registers SDNQConfig globally.
         import sdnq  # noqa: F401
+        from sdnq.loader import apply_sdnq_options_to_model
         from diffusers import Flux2KleinPipeline as DiffusersFlux2Klein
 
         model_id = os.environ.get(
@@ -25,10 +26,16 @@ class Flux2KleinPipeline:
 
         pipe = DiffusersFlux2Klein.from_pretrained(model_id, torch_dtype=torch.bfloat16)
 
-        # apply_sdnq_options_to_model(use_quantized_matmul=True) requires
-        # Triton, which is not available on Jetson. SDNQ still dequants
-        # weights transparently — we just lose the optional INT8 matmul fast
-        # path and fall back to PyTorch eager bf16 matmul.
+        # SDNQ's INT4/INT8 matmul fast path is Triton-backed. Triton has
+        # aarch64 manylinux wheels on PyPI (triton-lang 3.7+), so it
+        # installs cleanly on Jetson Orin (Ampere SM 87 has INT4 tensor
+        # cores) and gives a real speedup over the bf16 dequant fallback.
+        pipe.transformer = apply_sdnq_options_to_model(
+            pipe.transformer, use_quantized_matmul=True
+        )
+        pipe.text_encoder = apply_sdnq_options_to_model(
+            pipe.text_encoder, use_quantized_matmul=True
+        )
         pipe.to("cuda")
         return cls(pipe)
 
