@@ -27,3 +27,9 @@ data:
           api_base: http://flux2-klein:8000/v1
           api_key: dummy
           mode: image_generation
+      - model_name: amd/FLUX.2-klein-4B-sdnq
+        litellm_params:
+          model: openai/amd/FLUX.2-klein-4B-sdnq
+          api_base: http://flux2-klein-sdnq:8000/v1
+          api_key: dummy
+          mode: image_generation
