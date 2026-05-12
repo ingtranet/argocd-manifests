@@ -69,6 +69,11 @@ spec:
               value: "0.0"
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
           ports:
             - containerPort: 8080
           startupProbe:
