@@ -62,16 +62,25 @@ class Flux2KleinPipeline:
         loop = asyncio.get_running_loop()
         async with self._lock:
             return await loop.run_in_executor(
-                None, self._run, prompt, n, steps, guidance, seed, width, height
+                None, self._run, prompt, n, steps, guidance, seed, width, height, None
             )
 
-    def _run(self, prompt, n, steps, guidance, seed, width, height):
+    async def edit(self, *, image, prompt, n, steps, guidance, seed, width, height):
+        if self._lock is None:
+            self._lock = asyncio.Lock()
+        loop = asyncio.get_running_loop()
+        async with self._lock:
+            return await loop.run_in_executor(
+                None, self._run, prompt, n, steps, guidance, seed, width, height, image
+            )
+
+    def _run(self, prompt, n, steps, guidance, seed, width, height, image):
         import torch
 
         generator = (
             torch.Generator(device="cuda").manual_seed(seed) if seed is not None else None
         )
-        out = self._pipe(
+        call_kwargs = dict(
             prompt=[prompt] * n,
             width=width,
             height=height,
@@ -79,4 +88,7 @@ class Flux2KleinPipeline:
             guidance_scale=guidance,
             generator=generator,
         )
+        if image is not None:
+            call_kwargs["image"] = image
+        out = self._pipe(**call_kwargs)
         return out.images

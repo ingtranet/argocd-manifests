@@ -2,5 +2,6 @@ diffusers>=0.38,<0.39
 transformers>=4.55
 fastapi
 uvicorn[standard]
+python-multipart
 pillow
 prometheus-client
