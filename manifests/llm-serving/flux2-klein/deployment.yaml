@@ -41,13 +41,13 @@ spec:
           args:
             - |
               set -e
-              MARKER=/models/hub/models--Disty0--FLUX.2-klein-4B-SDNQ-4bit-dynamic/.complete
+              MARKER=/models/hub/models--black-forest-labs--FLUX.2-klein-4B/.complete
               if [ -f "$MARKER" ]; then
                 echo "Model already downloaded, skipping."
               else
                 pip install --quiet huggingface_hub
                 python -c "from huggingface_hub import snapshot_download; \
-                  snapshot_download('Disty0/FLUX.2-klein-4B-SDNQ-4bit-dynamic', max_workers=1)"
+                  snapshot_download('black-forest-labs/FLUX.2-klein-4B', max_workers=1)"
                 touch "$MARKER"
               fi
           env:
@@ -69,7 +69,7 @@ spec:
             - name: MODEL_ID
               value: black-forest-labs/FLUX.2-klein-4B
             - name: FLUX_MODEL
-              value: Disty0/FLUX.2-klein-4B-SDNQ-4bit-dynamic
+              value: black-forest-labs/FLUX.2-klein-4B
             - name: FLUX_STEPS
               value: "4"
             - name: FLUX_GUIDANCE
