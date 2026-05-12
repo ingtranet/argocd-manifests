@@ -17,7 +17,7 @@ RUN git clone https://github.com/AMD-AGI/Nitro-E /opt/nitro-e \
  && cd /opt/nitro-e && git checkout ${NITRO_REF}
 
 COPY requirements.txt /tmp/requirements.txt
-RUN pip install --no-cache-dir -r /tmp/requirements.txt
+RUN pip install --no-cache-dir --index-url https://pypi.org/simple/ -r /tmp/requirements.txt
 
 COPY server/ /opt/server/
 
