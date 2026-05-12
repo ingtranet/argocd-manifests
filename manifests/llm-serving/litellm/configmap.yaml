@@ -8,11 +8,6 @@ data:
   config.yaml: |
     litellm_settings:
       drop_params: true
-    general_settings:
-      pass_through_endpoints:
-        - path: "/flux2-klein"
-          target: "http://flux2-klein:8000"
-          forward_headers: true
     model_list:
       - model_name: google/embeddinggemma-300m
         litellm_params:
@@ -26,3 +21,9 @@ data:
           api_base: http://flux2-klein:8000/v1
           api_key: dummy
           mode: image_generation
+      - model_name: black-forest-labs/FLUX.2-klein-4B-edit
+        litellm_params:
+          model: openai/black-forest-labs/FLUX.2-klein-4B-edit
+          api_base: http://flux2-klein:8000/v1
+          api_key: dummy
+          mode: image_edit
