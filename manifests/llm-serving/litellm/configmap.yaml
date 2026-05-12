@@ -10,11 +10,8 @@ data:
       drop_params: true
     general_settings:
       pass_through_endpoints:
-        - path: "/flux2-klein/v1/images/edits"
-          target: "http://flux2-klein:8000/v1/images/edits"
-          forward_headers: true
-        - path: "/flux2-klein/v1/images/generations"
-          target: "http://flux2-klein:8000/v1/images/generations"
+        - path: "/flux2-klein"
+          target: "http://flux2-klein:8000"
           forward_headers: true
     model_list:
       - model_name: google/embeddinggemma-300m
