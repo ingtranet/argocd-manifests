@@ -73,3 +73,13 @@ async def generations(req: ImageRequest, request: Request):
         created=int(time.time()),
         data=[ImageDatum(b64_json=_png_b64(img)) for img in images],
     )
+
+
+def _default_loader():
+    from server.pipeline import NitroEPipeline
+    return NitroEPipeline.load()
+
+
+# Production default. Tests override this before calling TestClient.
+if PIPELINE_LOADER is None:
+    PIPELINE_LOADER = _default_loader
