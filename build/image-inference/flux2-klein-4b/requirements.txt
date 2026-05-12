@@ -1,5 +1,5 @@
-diffusers>=0.40
-transformers>=4.50
+diffusers>=0.38,<0.39
+transformers>=4.46
 accelerate>=1.0
 bitsandbytes>=0.45
 safetensors
