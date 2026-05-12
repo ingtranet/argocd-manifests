@@ -1,6 +1,5 @@
 import asyncio
 import os
-import sys
 
 
 class NitroEPipeline:
@@ -9,14 +8,14 @@ class NitroEPipeline:
 
     def __init__(self, pipe):
         self._pipe = pipe
-        self._lock = None  # created lazily inside running event loop
+        self._lock = None  # created lazily inside the running event loop
 
     @classmethod
     def load(cls) -> "NitroEPipeline":
-        # Imports inside load() so that test monkeypatching of sys.modules
-        # is honored on every call (module-level imports would be cached).
-        torch = sys.modules["torch"]
-        init_pipe = sys.modules["core.tools.inference_pipe"].init_pipe
+        # Lazy imports so each test's sys.modules monkeypatch is honored.
+        # In production these are sys.modules cache hits after the first call.
+        import torch
+        from core.tools.inference_pipe import init_pipe
 
         device = torch.device("cuda:0")
         dtype = torch.bfloat16
@@ -41,7 +40,8 @@ class NitroEPipeline:
             )
 
     def _run(self, prompt, n, steps, guidance, seed):
-        torch = sys.modules["torch"]
+        import torch
+
         generator = (
             torch.Generator(device="cuda").manual_seed(seed) if seed is not None else None
         )
