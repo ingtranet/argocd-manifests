@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flux2-klein-9b
+  labels:
+    app: flux2-klein-9b
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: flux2-klein-9b
+  template:
+    metadata:
+      labels:
+        app: flux2-klein-9b
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+        kubernetes.io/hostname: orin-nx-3
+      runtimeClassName: nvidia
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      initContainers:
+        - name: download-model
+          image: python:3.11-slim
+          resources:
+            requests:
+              memory: 2Gi
+            limits:
+              memory: 8Gi
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              MARKER=/models/hub/models--black-forest-labs--FLUX.2-klein-9B/.complete
+              if [ -f "$MARKER" ]; then
+                echo "Model already downloaded, skipping."
+              else
+                pip install --quiet huggingface_hub
+                python -c "from huggingface_hub import snapshot_download; \
+                  snapshot_download('black-forest-labs/FLUX.2-klein-9B', max_workers=1)"
+                touch "$MARKER"
+              fi
+          env:
+            - name: HF_HOME
+              value: /models
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
+          volumeMounts:
+            - name: models
+              mountPath: /models
+      containers:
+        - name: flux2-klein-9b
+          # NOTE: bump tag to image-inference:flux2-klein-9b-<git-sha> after CI build.
+          image: zot.ingtra.net/library/image-inference:flux2-klein-9b-REPLACE_AFTER_BUILD
+          env:
+            - name: MODEL_ID
+              value: black-forest-labs/FLUX.2-klein-9B
+            - name: FLUX_MODEL
+              value: black-forest-labs/FLUX.2-klein-9B
+            - name: FLUX_STEPS
+              value: "4"
+            - name: FLUX_GUIDANCE
+              value: "0.0"
+            - name: HF_HOME
+              value: /models
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 120
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 60
+            timeoutSeconds: 30
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: models
+              mountPath: /models
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 8000
+              name: http
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: models
+          hostPath:
+            path: /data/cache/hf-models
+            type: DirectoryOrCreate
+        - name: nginx-config
+          configMap:
+            name: flux2-klein-9b-nginx-config
