@@ -5,6 +5,10 @@ metadata:
   name: comfy-ui
 spec:
   replicas: 1
+  # Single hostPath-backed SQLite (user/comfyui.db) can't be shared by two
+  # pods; RollingUpdate would briefly run old+new and deadlock the DB lock.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: comfy-ui
