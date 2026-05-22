@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lance-3b
+  labels:
+    app: lance-3b
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: lance-3b
+  template:
+    metadata:
+      labels:
+        app: lance-3b
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      runtimeClassName: nvidia
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      initContainers:
+        # Original Lance checkpoint (Lance_3B_Video config/LLM, Qwen2.5-VL-ViT,
+        # Wan VAE) + the community AWQ INT4 dir. The AWQ dir only overrides the
+        # LLM linears, so the original is still needed for ViT/VAE/config.
+        - name: download-models
+          image: python:3.11-slim
+          resources:
+            requests:
+              memory: 2Gi
+            limits:
+              memory: 8Gi
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              MARKER=/models/.lance-complete
+              if [ -f "$MARKER" ]; then
+                echo "Models already downloaded, skipping."
+              else
+                pip install --quiet huggingface_hub
+                python -c "from huggingface_hub import snapshot_download; \
+                  snapshot_download('bytedance-research/Lance', local_dir='/models/Lance', max_workers=1)"
+                python -c "from huggingface_hub import snapshot_download; \
+                  snapshot_download('Reza2kn/Lance-3B-Video-AWQ-INT4', local_dir='/models/Lance-3B-Video-AWQ-INT4', max_workers=1)"
+                touch "$MARKER"
+              fi
+          env:
+            - name: HF_HOME
+              value: /models
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
+          volumeMounts:
+            - name: models
+              mountPath: /models
+      containers:
+        - name: lance-3b
+          # NOTE: bump tag to image-inference:lance-3b-<git-sha> once CI builds
+          # this build/ change (same convention as flux2-klein-4b-<sha>).
+          image: zot.ingtra.net/library/image-inference:lance-3b-REPLACE_AFTER_BUILD
+          env:
+            - name: MODEL_ID
+              value: lance-3b-video-awq-int4
+            - name: LANCE_MODEL_PATH
+              value: /models/Lance/Lance_3B_Video
+            - name: LANCE_VIT_PATH
+              value: /models/Lance/Qwen2.5-VL-ViT
+            - name: LANCE_AWQ_DIR
+              value: /models/Lance-3B-Video-AWQ-INT4
+            - name: HF_HOME
+              value: /models
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            # Model load + AWQ swap + a bootstrap generation at ~10x dequant
+            # cost can take many minutes on Orin: allow ~40 min before failing.
+            initialDelaySeconds: 60
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 160
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 60
+            timeoutSeconds: 30
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: models
+              mountPath: /models
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 8000
+              name: http
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: models
+          hostPath:
+            path: /data/cache/hf-models
+            type: DirectoryOrCreate
+        - name: nginx-config
+          configMap:
+            name: lance-3b-nginx-config
