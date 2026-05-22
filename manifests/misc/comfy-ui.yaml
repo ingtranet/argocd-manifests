@@ -18,7 +18,7 @@ spec:
       runtimeClassName: nvidia
       containers:
         - name: comfy-ui
-          image: yanwk/comfyui-boot:cu128-slim-20260518
+          image: yanwk/comfyui-boot:cu130-slim-v2-20260521
           env:
             - name: NVIDIA_VISIBLE_DEVICES
               value: all
