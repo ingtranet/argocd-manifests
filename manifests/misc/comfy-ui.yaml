@@ -25,8 +25,34 @@ spec:
           ports:
             - containerPort: 8188
           volumeMounts:
-            - mountPath: /root
+            # cu130-slim-v2 "dockerful" design: ComfyUI core lives in the image
+            # (updated by pulling a new tag). Only persist data/nodes/models so
+            # they survive image bumps. Do NOT mount /root/ComfyUI itself, or the
+            # image-bundled core gets shadowed by stale volume contents.
+            - mountPath: /root/ComfyUI/models
               name: comfy-ui-data
+              subPath: ComfyUI/models
+            - mountPath: /root/ComfyUI/custom_nodes
+              name: comfy-ui-data
+              subPath: ComfyUI/custom_nodes
+            - mountPath: /root/ComfyUI/input
+              name: comfy-ui-data
+              subPath: ComfyUI/input
+            - mountPath: /root/ComfyUI/output
+              name: comfy-ui-data
+              subPath: ComfyUI/output
+            - mountPath: /root/ComfyUI/user
+              name: comfy-ui-data
+              subPath: ComfyUI/user
+            - mountPath: /root/.cache
+              name: comfy-ui-data
+              subPath: .cache
+            - mountPath: /root/.local
+              name: comfy-ui-data
+              subPath: .local
+            - mountPath: /root/user-scripts
+              name: comfy-ui-data
+              subPath: user-scripts
       volumes:
         - name: comfy-ui-data
           hostPath:
