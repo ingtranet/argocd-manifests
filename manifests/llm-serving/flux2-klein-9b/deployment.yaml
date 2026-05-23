@@ -22,7 +22,9 @@ spec:
     spec:
       nodeSelector:
         nvidia.com/gpu.product: Orin
-        kubernetes.io/hostname: orin-nx-3
+        # orin-nx-3 has chronic calico/network flaps that kill the ~10min load
+        # before startup completes; nx-1 has been stable. (re-downloads 50GB here)
+        kubernetes.io/hostname: orin-nx-1
       runtimeClassName: nvidia
       tolerations:
         - key: nvidia.com/gpu
@@ -64,8 +66,7 @@ spec:
               mountPath: /models
       containers:
         - name: flux2-klein-9b
-          # NOTE: bump tag to image-inference:flux2-klein-9b-<git-sha> after CI build.
-          image: zot.ingtra.net/library/image-inference:flux2-klein-9b-REPLACE_AFTER_BUILD
+          image: zot.ingtra.net/library/image-inference:flux2-klein-9b-2e52d4b
           env:
             - name: MODEL_ID
               value: black-forest-labs/FLUX.2-klein-9B
@@ -74,9 +75,17 @@ spec:
             - name: FLUX_STEPS
               value: "4"
             - name: FLUX_GUIDANCE
-              value: "0.0"
+              value: "1.0"
             - name: HF_HOME
               value: /models
+            # gated repo: from_pretrained needs the token to resolve it even when
+            # cached (4B is ungated, hence its main container omits this).
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
           ports:
