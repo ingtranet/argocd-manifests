@@ -72,7 +72,7 @@ spec:
             - name: FLUX_STEPS
               value: "4"
             - name: FLUX_GUIDANCE
-              value: "0.0"
+              value: "1.0"
             - name: HF_HOME
               value: /models
             - name: NVIDIA_VISIBLE_DEVICES

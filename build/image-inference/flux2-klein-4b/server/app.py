@@ -19,7 +19,7 @@ from server.schemas import (
 
 MODEL_ID = os.environ.get("MODEL_ID", "black-forest-labs/FLUX.2-klein-4B")
 DEFAULT_STEPS = int(os.environ.get("FLUX_STEPS", "4"))
-DEFAULT_GUIDANCE = float(os.environ.get("FLUX_GUIDANCE", "0.0"))
+DEFAULT_GUIDANCE = float(os.environ.get("FLUX_GUIDANCE", "1.0"))
 
 GEN_LATENCY = Histogram(
     "flux2_klein_generation_seconds", "End-to-end image generation latency"
