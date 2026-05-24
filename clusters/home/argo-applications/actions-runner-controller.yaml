@@ -17,7 +17,7 @@ spec:
   source:
     path: .
     repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set-controller
-    targetRevision: 0.12.1
+    targetRevision: 0.14.2
     helm:
       releaseName: gha-runner-scale-set-controller
   destination:
@@ -34,7 +34,7 @@ spec:
   source:
     path: .
     repoURL: oci://ghcr.io/actions/actions-runner-controller-charts/gha-runner-scale-set
-    targetRevision: 0.12.1
+    targetRevision: 0.14.2
     helm:
       releaseName: gha-runner-naraninyeo
       valuesObject:
@@ -49,14 +49,14 @@ spec:
               kubernetes.io/arch: amd64
             initContainers:
             - name: init-dind-externals
-              image: ghcr.io/actions/actions-runner:latest@sha256:b6614fce332517f74d0a76e7c762fb08e4f2ff13dcf333183397c8a5725b6e8e
+              image: ghcr.io/actions/actions-runner:2.334.0@sha256:b6614fce332517f74d0a76e7c762fb08e4f2ff13dcf333183397c8a5725b6e8e
               imagePullPolicy: IfNotPresent
               command: ["cp", "-r", "/home/runner/externals/.", "/home/runner/tmpDir/"]
               volumeMounts:
                 - name: dind-externals
                   mountPath: /home/runner/tmpDir
             - name: init-dind-rootless
-              image: docker:dind-rootless@sha256:b195ea3784d101abfe1ac68a47f95bcde74bb7ea4e4e8d277d29bc2661a6ae0e
+              image: docker:29.5.2-dind-rootless@sha256:c3ecad06d7e5e55635b9a29b3d4b444153c12c2c8c73396794409a33b3913a18
               imagePullPolicy: IfNotPresent
               command:
                 - sh
@@ -79,7 +79,7 @@ spec:
                 - mountPath: /dind-home
                   name: dind-home
             - name: dind
-              image: docker:dind-rootless@sha256:b195ea3784d101abfe1ac68a47f95bcde74bb7ea4e4e8d277d29bc2661a6ae0e
+              image: docker:29.5.2-dind-rootless@sha256:c3ecad06d7e5e55635b9a29b3d4b444153c12c2c8c73396794409a33b3913a18
               imagePullPolicy: IfNotPresent
               args:
                 - dockerd
@@ -112,7 +112,7 @@ spec:
                   mountPath: /home/runner
             containers:
             - name: runner
-              image: ghcr.io/actions/actions-runner:latest@sha256:b6614fce332517f74d0a76e7c762fb08e4f2ff13dcf333183397c8a5725b6e8e
+              image: ghcr.io/actions/actions-runner:2.334.0@sha256:b6614fce332517f74d0a76e7c762fb08e4f2ff13dcf333183397c8a5725b6e8e
               imagePullPolicy: IfNotPresent
               command: ["/home/runner/run.sh"]
               env:
