@@ -1,0 +1,40 @@
+# Curated for the dustynv/vllm Jetson base. The base ALREADY ships the heavy,
+# Jetson-built stack — we must NOT reinstall any of these or we clobber the
+# aarch64 wheels with x86 ones and break the image:
+#   torch 2.8 / torchvision / torchaudio / triton 3.4 / flash_attn 2.8 /
+#   transformers 4.53.1 / accelerate / safetensors / diffusers / bitsandbytes /
+#   torchao / xformers
+#
+# So unlike Lance's setup_env.sh we drop every torch/flash-attn/triton pin and
+# install only the pure-python deps Lance + lance-quant need at import/inference
+# time for the image tasks (t2i, image_edit).
+einops
+einops-exts
+omegaconf
+addict
+yacs
+timm==0.6.13
+qwen-vl-utils
+ftfy
+sentencepiece
+tiktoken
+protobuf
+tabulate
+termcolor
+kornia
+opencv-python-headless
+scikit-image
+imageio
+imageio-ffmpeg
+# NOTE: `decord` (and the eva-decord fork) ship no aarch64/py3.12 wheel. Lance
+# imports it at the top of data/datasets_custom/validation_dataset.py, but only
+# the VIDEO branch ever calls it. Since this PoC serves image tasks only, the
+# Dockerfile installs a tiny stub `decord` module to satisfy the import instead.
+transformers-stream-generator
+
+# serving
+fastapi
+uvicorn[standard]
+python-multipart
+pillow
+prometheus-client

@@ -27,3 +27,9 @@ data:
           api_base: http://flux2-klein:8000/v1
           api_key: dummy
           mode: image_generation
+      - model_name: lance-3b-video-awq-int4
+        litellm_params:
+          model: openai/lance-3b-video-awq-int4
+          api_base: http://lance-3b:8000/v1
+          api_key: dummy
+          mode: image_generation
