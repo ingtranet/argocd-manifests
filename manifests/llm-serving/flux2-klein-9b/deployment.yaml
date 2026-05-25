@@ -138,13 +138,13 @@ spec:
             # @ scale 0.8 per the workflow). Comma-joined, positional;
             # unset LORA_REPOS to disable entirely. Individual load
             # failures fall back gracefully to the LoRAs that did load.
-            # A/B test: Consistency-only @ 0.8 (workflow scale).
+            # A/B test step 2: Enhanced-Details-only @ 1.0 (workflow scale).
             - name: LORA_REPOS
-              value: dx8152/Flux2-Klein-9B-Consistency
+              value: dx8152/Flux2-Klein-9B-Enhanced-Details
             - name: LORA_FILES
-              value: Flux2-Klein-9B-consistency-V2.safetensors
+              value: realistic.safetensors
             - name: LORA_SCALES
-              value: "0.8"
+              value: "1.0"
             # CUDA allocator: expandable_segments reduces fragmentation on
             # the unified-memory case where every transient peak competes
             # with the host page cache for the same DRAM. Without this,
