@@ -14,8 +14,10 @@ class ImageRequest(BaseModel):
     response_format: Literal["b64_json"] = "b64_json"
     seed: Optional[int] = None
     # Non-standard extension: when set, treat request as image edit.
-    # base64-encoded PNG/JPEG bytes (no data: prefix). Keeps the JSON
-    # body shape so it can pass through litellm's image_generation route.
+    # base64-encoded PNG/JPEG bytes (no data: prefix). Must be a string —
+    # litellm's image_generation proxy rejects non-string values. For
+    # multi-reference editing, join multiple base64 payloads with ',' (the
+    # base64 alphabet does not contain ',' so splitting is unambiguous).
     image_b64: Optional[str] = None
 
 

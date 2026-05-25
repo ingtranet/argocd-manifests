@@ -4,7 +4,7 @@ import os
 import time
 from contextlib import asynccontextmanager
 
-from typing import Optional
+from typing import List, Optional
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from PIL import Image
@@ -64,10 +64,15 @@ async def generations(req: ImageRequest, request: Request):
 
     src_image = None
     if req.image_b64:
+        raw = [p for p in req.image_b64.split(",") if p]
         try:
-            src_image = Image.open(io.BytesIO(base64.b64decode(req.image_b64))).convert("RGB")
+            decoded = [
+                Image.open(io.BytesIO(base64.b64decode(p))).convert("RGB")
+                for p in raw
+            ]
         except Exception as e:
             raise HTTPException(status_code=422, detail=f"invalid image_b64: {e}")
+        src_image = decoded if len(decoded) > 1 else decoded[0]
 
     try:
         with GEN_LATENCY.time():
@@ -106,7 +111,7 @@ async def generations(req: ImageRequest, request: Request):
 @app.post("/v1/images/edits", response_model=ImageResponse)
 async def edits(
     request: Request,
-    image: UploadFile = File(...),
+    image: List[UploadFile] = File(...),
     prompt: str = Form(...),
     model: Optional[str] = Form(None),
     n: int = Form(1),
@@ -122,13 +127,17 @@ async def edits(
         raise HTTPException(status_code=422, detail="n must be between 1 and 4")
     if not prompt or len(prompt) > 2000:
         raise HTTPException(status_code=422, detail="prompt missing or too long")
+    if not image:
+        raise HTTPException(status_code=422, detail="image field required")
 
     width, height = (int(x) for x in size.split("x"))
-    img_bytes = await image.read()
     try:
-        src = Image.open(io.BytesIO(img_bytes)).convert("RGB")
+        srcs = [
+            Image.open(io.BytesIO(await f.read())).convert("RGB") for f in image
+        ]
     except Exception as e:
         raise HTTPException(status_code=422, detail=f"invalid image: {e}")
+    src = srcs if len(srcs) > 1 else srcs[0]
 
     pipe = request.app.state.pipe
     try:
