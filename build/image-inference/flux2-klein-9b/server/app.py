@@ -17,7 +17,7 @@ from server.schemas import (
     ImageResponse,
 )
 
-MODEL_ID = os.environ.get("MODEL_ID", "cookieshake/FLUX.2-klein-9B-bnb-nf4")
+MODEL_ID = os.environ.get("MODEL_ID", "cookieshake/FLUX.2-klein-9B-bnb-nf4-loras-baked")
 DEFAULT_STEPS = int(os.environ.get("FLUX_STEPS", "4"))
 DEFAULT_GUIDANCE = float(os.environ.get("FLUX_GUIDANCE", "1.0"))
 # Cap reference-image resolution before VAE encode. Multi-reference edit on

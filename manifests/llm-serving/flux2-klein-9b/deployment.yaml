@@ -43,59 +43,15 @@ spec:
           args:
             - |
               set -e
-              MARKER=/models/hub/models--cookieshake--FLUX.2-klein-9B-bnb-nf4/.complete
+              MARKER=/models/hub/models--cookieshake--FLUX.2-klein-9B-bnb-nf4-loras-baked/.complete
               if [ -f "$MARKER" ]; then
                 echo "Model already downloaded, skipping."
               else
                 pip install --quiet huggingface_hub
                 python -c "from huggingface_hub import snapshot_download; \
-                  snapshot_download('cookieshake/FLUX.2-klein-9B-bnb-nf4', max_workers=1)"
+                  snapshot_download('cookieshake/FLUX.2-klein-9B-bnb-nf4-loras-baked', max_workers=1)"
                 touch "$MARKER"
               fi
-          env:
-            - name: HF_HOME
-              value: /models
-            - name: HF_TOKEN
-              valueFrom:
-                secretKeyRef:
-                  name: hf-token
-                  key: token
-                  optional: true
-          volumeMounts:
-            - name: models
-              mountPath: /models
-        - name: download-loras
-          image: python:3.11-slim
-          resources:
-            requests:
-              memory: 1Gi
-            limits:
-              memory: 4Gi
-          command: ["sh", "-c"]
-          args:
-            - |
-              set -e
-              pip install --quiet huggingface_hub
-              fetch() {
-                local repo="$1"; local pat="$2"
-                # HF caches as /models/hub/models--<org>--<repo>/ — note the
-                # double dash. snapshot_download creates this dir, so place
-                # the marker INSIDE it (after the download) rather than
-                # constructing the path ourselves.
-                local cachekey
-                cachekey=$(echo "$repo" | sed 's|/|--|g')
-                local dir="/models/hub/models--${cachekey}"
-                local marker="${dir}/.complete"
-                if [ -f "$marker" ]; then
-                  echo "$repo already downloaded, skipping."
-                else
-                  python -c "from huggingface_hub import snapshot_download; \
-                    snapshot_download('$repo', allow_patterns=['$pat','README.md'])"
-                  [ -d "$dir" ] && touch "$marker" || echo "warning: $dir not created"
-                fi
-              }
-              fetch dx8152/Flux2-Klein-9B-Consistency      Flux2-Klein-9B-consistency-V2.safetensors
-              fetch dx8152/Flux2-Klein-9B-Enhanced-Details realistic.safetensors
           env:
             - name: HF_HOME
               value: /models
@@ -113,9 +69,9 @@ spec:
           image: zot.ingtra.net/library/image-inference:flux2-klein-9b-c516751
           env:
             - name: MODEL_ID
-              value: cookieshake/FLUX.2-klein-9B-bnb-nf4
+              value: cookieshake/FLUX.2-klein-9B-bnb-nf4-loras-baked
             - name: FLUX_MODEL
-              value: cookieshake/FLUX.2-klein-9B-bnb-nf4
+              value: cookieshake/FLUX.2-klein-9B-bnb-nf4-loras-baked
             - name: FLUX_STEPS
               value: "4"
             - name: FLUX_GUIDANCE
@@ -132,19 +88,10 @@ spec:
                   optional: true
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
-            # LoRA stack chained in dx8152's Single image.json order:
-            # Enhanced-Details first (realistic detail enhancer @ scale 1.0),
-            # Consistency LoRA second (color cast / saturation cleanup
-            # @ scale 0.8 per the workflow). Comma-joined, positional;
-            # unset LORA_REPOS to disable entirely. Individual load
-            # failures fall back gracefully to the LoRAs that did load.
-            # A/B test step 2: Enhanced-Details-only @ 1.0 (workflow scale).
-            - name: LORA_REPOS
-              value: dx8152/Flux2-Klein-9B-Enhanced-Details
-            - name: LORA_FILES
-              value: realistic.safetensors
-            - name: LORA_SCALES
-              value: "1.0"
+            # LoRAs (Enhanced-Details @ 1.0 + Consistency-V2 @ 0.8) are baked
+            # into the transformer weights of this repo — no runtime LoRA
+            # loading. Switch back to the unbaked repo + LORA_REPOS env if
+            # adapter scales need to be tuned.
             # CUDA allocator: expandable_segments reduces fragmentation on
             # the unified-memory case where every transient peak competes
             # with the host page cache for the same DRAM. Without this,
@@ -157,8 +104,8 @@ spec:
           # kubelet + nginx sidecar so node-level OOM stays out of play.
           # When this trips, we get a clean container-level OOMKill instead
           # of a node freeze, which is the right failure mode for tuning.
-          # Bumped 13Gi -> 14Gi after multi-LoRA chain (Enhanced-Details +
-          # Consistency) blew the prior cap with two active PEFT adapters'
+          # Back to 13Gi after baking LoRAs into the base weights — runtime
+          # is now equivalent to vanilla NF4 (no PEFT adapters).
           # delta-weight buffers during the transformer forward.
           resources:
             requests:

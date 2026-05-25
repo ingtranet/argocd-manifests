@@ -1,8 +1,5 @@
 diffusers>=0.38,<0.39
 transformers>=4.55
-# PEFT is required by diffusers' load_lora_weights / set_adapters path.
-# Without it pipe.load_lora_weights raises "PEFT backend is required".
-peft>=0.11
 fastapi
 uvicorn[standard]
 python-multipart
