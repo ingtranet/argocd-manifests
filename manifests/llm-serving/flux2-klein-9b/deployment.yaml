@@ -1,23 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: flux2-klein-4b
+  name: flux2-klein-9b
   labels:
-    app: flux2-klein-4b
+    app: flux2-klein-9b
 spec:
-  # temporarily scaled to 0 while 9b runs on the shared Orin nx-1; both
-  # builds target the same single Orin node so they cannot run concurrently.
-  # bump back to 1 if 9b is rolled back.
-  replicas: 0
+  replicas: 1
   strategy:
     type: Recreate
   selector:
     matchLabels:
-      app: flux2-klein-4b
+      app: flux2-klein-9b
   template:
     metadata:
       labels:
-        app: flux2-klein-4b
+        app: flux2-klein-9b
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
@@ -25,6 +22,9 @@ spec:
     spec:
       nodeSelector:
         nvidia.com/gpu.product: Orin
+        # orin-nx-3 has chronic calico/network flaps that kill the ~10min load
+        # before startup completes; nx-1 has been stable. (re-downloads 50GB here)
+        kubernetes.io/hostname: orin-nx-1
       runtimeClassName: nvidia
       tolerations:
         - key: nvidia.com/gpu
@@ -43,13 +43,13 @@ spec:
           args:
             - |
               set -e
-              MARKER=/models/hub/models--black-forest-labs--FLUX.2-klein-4B/.complete
+              MARKER=/models/hub/models--cookieshake--FLUX.2-klein-9B-bnb-nf4/.complete
               if [ -f "$MARKER" ]; then
                 echo "Model already downloaded, skipping."
               else
                 pip install --quiet huggingface_hub
                 python -c "from huggingface_hub import snapshot_download; \
-                  snapshot_download('black-forest-labs/FLUX.2-klein-4B', max_workers=1)"
+                  snapshot_download('cookieshake/FLUX.2-klein-9B-bnb-nf4', max_workers=1)"
                 touch "$MARKER"
               fi
           env:
@@ -65,19 +65,27 @@ spec:
             - name: models
               mountPath: /models
       containers:
-        - name: flux2-klein
-          image: zot.ingtra.net/library/image-inference:flux2-klein-4b-63d08d8
+        - name: flux2-klein-9b
+          image: zot.ingtra.net/library/image-inference:flux2-klein-9b-REPLACE_AFTER_BUILD
           env:
             - name: MODEL_ID
-              value: black-forest-labs/FLUX.2-klein-4B
+              value: cookieshake/FLUX.2-klein-9B-bnb-nf4
             - name: FLUX_MODEL
-              value: black-forest-labs/FLUX.2-klein-4B
+              value: cookieshake/FLUX.2-klein-9B-bnb-nf4
             - name: FLUX_STEPS
               value: "4"
             - name: FLUX_GUIDANCE
               value: "1.0"
             - name: HF_HOME
               value: /models
+            # gated derivative — still requires the token for the upstream
+            # license click-through gate to resolve.
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
           ports:
@@ -89,7 +97,7 @@ spec:
             initialDelaySeconds: 60
             periodSeconds: 15
             timeoutSeconds: 5
-            failureThreshold: 80
+            failureThreshold: 120
           livenessProbe:
             httpGet:
               path: /health
@@ -123,4 +131,4 @@ spec:
             type: DirectoryOrCreate
         - name: nginx-config
           configMap:
-            name: flux2-klein-nginx-config
+            name: flux2-klein-9b-nginx-config
