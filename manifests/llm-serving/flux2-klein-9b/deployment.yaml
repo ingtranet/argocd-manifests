@@ -64,7 +64,7 @@ spec:
           volumeMounts:
             - name: models
               mountPath: /models
-        - name: download-lora
+        - name: download-loras
           image: python:3.11-slim
           resources:
             requests:
@@ -75,16 +75,22 @@ spec:
           args:
             - |
               set -e
-              MARKER=/models/hub/models--dx8152--Flux2-Klein-9B-Consistency/.complete
-              if [ -f "$MARKER" ]; then
-                echo "LoRA already downloaded, skipping."
-              else
-                pip install --quiet huggingface_hub
-                python -c "from huggingface_hub import snapshot_download; \
-                  snapshot_download('dx8152/Flux2-Klein-9B-Consistency', \
-                    allow_patterns=['Flux2-Klein-9B-consistency-V2.safetensors','README.md'])"
-                touch "$MARKER"
-              fi
+              pip install --quiet huggingface_hub
+              fetch() {
+                local repo="$1"; local pat="$2"
+                local cachekey
+                cachekey=$(echo "$repo" | tr '/' '-')
+                local marker="/models/hub/models--${cachekey}/.complete"
+                if [ -f "$marker" ]; then
+                  echo "$repo already downloaded, skipping."
+                else
+                  python -c "from huggingface_hub import snapshot_download; \
+                    snapshot_download('$repo', allow_patterns=['$pat','README.md'])"
+                  touch "$marker"
+                fi
+              }
+              fetch dx8152/Flux2-Klein-9B-Consistency      Flux2-Klein-9B-consistency-V2.safetensors
+              fetch dx8152/Flux2-Klein-9B-Enhanced-Details realistic.safetensors
           env:
             - name: HF_HOME
               value: /models
@@ -121,16 +127,18 @@ spec:
                   optional: true
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
-            # Optional LoRA adapter loaded on top of the NF4 base.
-            # dx8152/Flux2-Klein-9B-Consistency V2: color cast / saturation
-            # / artifact cleanup; "without any cue words" (no trigger). Unset
-            # LORA_REPO to disable; load failure falls back to plain NF4.
-            - name: LORA_REPO
-              value: dx8152/Flux2-Klein-9B-Consistency
-            - name: LORA_FILE
-              value: Flux2-Klein-9B-consistency-V2.safetensors
-            - name: LORA_SCALE
-              value: "1.0"
+            # LoRA stack chained in dx8152's Single image.json order:
+            # Enhanced-Details first (realistic detail enhancer @ scale 1.0),
+            # Consistency LoRA second (color cast / saturation cleanup
+            # @ scale 0.8 per the workflow). Comma-joined, positional;
+            # unset LORA_REPOS to disable entirely. Individual load
+            # failures fall back gracefully to the LoRAs that did load.
+            - name: LORA_REPOS
+              value: dx8152/Flux2-Klein-9B-Enhanced-Details,dx8152/Flux2-Klein-9B-Consistency
+            - name: LORA_FILES
+              value: realistic.safetensors,Flux2-Klein-9B-consistency-V2.safetensors
+            - name: LORA_SCALES
+              value: "1.0,0.8"
             # CUDA allocator: expandable_segments reduces fragmentation on
             # the unified-memory case where every transient peak competes
             # with the host page cache for the same DRAM. Without this,

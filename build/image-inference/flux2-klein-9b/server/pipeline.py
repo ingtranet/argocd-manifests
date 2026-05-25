@@ -35,32 +35,60 @@ class Flux2Klein9BPipeline:
         )
         pipe.to("cuda")
 
-        # Optional LoRA adapter. Loaded BEFORE the mem knobs because
-        # set_adapters / fuse paths can conflict with attention_slicing
-        # state in some diffusers versions. Best-effort: graceful fallback
-        # if the keys don't auto-convert or NF4 base rejects PEFT attach.
-        lora_repo = os.environ.get("LORA_REPO", "").strip()
-        lora_file = os.environ.get("LORA_FILE", "").strip() or None
-        lora_scale = float(os.environ.get("LORA_SCALE", "1.0"))
-        if lora_repo:
-            try:
-                load_kw = {"weight_name": lora_file} if lora_file else {}
-                pipe.load_lora_weights(lora_repo, **load_kw)
+        # Optional LoRA stack — multiple adapters chained together (PEFT
+        # handles the multi-adapter math). Env format is comma-joined lists,
+        # parallel positionally: LORA_REPOS / LORA_FILES / LORA_SCALES.
+        # Leaving any list shorter is fine: missing file -> repo's default,
+        # missing scale -> 1.0. Loading order matters when LoRAs are not
+        # commutative; we apply in the order given (matches dx8152's
+        # Single image.json: detail enhancer first, consistency LoRA after).
+        # Every step is best-effort: a bad adapter logs and is skipped, the
+        # pipeline keeps running on plain NF4 + the LoRAs that *did* load.
+        lora_repos = [s.strip() for s in os.environ.get("LORA_REPOS", "").split(",") if s.strip()]
+        lora_files_raw = [s.strip() for s in os.environ.get("LORA_FILES", "").split(",")]
+        lora_scales_raw = [s.strip() for s in os.environ.get("LORA_SCALES", "").split(",") if s.strip()]
+        if lora_repos:
+            loaded = []
+            for i, repo in enumerate(lora_repos):
+                fname = lora_files_raw[i] if i < len(lora_files_raw) and lora_files_raw[i] else None
+                adapter_name = f"adapter_{i}"
                 try:
-                    pipe.set_adapters(["default_0"], adapter_weights=[lora_scale])
-                except Exception:
-                    # adapter name varies across diffusers versions; the
-                    # scale also propagates via cross_attention_kwargs at
-                    # call time, so missing set_adapters is non-fatal.
-                    pass
-                print(f"[lora] loaded {lora_repo}"
-                      + (f" file={lora_file}" if lora_file else "")
-                      + f" scale={lora_scale}")
-            except Exception as e:
-                print(f"[lora] load failed (continuing WITHOUT LoRA): "
-                      f"{type(e).__name__}: {e}")
+                    load_kw = {"weight_name": fname} if fname else {}
+                    pipe.load_lora_weights(repo, adapter_name=adapter_name, **load_kw)
+                    loaded.append(adapter_name)
+                    print(f"[lora] loaded {repo}"
+                          + (f" file={fname}" if fname else "")
+                          + f" as {adapter_name}")
+                except Exception as e:
+                    print(f"[lora] FAILED to load {repo}: "
+                          f"{type(e).__name__}: {e}")
+            if loaded:
+                scales = [float(s) for s in lora_scales_raw[:len(loaded)]]
+                while len(scales) < len(loaded):
+                    scales.append(1.0)
+                try:
+                    pipe.set_adapters(loaded, adapter_weights=scales)
+                    print(f"[lora] active: {list(zip(loaded, scales))}")
+                except Exception as e:
+                    print(f"[lora] set_adapters failed: "
+                          f"{type(e).__name__}: {e}")
         else:
-            print("[lora] LORA_REPO not set, skipping")
+            print("[lora] LORA_REPOS not set, skipping")
+
+        # Explicit scheduler choice. dx8152's ComfyUI workflow uses
+        # KSamplerSelect=euler + Flux2Scheduler, which corresponds to
+        # diffusers' FlowMatchEulerDiscreteScheduler (flow-matching euler).
+        # The Flux2 pipeline default *should* already be this, but pin it
+        # explicitly so behavior matches across diffusers minor versions.
+        # Log the before/after class to confirm at startup.
+        try:
+            from diffusers import FlowMatchEulerDiscreteScheduler
+            prev = type(pipe.scheduler).__name__
+            pipe.scheduler = FlowMatchEulerDiscreteScheduler.from_config(pipe.scheduler.config)
+            print(f"[sched] scheduler: {prev} -> {type(pipe.scheduler).__name__}")
+        except Exception as e:
+            print(f"[sched] scheduler pin failed (keeping default): "
+                  f"{type(e).__name__}: {e}")
 
         # Fuse Q/K/V projections in the transformer — single bigger matmul
         # instead of three, with a small RSS reduction (~weights of two
