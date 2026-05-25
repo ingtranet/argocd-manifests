@@ -152,15 +152,18 @@ spec:
             - name: PYTORCH_CUDA_ALLOC_CONF
               value: "expandable_segments:True"
           # Cap process RSS so a runaway transient cannot drag the *node*
-          # down. Orin NX has 16GiB unified; leave ~3GiB for system +
+          # down. Orin NX has 16GiB unified; leave headroom for system +
           # kubelet + nginx sidecar so node-level OOM stays out of play.
           # When this trips, we get a clean container-level OOMKill instead
           # of a node freeze, which is the right failure mode for tuning.
+          # Bumped 13Gi -> 14Gi after multi-LoRA chain (Enhanced-Details +
+          # Consistency) blew the prior cap with two active PEFT adapters'
+          # delta-weight buffers during the transformer forward.
           resources:
             requests:
               memory: 10Gi
             limits:
-              memory: 13Gi
+              memory: 14Gi
           ports:
             - containerPort: 8080
           startupProbe:
