@@ -34,6 +34,29 @@ class Flux2Klein9BPipeline:
             torch_dtype=torch.bfloat16,
         )
         pipe.to("cuda")
+
+        # Memory-saving knobs for the Orin NX 16GB unified-memory case.
+        # Single-image generate/edit fits comfortably, but multi-reference
+        # edit (>=2 images) blows the peak: ref VAE encode + concatenated
+        # ref+noisy latents push transformer attention activations past
+        # the 3-4GB headroom we have over the 11GB weights.
+        # These knobs are no-ops if Flux2KleinPipeline doesn't expose them.
+        knobs = (
+            ("enable_attention_slicing", ("max",)),
+            ("enable_vae_slicing", ()),
+            ("enable_vae_tiling", ()),
+        )
+        for name, args in knobs:
+            fn = getattr(pipe, name, None)
+            if fn is None:
+                print(f"[mem] {name}: pipeline does not expose it, skip")
+                continue
+            try:
+                fn(*args)
+                print(f"[mem] {name}{args} applied")
+            except Exception as e:
+                print(f"[mem] {name}{args} failed: {type(e).__name__}: {e}")
+
         return cls(pipe)
 
     async def generate(self, *, prompt, n, steps, guidance, seed, width, height):
