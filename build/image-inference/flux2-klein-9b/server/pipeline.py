@@ -35,6 +35,33 @@ class Flux2Klein9BPipeline:
         )
         pipe.to("cuda")
 
+        # Optional LoRA adapter. Loaded BEFORE the mem knobs because
+        # set_adapters / fuse paths can conflict with attention_slicing
+        # state in some diffusers versions. Best-effort: graceful fallback
+        # if the keys don't auto-convert or NF4 base rejects PEFT attach.
+        lora_repo = os.environ.get("LORA_REPO", "").strip()
+        lora_file = os.environ.get("LORA_FILE", "").strip() or None
+        lora_scale = float(os.environ.get("LORA_SCALE", "1.0"))
+        if lora_repo:
+            try:
+                load_kw = {"weight_name": lora_file} if lora_file else {}
+                pipe.load_lora_weights(lora_repo, **load_kw)
+                try:
+                    pipe.set_adapters(["default_0"], adapter_weights=[lora_scale])
+                except Exception:
+                    # adapter name varies across diffusers versions; the
+                    # scale also propagates via cross_attention_kwargs at
+                    # call time, so missing set_adapters is non-fatal.
+                    pass
+                print(f"[lora] loaded {lora_repo}"
+                      + (f" file={lora_file}" if lora_file else "")
+                      + f" scale={lora_scale}")
+            except Exception as e:
+                print(f"[lora] load failed (continuing WITHOUT LoRA): "
+                      f"{type(e).__name__}: {e}")
+        else:
+            print("[lora] LORA_REPO not set, skipping")
+
         # Fuse Q/K/V projections in the transformer — single bigger matmul
         # instead of three, with a small RSS reduction (~weights of two
         # projections share a buffer) and a small speedup. No-op if the
