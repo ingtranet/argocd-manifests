@@ -99,7 +99,7 @@ spec:
               mountPath: /models
       containers:
         - name: flux2-klein-9b
-          image: zot.ingtra.net/library/image-inference:flux2-klein-9b-23f403f
+          image: zot.ingtra.net/library/image-inference:flux2-klein-9b-aa28a29
           env:
             - name: MODEL_ID
               value: cookieshake/FLUX.2-klein-9B-bnb-nf4
