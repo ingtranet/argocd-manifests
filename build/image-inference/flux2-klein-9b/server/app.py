@@ -20,6 +20,31 @@ from server.schemas import (
 MODEL_ID = os.environ.get("MODEL_ID", "cookieshake/FLUX.2-klein-9B-bnb-nf4")
 DEFAULT_STEPS = int(os.environ.get("FLUX_STEPS", "4"))
 DEFAULT_GUIDANCE = float(os.environ.get("FLUX_GUIDANCE", "1.0"))
+# Cap reference-image resolution before VAE encode. Multi-reference edit on
+# 9B + Orin NX 16GB unified can freeze the *node* (not just OOM the pod)
+# because (output + N*ref) latent concatenation in transformer attention
+# scales O(seq^2). Downsampling refs to 256 cuts ref tokens 4x without
+# changing the output resolution. Single-ref edit already fits at full size,
+# so only apply when there is more than one ref.
+REF_MAX_DIM_MULTI = int(os.environ.get("FLUX_REF_MAX_DIM_MULTI", "256"))
+
+
+def _shrink_refs(images):
+    """images: PIL.Image OR list[PIL.Image]. Returns the same shape with
+    each PIL.Image downscaled (preserving aspect) so max(w,h) <= cap, but
+    only when there is more than one ref."""
+    if not isinstance(images, list) or len(images) <= 1:
+        return images
+    cap = REF_MAX_DIM_MULTI
+    out = []
+    for im in images:
+        w, h = im.size
+        m = max(w, h)
+        if m > cap:
+            scale = cap / m
+            im = im.resize((max(1, int(w * scale)), max(1, int(h * scale))), Image.LANCZOS)
+        out.append(im)
+    return out
 
 GEN_LATENCY = Histogram(
     "flux2_klein_9b_generation_seconds", "End-to-end image generation latency"
@@ -72,7 +97,7 @@ async def generations(req: ImageRequest, request: Request):
             ]
         except Exception as e:
             raise HTTPException(status_code=422, detail=f"invalid image_b64: {e}")
-        src_image = decoded if len(decoded) > 1 else decoded[0]
+        src_image = _shrink_refs(decoded) if len(decoded) > 1 else decoded[0]
 
     try:
         with GEN_LATENCY.time():
@@ -137,7 +162,7 @@ async def edits(
         ]
     except Exception as e:
         raise HTTPException(status_code=422, detail=f"invalid image: {e}")
-    src = srcs if len(srcs) > 1 else srcs[0]
+    src = _shrink_refs(srcs) if len(srcs) > 1 else srcs[0]
 
     pipe = request.app.state.pipe
     try:

@@ -35,6 +35,30 @@ class Flux2Klein9BPipeline:
         )
         pipe.to("cuda")
 
+        # Fuse Q/K/V projections in the transformer — single bigger matmul
+        # instead of three, with a small RSS reduction (~weights of two
+        # projections share a buffer) and a small speedup. No-op if the
+        # transformer doesn't expose it.
+        try:
+            pipe.transformer.fuse_qkv_projections()
+            print("[mem] transformer.fuse_qkv_projections() applied")
+        except Exception as e:
+            print(f"[mem] transformer.fuse_qkv_projections() skipped: {type(e).__name__}: {e}")
+        # Sub-module slicing/tiling that the pipeline didn't expose at the
+        # top level. VAE encode of multiple reference images is one of the
+        # bigger transient peaks, so tile + slice it explicitly.
+        for obj_name, fn_name in (("vae", "enable_slicing"), ("vae", "enable_tiling")):
+            obj = getattr(pipe, obj_name, None)
+            fn = getattr(obj, fn_name, None) if obj is not None else None
+            if fn is None:
+                print(f"[mem] pipe.{obj_name}.{fn_name}: not available, skip")
+                continue
+            try:
+                fn()
+                print(f"[mem] pipe.{obj_name}.{fn_name}() applied")
+            except Exception as e:
+                print(f"[mem] pipe.{obj_name}.{fn_name}() failed: {type(e).__name__}: {e}")
+
         # Memory-saving knobs for the Orin NX 16GB unified-memory case.
         # Single-image generate/edit fits comfortably, but multi-reference
         # edit (>=2 images) blows the peak: ref VAE encode + concatenated

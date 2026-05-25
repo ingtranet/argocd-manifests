@@ -88,6 +88,23 @@ spec:
                   optional: true
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
+            # CUDA allocator: expandable_segments reduces fragmentation on
+            # the unified-memory case where every transient peak competes
+            # with the host page cache for the same DRAM. Without this,
+            # multi-ref inference fragmented enough to NodeNotReady the
+            # whole orin-nx-1 (TaintManagerEviction recovery).
+            - name: PYTORCH_CUDA_ALLOC_CONF
+              value: "expandable_segments:True"
+          # Cap process RSS so a runaway transient cannot drag the *node*
+          # down. Orin NX has 16GiB unified; leave ~3GiB for system +
+          # kubelet + nginx sidecar so node-level OOM stays out of play.
+          # When this trips, we get a clean container-level OOMKill instead
+          # of a node freeze, which is the right failure mode for tuning.
+          resources:
+            requests:
+              memory: 10Gi
+            limits:
+              memory: 13Gi
           ports:
             - containerPort: 8080
           startupProbe:
