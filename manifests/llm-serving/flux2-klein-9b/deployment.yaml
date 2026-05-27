@@ -138,7 +138,7 @@ spec:
             # footprint (2x rank-64) by ~4x. Set to 'int8' or 'off' to fall
             # back if NF4 quality regresses on rank-64 small-dim tensors.
             - name: LORA_QUANT
-              value: nf4
+              value: int8
             # CUDA allocator: expandable_segments reduces fragmentation on
             # the unified-memory case where every transient peak competes
             # with the host page cache for the same DRAM. Without this,
