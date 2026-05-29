@@ -127,12 +127,16 @@ spec:
                   optional: true
             - name: NVIDIA_VISIBLE_DEVICES
               value: "all"
-            # Enhanced-Details (1.0) chained with Consistency-V2 (0.8) per
-            # dx8152's Single image.json workflow. Format per spec:
+            # Consistency-V2 only (Enhanced-Details dropped). A/B against
+            # vanilla NF4 showed the visible delta — warmer tone / saturation
+            # — was almost entirely from Consistency; Enhanced-Details was
+            # marginal at this prompt class. Two-adapter forward + 512 edit
+            # also pushed the node toward freeze territory, so trimming to
+            # one adapter is the stability play. Format per spec:
             #   repo[:scale[:adapter_name[:weight_name]]]
             # weight_name pins Consistency to V2 (the repo also ships V1).
             - name: LORA_REPOS
-              value: dx8152/Flux2-Klein-9B-Enhanced-Details:1.0:enh:realistic.safetensors,dx8152/Flux2-Klein-9B-Consistency:0.8:cons:Flux2-Klein-9B-consistency-V2.safetensors
+              value: dx8152/Flux2-Klein-9B-Consistency:0.8:cons:Flux2-Klein-9B-consistency-V2.safetensors
             # Quantize loaded LoRA lora_A/lora_B nn.Linear -> bnb Linear4bit
             # in-place after load. Cuts the resident ~662MB bf16 adapter
             # footprint (2x rank-64) by ~4x. Set to 'int8' or 'off' to fall
