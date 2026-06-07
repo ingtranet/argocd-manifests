@@ -1,0 +1,132 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qwen3-5-4b-mtp
+  labels:
+    app: qwen3-5-4b-mtp
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: qwen3-5-4b-mtp
+  template:
+    metadata:
+      labels:
+        app: qwen3-5-4b-mtp
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      # Pin to orin-nx-3 (avoid the weaker orin-nx-1). Small (~3GB) so it fits
+      # alongside gemma-4-e4b + embeddinggemma.
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values: ["orin-nx-3"]
+      runtimeClassName: nvidia
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      initContainers:
+        - name: download-model
+          image: python:3.11-slim
+          command:
+            - sh
+            - -c
+            - |
+              M=/models/qwen3-5-4b-mtp/Qwen3.5-4B-UD-Q4_K_XL.gguf
+              if [ -f "$M" ]; then echo "present, skip"; else
+                pip install huggingface_hub && \
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('unsloth/Qwen3.5-4B-MTP-GGUF', local_dir='/models/qwen3-5-4b-mtp', allow_patterns=['Qwen3.5-4B-UD-Q4_K_XL.gguf'])"
+              fi
+          env:
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
+          volumeMounts:
+            - name: models
+              mountPath: /models
+      containers:
+        - name: llamacpp
+          image: zot.ingtra.net/library/image-inference:llamacpp-b9568-9ad8669
+          # MTP speculative decoding (head embedded in the GGUF). --mmproj / -np>1
+          # are not compatible with MTP; we serve text-only with np=1.
+          args:
+            - -m
+            - /models/qwen3-5-4b-mtp/Qwen3.5-4B-UD-Q4_K_XL.gguf
+            - --host
+            - "0.0.0.0"
+            - --port
+            - "8080"
+            - -ngl
+            - "99"
+            - -c
+            - "8192"
+            - -fa
+            - "on"
+            - -np
+            - "1"
+            - --spec-type
+            - draft-mtp
+            - --spec-draft-n-max
+            - "6"
+            - --jinja
+            - --metrics
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: models
+              mountPath: /models
+      volumes:
+        - name: models
+          hostPath:
+            path: /data/cache/hf-models
+            type: DirectoryOrCreate
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: qwen3-5-4b-mtp
+  labels:
+    app: qwen3-5-4b-mtp
+spec:
+  selector:
+    app: qwen3-5-4b-mtp
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+  type: ClusterIP
