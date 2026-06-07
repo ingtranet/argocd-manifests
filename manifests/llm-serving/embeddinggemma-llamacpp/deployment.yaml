@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: embeddinggemma-llamacpp
+  labels:
+    app: embeddinggemma-llamacpp
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: embeddinggemma-llamacpp
+  template:
+    metadata:
+      labels:
+        app: embeddinggemma-llamacpp
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      runtimeClassName: nvidia
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: DoNotSchedule
+          labelSelector:
+            matchLabels:
+              app: embeddinggemma-llamacpp
+      initContainers:
+        - name: download-model
+          image: python:3.11-slim
+          command:
+            - sh
+            - -c
+            - |
+              MODEL=/models/unsloth-embeddinggemma-300m-GGUF/embeddinggemma-300M-Q8_0.gguf
+              if [ -f "$MODEL" ]; then
+                echo "GGUF already present, skipping download."
+              else
+                pip install huggingface_hub && \
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('unsloth/embeddinggemma-300m-GGUF', local_dir='/models/unsloth-embeddinggemma-300m-GGUF', allow_patterns=['embeddinggemma-300M-Q8_0.gguf'])"
+              fi
+          env:
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
+          volumeMounts:
+            - name: models
+              mountPath: /models
+      containers:
+        - name: llamacpp
+          image: zot.ingtra.net/library/image-inference:llamacpp-b9568-9ad8669
+          # ENTRYPOINT is llama-server; these args are appended.
+          args:
+            - -m
+            - /models/unsloth-embeddinggemma-300m-GGUF/embeddinggemma-300M-Q8_0.gguf
+            - --host
+            - "0.0.0.0"
+            - --port
+            - "8080"
+            - -ngl
+            - "99"
+            - -c
+            - "2048"
+            - --embeddings
+            # EmbeddingGemma uses mean pooling + L2 normalization; match vLLM's pooling output.
+            - --pooling
+            - mean
+            - --embd-normalize
+            - "2"
+            # Served model name for OpenAI /v1/embeddings, so litellm's model field matches.
+            - --alias
+            - google/embeddinggemma-300m
+            - --metrics
+          env:
+            - name: NVIDIA_VISIBLE_DEVICES
+              value: "all"
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 60
+            timeoutSeconds: 30
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: models
+              mountPath: /models
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 8000
+              name: http
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: models
+          hostPath:
+            path: /data/cache/hf-models
+            type: DirectoryOrCreate
+        - name: nginx-config
+          configMap:
+            name: embeddinggemma-llamacpp-nginx-config
