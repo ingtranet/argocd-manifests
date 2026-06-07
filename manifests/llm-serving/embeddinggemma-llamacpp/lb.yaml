@@ -26,6 +26,6 @@ spec:
       priority: 100
       services:
         - kind: Service
-          name: embeddinggemma-300m
+          name: embeddinggemma-llamacpp
           namespace: llm-serving
           port: 8000
