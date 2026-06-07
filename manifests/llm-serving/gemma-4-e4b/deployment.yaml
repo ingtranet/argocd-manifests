@@ -5,9 +5,7 @@ metadata:
   labels:
     app: gemma-4-e4b
 spec:
-  # Temporarily paused (0) while the gemma-4-12b-spec draft test runs on the same
-  # node (orin-nx-3) — restore to 1 after the test.
-  replicas: 0
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -85,10 +83,8 @@ spec:
             # chat_template_kwargs={"enable_thinking": true}.
             - --chat-template-kwargs
             - '{"enable_thinking":false}'
-            # n-gram speculative decoding (no draft model, no extra memory).
-            # Helps most on repetitive/structured output.
-            - --spec-type
-            - ngram-mod
+            # Note: n-gram / draft-model speculative decoding and -fa/KV-quant all
+            # regressed or did nothing on Orin NX (bandwidth-bound) — see git log.
             - --metrics
           env:
             - name: NVIDIA_VISIBLE_DEVICES
