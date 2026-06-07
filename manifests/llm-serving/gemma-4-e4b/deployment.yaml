@@ -1,9 +1,9 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gemma-4-12b
+  name: gemma-4-e4b
   labels:
-    app: gemma-4-12b
+    app: gemma-4-e4b
 spec:
   replicas: 1
   strategy:
@@ -13,11 +13,11 @@ spec:
       maxUnavailable: 1
   selector:
     matchLabels:
-      app: gemma-4-12b
+      app: gemma-4-e4b
   template:
     metadata:
       labels:
-        app: gemma-4-12b
+        app: gemma-4-e4b
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "8080"
@@ -37,7 +37,7 @@ spec:
           whenUnsatisfiable: DoNotSchedule
           labelSelector:
             matchLabels:
-              app: gemma-4-12b
+              app: gemma-4-e4b
       initContainers:
         - name: download-model
           image: python:3.11-slim
@@ -45,12 +45,12 @@ spec:
             - sh
             - -c
             - |
-              MODEL=/models/gemma-4-12b-it-qat-q4_0-gguf/gemma-4-12b-it-qat-q4_0.gguf
+              MODEL=/models/gemma-4-e4b-it-qat-q4_0-gguf/gemma-4-E4B_q4_0-it.gguf
               if [ -f "$MODEL" ]; then
                 echo "GGUF already present, skipping download."
               else
                 pip install huggingface_hub && \
-                python -c "from huggingface_hub import snapshot_download; snapshot_download('google/gemma-4-12B-it-qat-q4_0-gguf', local_dir='/models/gemma-4-12b-it-qat-q4_0-gguf', allow_patterns=['gemma-4-12b-it-qat-q4_0.gguf'])"
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('google/gemma-4-E4B-it-qat-q4_0-gguf', local_dir='/models/gemma-4-e4b-it-qat-q4_0-gguf', allow_patterns=['gemma-4-E4B_q4_0-it.gguf'])"
               fi
           env:
             - name: HF_TOKEN
@@ -68,7 +68,7 @@ spec:
           # ENTRYPOINT is llama-server; these args are appended.
           args:
             - -m
-            - /models/gemma-4-12b-it-qat-q4_0-gguf/gemma-4-12b-it-qat-q4_0.gguf
+            - /models/gemma-4-e4b-it-qat-q4_0-gguf/gemma-4-E4B_q4_0-it.gguf
             - --host
             - "0.0.0.0"
             - --port
@@ -77,9 +77,6 @@ spec:
             - "99"
             - -c
             - "8192"
-            # Note: forcing -fa on or quantizing the KV cache (q8_0) both *regressed*
-            # gen speed on this Orin NX / Gemma 4 q4_0 build, so we leave FA at its
-            # default (auto) and the KV cache at f16.
             # Use the chat template embedded in the GGUF (correct BOS/EOS for Gemma 4).
             - --jinja
             # Default reasoning/thinking OFF. Clients re-enable per request with
@@ -133,4 +130,4 @@ spec:
             type: DirectoryOrCreate
         - name: nginx-config
           configMap:
-            name: gemma-4-12b-nginx-config
+            name: gemma-4-e4b-nginx-config

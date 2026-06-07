@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: gemma-4-12b-nginx-config
+  name: gemma-4-e4b-nginx-config
   labels:
-    app: gemma-4-12b
+    app: gemma-4-e4b
 data:
   nginx.conf: |
     worker_processes auto;
