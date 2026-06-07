@@ -77,14 +77,9 @@ spec:
             - "99"
             - -c
             - "8192"
-            # Force flash attention on (default auto) and quantize the KV cache to
-            # q8_0 to cut unified-memory bandwidth pressure on the Orin.
+            # Force flash attention on (default auto).
             - -fa
             - "on"
-            - -ctk
-            - q8_0
-            - -ctv
-            - q8_0
             # Use the chat template embedded in the GGUF (correct BOS/EOS for Gemma 4).
             - --jinja
             # Default reasoning/thinking OFF. Clients re-enable per request with
