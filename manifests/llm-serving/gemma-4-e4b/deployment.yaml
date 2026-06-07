@@ -5,7 +5,9 @@ metadata:
   labels:
     app: gemma-4-e4b
 spec:
-  replicas: 1
+  # Temporarily paused (0) while the gemma-4-12b-spec draft test runs on the same
+  # node (orin-nx-3) — restore to 1 after the test.
+  replicas: 0
   strategy:
     type: RollingUpdate
     rollingUpdate:

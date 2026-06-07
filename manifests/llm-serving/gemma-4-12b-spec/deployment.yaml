@@ -20,8 +20,8 @@ spec:
         prometheus.io/port: "8080"
         prometheus.io/path: "/metrics"
     spec:
-      # Pin to the idle Orin NX node so 12B + E2B draft don't contend with the
-      # E4B + embeddinggemma pods on orin-nx-3 (would OOM the shared 16GB).
+      # Pin to orin-nx-3 (orin-nx-1 has too little headroom). gemma-4-e4b is
+      # scaled to 0 while this test runs so 12B + E2B draft fit in the 16GB.
       nodeSelector:
         nvidia.com/gpu.product: Orin
       affinity:
@@ -31,7 +31,7 @@ spec:
               - matchExpressions:
                   - key: kubernetes.io/hostname
                     operator: In
-                    values: ["orin-nx-1"]
+                    values: ["orin-nx-3"]
       runtimeClassName: nvidia
       tolerations:
         - key: nvidia.com/gpu
