@@ -150,6 +150,13 @@ spec:
             # whole orin-nx-1 (TaintManagerEviction recovery).
             - name: PYTORCH_CUDA_ALLOC_CONF
               value: "expandable_segments:True"
+            # Cap glibc malloc arenas. smaps showed RSS ~2.2GB was almost
+            # entirely anon (libs only 43MB), spread across many 64MB [anon]
+            # chunks — the classic per-thread arena fragmentation pattern on
+            # an 8-core box. Limiting to 2 arenas trims that overhead; no
+            # effect if the chunks turn out to be CUDA pinned host buffers.
+            - name: MALLOC_ARENA_MAX
+              value: "2"
           # Cap process RSS so a runaway transient cannot drag the *node*
           # down. Orin NX has 16GiB unified.
           resources:
