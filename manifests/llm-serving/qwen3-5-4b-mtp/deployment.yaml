@@ -76,14 +76,7 @@ spec:
             - "99"
             - -c
             - "8192"
-            - -fa
-            - "on"
-            - -np
-            - "1"
-            - --spec-type
-            - draft-mtp
-            - --spec-draft-n-max
-            - "6"
+            # MTP draft-mtp regressed to ~4.9 tok/s on Orin (vs plain), so disabled.
             - --jinja
             - --metrics
           env:
