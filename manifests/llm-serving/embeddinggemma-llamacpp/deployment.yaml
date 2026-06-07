@@ -45,12 +45,12 @@ spec:
             - sh
             - -c
             - |
-              MODEL=/models/unsloth-embeddinggemma-300m-GGUF/embeddinggemma-300M-Q8_0.gguf
+              MODEL=/models/ggml-org-embeddinggemma-300M-GGUF/embeddinggemma-300M-Q8_0.gguf
               if [ -f "$MODEL" ]; then
                 echo "GGUF already present, skipping download."
               else
                 pip install huggingface_hub && \
-                python -c "from huggingface_hub import snapshot_download; snapshot_download('unsloth/embeddinggemma-300m-GGUF', local_dir='/models/unsloth-embeddinggemma-300m-GGUF', allow_patterns=['embeddinggemma-300M-Q8_0.gguf'])"
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('ggml-org/embeddinggemma-300M-GGUF', local_dir='/models/ggml-org-embeddinggemma-300M-GGUF', allow_patterns=['embeddinggemma-300M-Q8_0.gguf'])"
               fi
           env:
             - name: HF_TOKEN
@@ -68,7 +68,7 @@ spec:
           # ENTRYPOINT is llama-server; these args are appended.
           args:
             - -m
-            - /models/unsloth-embeddinggemma-300m-GGUF/embeddinggemma-300M-Q8_0.gguf
+            - /models/ggml-org-embeddinggemma-300M-GGUF/embeddinggemma-300M-Q8_0.gguf
             - --host
             - "0.0.0.0"
             - --port
