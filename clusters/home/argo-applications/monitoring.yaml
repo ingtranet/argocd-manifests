@@ -243,7 +243,7 @@ spec:
               }
               loki.source.kubernetes "pod_logs" {
                 targets    = discovery.relabel.pod_logs.output
-                forward_to = [loki.write.openobserve.receiver]
+                forward_to = [loki.process.drop_empty.receiver]
               }
 
               // ---------- Kubernetes cluster events ----------
@@ -255,10 +255,22 @@ spec:
               // kubernetes_events can't be relabeled at the source, so route it
               // through here to set the OpenObserve stream name (avoids "default").
               loki.relabel "events" {
-                forward_to = [loki.write.openobserve.receiver]
+                forward_to = [loki.process.drop_empty.receiver]
                 rule {
                   target_label = "o2_stream_name"
                   replacement  = "k8s_events"
+                }
+              }
+
+              // OpenObserve rejects the whole batch with HTTP 400
+              // ("empty log line") if any single entry has a blank line, so
+              // Alloy ends up dropping every batch. Drop empty/whitespace-only
+              // lines here before pushing.
+              loki.process "drop_empty" {
+                forward_to = [loki.write.openobserve.receiver]
+                stage.drop {
+                  expression          = "^\\s*$"
+                  drop_counter_reason = "empty_line"
                 }
               }
 
