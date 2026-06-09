@@ -233,6 +233,13 @@ spec:
                   separator     = "/"
                   target_label  = "job"
                 }
+                // default is a SQL reserved word the Grafana OpenObserve plugin
+                // can't query, so route all pod logs to the k8s_logs stream.
+                // Per-namespace alerting still works via the "namespace" label.
+                rule {
+                  target_label = "o2_stream_name"
+                  replacement  = "k8s_logs"
+                }
               }
               loki.source.kubernetes "pod_logs" {
                 targets    = discovery.relabel.pod_logs.output
@@ -243,7 +250,16 @@ spec:
               loki.source.kubernetes_events "cluster_events" {
                 job_name   = "integrations/kubernetes/eventhandler"
                 log_format = "logfmt"
+                forward_to = [loki.relabel.events.receiver]
+              }
+              // kubernetes_events can't be relabeled at the source, so route it
+              // through here to set the OpenObserve stream name (avoids "default").
+              loki.relabel "events" {
                 forward_to = [loki.write.openobserve.receiver]
+                rule {
+                  target_label = "o2_stream_name"
+                  replacement  = "k8s_events"
+                }
               }
 
               loki.write "openobserve" {
