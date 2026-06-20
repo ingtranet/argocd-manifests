@@ -1,0 +1,82 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dagster
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dagster
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://dagster-io.github.io/helm
+    chart: dagster
+    targetRevision: 1.13.10
+    helm:
+      releaseName: dagster
+      valuesObject:
+        # 외부 Postgres 재사용 (Airflow와 동일 인스턴스 postgresql.vd.ingtra.net).
+        # DB 'dagster'는 사전 생성 필요. password는 external-secret으로 주입.
+        postgresql:
+          enabled: false
+          postgresqlHost: "postgresql.vd.ingtra.net"
+          postgresqlUsername: "system"
+          postgresqlDatabase: "dagster"
+          service:
+            port: 5432
+        global:
+          postgresqlSecretName: "dagster-postgresql-secret"
+        generatePostgresqlPasswordSecret: false
+        # compute log 비활성 — S3/PVC 없이 운영. step stdout은 파드 로그로 나가
+        # 기존 Vector→OpenObserve 파이프라인에서 확인.
+        computeLogManager:
+          type: NoOpComputeLogManager
+        # Chart 내장 ingress 미사용 — Traefik IngressRoute(manifests/traefik-configs/dagster.yaml)로 노출.
+        ingress:
+          enabled: false
+        # code location: 뉴스 아카이빙 파이프라인.
+        # 코드는 별도 repo dagster-pipelines 의 news 프로젝트 → 이미지로 빌드.
+        dagster-user-deployments:
+          enabled: true
+          deployments:
+            - name: news
+              image:
+                repository: cookieshake/news-dagster
+                # TODO: build-news CI가 push한 실제 태그로 고정 (latest는 재시작 시에만 갱신)
+                tag: "latest"
+                pullPolicy: Always
+              dagsterApiGrpcArgs:
+                - "-m"
+                - "news.definitions"
+              port: 4000
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dagster
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dagster-configs
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/ingtranet/argocd-manifests.git
+    path: manifests/dagster
+    targetRevision: HEAD
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: dagster
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: dagster-postgresql-secret
+      jsonPointers:
+        - /data
+        - /stringData
