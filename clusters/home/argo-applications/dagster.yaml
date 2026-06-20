@@ -73,6 +73,10 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: dagster
+  syncPolicy:
+    syncOptions:
+      # placeholder Secret이 클러스터에 수동 주입된 실제 값을 sync 때 덮어쓰지 않도록
+      - RespectIgnoreDifferences=true
   ignoreDifferences:
     - group: ""
       kind: Secret
