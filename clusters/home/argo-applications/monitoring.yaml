@@ -381,6 +381,29 @@ spec:
                   source_labels = ["__name__"]
                   regex         = "go_.*|process_.*|reflector_.*|workqueue_.*_bucket|rest_client_request_duration_seconds_bucket|apiserver_.*_bucket|etcd_request_duration_seconds_bucket"
                 }
+                // cadvisor is the largest single ingest source: container_* metrics
+                // explode by container x device/interface. We only keep what dashboards
+                // /alerts actually use; the rest is dropped here.
+                // KEEP (do not drop): container_cpu_usage_seconds_total,
+                //   container_cpu_cfs_throttled_{periods,seconds}_total,
+                //   container_memory_{working_set_bytes,rss,usage_bytes,cache},
+                //   container_spec_{memory_limit_bytes,cpu_quota,cpu_period},
+                //   container_oom_events_total,
+                //   container_network_{receive,transmit}_bytes_total,
+                //   container_fs_{usage_bytes,limit_bytes},
+                //   container_{last_seen,start_time_seconds}.
+                // (1) per-device / per-interface fan-out (fs, network counters, blkio)
+                rule {
+                  action        = "drop"
+                  source_labels = ["__name__"]
+                  regex         = "container_fs_(inodes_free|inodes_total|io_current|io_time_seconds_total|io_time_weighted_seconds_total|read_seconds_total|reads_bytes_total|reads_merged_total|reads_total|sector_reads_total|sector_writes_total|write_seconds_total|writes_bytes_total|writes_merged_total|writes_total)|container_network_(receive|transmit)_(errors_total|packets_total|packets_dropped_total)|container_blkio_device_usage_total"
+                }
+                // (2) low-value per-container series (granular cpu/memory, spec, PSI, misc)
+                rule {
+                  action        = "drop"
+                  source_labels = ["__name__"]
+                  regex         = "container_cpu_(load_average_10s|load_d_average_10s|system_seconds_total|user_seconds_total|cfs_periods_total)|container_memory_(failcnt|failures_total|mapped_file|kernel_usage|swap|max_usage_bytes)|container_spec_(cpu_shares|memory_swap_limit_bytes|memory_reservation_limit_bytes)|container_pressure_.*|container_(tasks_state|threads|threads_max|sockets|processes|file_descriptors|ulimits_soft)|cadvisor_version_info"
+                }
               }
 
               prometheus.remote_write "openobserve" {
