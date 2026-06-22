@@ -13,23 +13,22 @@ spec:
   project: default
   source:
     repoURL: https://airflow.apache.org
-    chart: airflow 
-    targetRevision: 1.18.0
+    chart: airflow
+    targetRevision: 1.22.0
     helm:
       releaseName: airflow
       valuesObject:
         images:
           airflow:
             repository: cookieshake/airflow
-            tag: 3.1.5-251213-glq
+            tag: 3.2.2-260623-yg7
         executor: "KubernetesExecutor"
         allowPodLaunching: true
         allowJobLaunching: true
         data:
           metadataSecretName: "secrets"
-        webserver:
-          defaultUser:
-            enabled: false
+        createUserJob:
+          enabled: false
         triggerer:
           persistence:
             enabled: false
@@ -54,9 +53,19 @@ spec:
             remote_base_log_folder: "s3://airflow/logs"
             remote_log_conn_id: "ingtranet_s3"
             encrypt_s3_logs: "False"
-          dag_processor:
-            dag_bundle_config_list: '[{"name": "general_airflow_dags", "classpath": "airflow.providers.git.bundles.git.GitDagBundle", "kwargs": {"tracking_ref": "main", "git_conn_id": "general_airflow_dags"}}, {"name": "private_airflow_dags", "classpath": "airflow.providers.git.bundles.git.GitDagBundle", "kwargs": {"tracking_ref": "main", "git_conn_id": "private_airflow_dags"}}]'  
-          
+        dagProcessor:
+          dagBundleConfigList:
+            - name: general_airflow_dags
+              classpath: airflow.providers.git.bundles.git.GitDagBundle
+              kwargs:
+                tracking_ref: main
+                git_conn_id: general_airflow_dags
+            - name: private_airflow_dags
+              classpath: airflow.providers.git.bundles.git.GitDagBundle
+              kwargs:
+                tracking_ref: main
+                git_conn_id: private_airflow_dags
+
   destination:
     server: https://kubernetes.default.svc
     namespace: airflow
