@@ -39,6 +39,15 @@ spec:
         jwtSecretName: "secrets"
         postgresql:
           enabled: false
+        # Remote-logging/XCom S3 커넥션을 env var로 주입. Airflow 3에서 worker
+        # supervisor(태스크 종료 후 로그 업로드)는 메타DB 접근이 없어 DB 커넥션을
+        # 못 푼다 → EnvironmentVariablesBackend로 모든 컨텍스트에서 해석되게 함.
+        extraEnv: |
+          - name: AIRFLOW_CONN_INGTRANET_S3
+            valueFrom:
+              secretKeyRef:
+                name: secrets
+                key: ingtranet-s3-conn
         apiServer:
           # 단일 uvicorn 워커가 UI 요청 폭주 시 헬스 프로브(5s)를 못 받아 CrashLoop → 프로브 완화
           livenessProbe:
