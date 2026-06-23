@@ -77,6 +77,14 @@ spec:
             - "99"
             - -c
             - "2048"
+            # Embedding은 non-causal이라 시퀀스 전체가 한 ubatch 안에 들어가야 한다.
+            # ubatch(-ub) 기본값 512면 512토큰 초과 입력이 "input is too large to
+            # process. increase the physical batch size" 500을 낸다. ctx(2048)와
+            # 동일하게 올려 2048토큰까지 처리. -b >= -ub 보장 위해 둘 다 명시.
+            - -b
+            - "2048"
+            - -ub
+            - "2048"
             - --embeddings
             # EmbeddingGemma uses mean pooling + L2 normalization; match vLLM's pooling output.
             - --pooling
