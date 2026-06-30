@@ -58,6 +58,23 @@ spec:
                 - name: dagster-s3-secret
               envVars:
                 - "AWS_DEFAULT_REGION=us-east-1"
+        # findata는 유니버스를 ~128 버킷으로 나눠 버킷마다 별도 run pod(K8sRunLauncher)로 실행한다.
+        # KIS 토큰 발급이 분당 1회 레이트리밋이라 다수 pod가 동시에 재인증하면 한도를 초과하므로,
+        # QueuedRunCoordinator로 run 시작을 직렬화한다.
+        # tagConcurrencyLimits는 dagster-pipelines 쪽에서 findata job/op에
+        # tags={"dagster/concurrency_key": "kis_api"}를 달아야 실제로 적용된다(코드 작업 필요, TODO).
+        # 그 전까지는 maxConcurrentRuns(클러스터 전체 run pod 동시 실행 수 제한)가 안전망 역할을 한다.
+        dagsterDaemon:
+          runCoordinator:
+            enabled: true
+            type: QueuedRunCoordinator
+            config:
+              queuedRunCoordinator:
+                maxConcurrentRuns: 5
+                tagConcurrencyLimits:
+                  - key: "dagster/concurrency_key"
+                    value: "kis_api"
+                    limit: 2
         # Chart 내장 ingress 미사용 — Traefik IngressRoute(manifests/traefik-configs/dagster.yaml)로 노출.
         ingress:
           enabled: false
@@ -76,6 +93,21 @@ spec:
                 - "-m"
                 - "news.definitions"
               port: 4000
+            # code location: 금융 데이터 수집 파이프라인(한국투자증권 API).
+            # 코드는 별도 repo dagster-pipelines 의 findata 프로젝트 → 이미지로 빌드.
+            # asset 실행(run pod)에서 KIS API·findata용 Postgres를 호출한다. 자격증명은
+            # dagster-findata-secret(envSecrets)으로 주입.
+            - name: findata
+              image:
+                repository: cookieshake/findata-dagster
+                tag: "latest"
+                pullPolicy: Always
+              dagsterApiGrpcArgs:
+                - "-m"
+                - "findata.definitions"
+              port: 4000
+              envSecrets:
+                - name: dagster-findata-secret
   destination:
     server: https://kubernetes.default.svc
     namespace: dagster
@@ -111,6 +143,12 @@ spec:
     - group: ""
       kind: Secret
       name: dagster-s3-secret
+      jsonPointers:
+        - /data
+        - /stringData
+    - group: ""
+      kind: Secret
+      name: dagster-findata-secret
       jsonPointers:
         - /data
         - /stringData
