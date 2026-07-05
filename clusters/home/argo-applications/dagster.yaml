@@ -94,13 +94,15 @@ spec:
                 - "news.definitions"
               port: 4000
             # code location: 금융 데이터 수집 파이프라인(한국투자증권 API).
-            # 코드는 별도 repo dagster-pipelines 의 findata 프로젝트 → 이미지로 빌드.
+            # 코드는 별도 repo dagster-pipelines 의 findata 프로젝트 → 사내 zot 레지스트리로 빌드
+            # (Docker Hub/GitHub CI는 폐기, 멀티아치 amd64+arm64로 수동/자체 빌드).
             # asset 실행(run pod)에서 KIS API·findata용 Postgres를 호출한다. 자격증명은
             # dagster-findata-secret(envSecrets)으로 주입.
+            # TODO: dagster/concurrency_key=kis_api op_tag 반영 이미지로 태그 갱신 예정.
             - name: findata
               image:
-                repository: cookieshake/findata-dagster
-                tag: "latest"
+                repository: zot.ingtra.net/library/findata-dagster
+                tag: "a265c06"
                 pullPolicy: Always
               dagsterApiGrpcArgs:
                 - "-m"
