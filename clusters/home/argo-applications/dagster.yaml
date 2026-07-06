@@ -116,22 +116,22 @@ spec:
               # KIS 토큰 캐시 공유(PVC 미사용). KIS 토큰 발급은 분당 1회 제한이라
               # 128개 run pod가 각자 발급하면 한도를 넘긴다. run pod를 한 노드에 고정하고
               # 그 노드의 hostPath를 tooja 캐시 경로(~/.cache/tooja=/root/.cache/tooja)에
-              # 마운트 → 토큰 1회 발급 후 24h 전 pod 재사용. run pod 전용(run_k8s_config).
-              containerContext:
-                k8s:
-                  run_k8s_config:
-                    pod_spec_config:
-                      node_selector:
-                        kubernetes.io/hostname: k8s-la-worker-2
-                      volumes:
-                        - name: tooja-cache
-                          hostPath:
-                            path: /var/lib/tooja-cache
-                            type: DirectoryOrCreate
-                    container_config:
-                      volume_mounts:
-                        - name: tooja-cache
-                          mountPath: /root/.cache/tooja
+              # 마운트 → 토큰 1회 발급 후 24h 전 pod 재사용.
+              # 주의: dagster helm 차트(dagster-user-deployments)는 아래 네이티브 필드
+              # (nodeSelector/volumes/volumeMounts)를 읽어 run pod의 container context
+              # (run_k8s_config.pod_spec_config.node_selector + volumes/volume_mounts)로
+              # 반영한다. `containerContext` 필드는 차트가 읽지 않음(무시됨).
+              # code-server pod에도 같이 적용되지만 무해(토큰 발급 안 함).
+              nodeSelector:
+                kubernetes.io/hostname: k8s-la-worker-2
+              volumes:
+                - name: tooja-cache
+                  hostPath:
+                    path: /var/lib/tooja-cache
+                    type: DirectoryOrCreate
+              volumeMounts:
+                - name: tooja-cache
+                  mountPath: /root/.cache/tooja
   destination:
     server: https://kubernetes.default.svc
     namespace: dagster
