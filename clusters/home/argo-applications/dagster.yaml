@@ -102,7 +102,7 @@ spec:
             - name: findata
               image:
                 repository: zot.ingtra.net/library/findata-dagster
-                tag: "a265c06"
+                tag: "6971441"
                 pullPolicy: Always
               dagsterApiGrpcArgs:
                 - "-m"
