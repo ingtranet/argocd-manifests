@@ -75,6 +75,8 @@ spec:
         # tags={"dagster/concurrency_key": "kis_api"}를 달아야 실제로 적용된다(코드 작업 필요, TODO).
         # 그 전까지는 maxConcurrentRuns(클러스터 전체 run pod 동시 실행 수 제한)가 안전망 역할을 한다.
         dagsterDaemon:
+          # 백필 런파드(kis_api)를 1개로 직렬화 — findata run pod가 단일 노드에 고정돼
+          # 동시 실행 시 노드 압박/토큰 경합이 생긴다. 일시적 실패는 runRetries로 자동 복구.
           runCoordinator:
             enabled: true
             type: QueuedRunCoordinator
@@ -84,7 +86,10 @@ spec:
                 tagConcurrencyLimits:
                   - key: "dagster/concurrency_key"
                     value: "kis_api"
-                    limit: 2
+                    limit: 1
+          runRetries:
+            enabled: true
+            maxRetries: 2
         # Chart 내장 ingress 미사용 — Traefik IngressRoute(manifests/traefik-configs/dagster.yaml)로 노출.
         ingress:
           enabled: false
