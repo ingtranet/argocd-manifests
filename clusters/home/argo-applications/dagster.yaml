@@ -120,6 +120,10 @@ spec:
                   value: "https://s3.ingtra.net"
                 - name: S3_BUCKET
                   value: "dagster"
+              # Hacker News 수집은 PostgreSQL(dwh-postgres/harvest DB)에 적재한다.
+              # HARVEST_PG_DSN을 통째로 env 주입(naver는 S3라 이 DSN 불필요).
+              envSecrets:
+                - name: dagster-harvest-secret
             # code location: 금융 데이터 수집 파이프라인(한국투자증권 API).
             # 코드는 별도 repo dagster-pipelines 의 findata 프로젝트 → 사내 zot 레지스트리로 빌드
             # (Docker Hub/GitHub CI는 폐기, 멀티아치 amd64+arm64로 수동/자체 빌드).
@@ -200,6 +204,12 @@ spec:
     - group: ""
       kind: Secret
       name: dagster-findata-secret
+      jsonPointers:
+        - /data
+        - /stringData
+    - group: ""
+      kind: Secret
+      name: dagster-harvest-secret
       jsonPointers:
         - /data
         - /stringData
