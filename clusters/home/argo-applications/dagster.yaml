@@ -62,11 +62,11 @@ spec:
               # httpx(trust_env)·boto3 모두 이 env를 자동 사용(코드 변경 불필요). 대소문자 둘 다 셋.
               envVars:
                 - "AWS_DEFAULT_REGION=us-east-1"
-                - "HTTP_PROXY=http://http-proxy-1.vd.ingtra.net:8090"
-                - "HTTPS_PROXY=http://http-proxy-1.vd.ingtra.net:8090"
+                - "HTTP_PROXY=http://http-proxy-1.vd.ingtra.net:8290"
+                - "HTTPS_PROXY=http://http-proxy-1.vd.ingtra.net:8290"
                 - "NO_PROXY=.ingtra.net,ingtra.net,.svc,.cluster.local,localhost,127.0.0.1"
-                - "http_proxy=http://http-proxy-1.vd.ingtra.net:8090"
-                - "https_proxy=http://http-proxy-1.vd.ingtra.net:8090"
+                - "http_proxy=http://http-proxy-1.vd.ingtra.net:8290"
+                - "https_proxy=http://http-proxy-1.vd.ingtra.net:8290"
                 - "no_proxy=.ingtra.net,ingtra.net,.svc,.cluster.local,localhost,127.0.0.1"
         # findata는 유니버스를 ~128 버킷으로 나눠 버킷마다 별도 run pod(K8sRunLauncher)로 실행한다.
         # KIS 토큰 발급이 분당 1회 레이트리밋이라 다수 pod가 동시에 재인증하면 한도를 초과하므로,
