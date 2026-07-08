@@ -78,21 +78,33 @@ spec:
         # Chart 내장 ingress 미사용 — Traefik IngressRoute(manifests/traefik-configs/dagster.yaml)로 노출.
         ingress:
           enabled: false
-        # code location: 뉴스 아카이빙 파이프라인.
-        # 코드는 별도 repo dagster-pipelines 의 news 프로젝트 → 이미지로 빌드.
+        # code location: 멀티소스 수집·아카이빙 파이프라인(Naver 뉴스 43개 언론사 + Hacker News).
+        # 코드는 별도 repo dagster-pipelines 의 harvest 프로젝트 → 사내 zot 레지스트리로 빌드
+        # (구 news 스캐폴드에서 리네임. Docker Hub/GitHub CI는 폐기, 멀티아치 amd64+arm64로 수동 빌드).
+        # 수집 결과는 run pod가 사내 S3(s3.ingtra.net, 버킷 dagster)에 parquet으로 적재한다.
+        # AWS_ACCESS_KEY_ID/SECRET은 runLauncher.envSecrets(dagster-s3-secret)가 전역 주입하고,
+        # S3_ENDPOINT_URL/S3_BUCKET은 아래 deployment env로 준다(run pod가 container context로 상속).
+        # 이미지 태그는 latest 고정. 배포는 deploy.sh가 build/push(:latest + :sha) 후
+        # 코드로케이션/daemon/webserver를 rollout restart 하는 방식(매니페스트 무편집).
+        # pullPolicy: Always 필수 — latest 새 다이제스트를 매 pod 기동 시 재풀.
+        # 롤백이 필요하면 이 tag를 특정 :sha(레지스트리에 함께 push됨)로 임시 핀.
         dagster-user-deployments:
           enabled: true
           deployments:
-            - name: news
+            - name: harvest
               image:
-                repository: cookieshake/news-dagster
-                # TODO: build-news CI가 push한 실제 태그로 고정 (latest는 재시작 시에만 갱신)
+                repository: zot.ingtra.net/library/harvest-dagster
                 tag: "latest"
                 pullPolicy: Always
               dagsterApiGrpcArgs:
                 - "-m"
-                - "news.definitions"
+                - "harvest.definitions"
               port: 4000
+              env:
+                - name: S3_ENDPOINT_URL
+                  value: "https://s3.ingtra.net"
+                - name: S3_BUCKET
+                  value: "dagster"
             # code location: 금융 데이터 수집 파이프라인(한국투자증권 API).
             # 코드는 별도 repo dagster-pipelines 의 findata 프로젝트 → 사내 zot 레지스트리로 빌드
             # (Docker Hub/GitHub CI는 폐기, 멀티아치 amd64+arm64로 수동/자체 빌드).
