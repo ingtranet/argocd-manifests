@@ -122,8 +122,16 @@ spec:
                   value: "dagster"
               # Hacker News 수집은 PostgreSQL(dwh-postgres/harvest DB)에 적재한다.
               # HARVEST_PG_DSN을 통째로 env 주입(naver는 S3라 이 DSN 불필요).
+              #
+              # dagster-s3-secret(AWS_ACCESS_KEY_ID/SECRET)은 run pod엔 runLauncher가 전역
+              # 주입하지만, 이 gRPC(user-code) 서버에도 필요하다: UI Materialize는 run pod을
+              # 띄우기 전에 gRPC 서버에서 S3Resource의 EnvVar config를 먼저 resolve하는데,
+              # 여기 AWS 키가 없으면 launch 단계에서 죽어 run이 생성조차 안 된다(naver 전용 함정,
+              # HN은 HARVEST_PG_DSN만 써서 무관). findata는 KIS 자격증명을 hostPath .env로 읽어
+              # EnvVar resolve가 없으므로 이 secret이 불필요하다.
               envSecrets:
                 - name: dagster-harvest-secret
+                - name: dagster-s3-secret
             # code location: 금융 데이터 수집 파이프라인(한국투자증권 API).
             # 코드는 별도 repo dagster-pipelines 의 findata 프로젝트 → 사내 zot 레지스트리로 빌드
             # (Docker Hub/GitHub CI는 폐기, 멀티아치 amd64+arm64로 수동/자체 빌드).
