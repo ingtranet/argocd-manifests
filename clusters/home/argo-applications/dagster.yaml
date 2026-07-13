@@ -54,6 +54,14 @@ spec:
           type: K8sRunLauncher
           config:
             k8sRunLauncher:
+              # run pod가 Job으로 떠서 완료 후에도 안 지워지고 쌓임(하루 300+ run 규모라
+              # 차트 기본 TTL 24h 안에 300개 넘게 적체됨, 2026-07-14 수동 GC로 발견).
+              # k8s Job의 ttlSecondsAfterFinished를 15분으로 짧게 잡아 완료된 job/pod를
+              # 빨리 회수. 실패 run 로그는 S3 compute log(위 computeLogManager)에 남으므로
+              # pod 자체를 오래 보존할 필요 없음.
+              runK8sConfig:
+                jobSpecConfig:
+                  ttlSecondsAfterFinished: 900
               envSecrets:
                 - name: dagster-s3-secret
               # 모든 code location(findata/harvest)의 run pod가 상속하는 전역 env.
