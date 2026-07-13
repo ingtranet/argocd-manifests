@@ -90,6 +90,19 @@ spec:
           runRetries:
             enabled: true
             maxRetries: 2
+          # 2026-07-13 hn_ingest 사고: pool(dagster/concurrency_key) 슬롯을 쥔 run이 노드
+          # 장애로 죽었는데 슬롯이 반납 안 돼 이후 스케줄 run이 전부 QUEUED로 무한 적체됨.
+          # 차트 기본값 freeSlotsAfterRunEndSeconds=0은 "즉시 반납"이 아니라, dagster 소스가
+          # `if not timeout_seconds: return`으로 0을 falsy 취급해 이 daemon 체크 자체를 꺼버림
+          # (dagster/_daemon/monitoring/concurrency.py) — 즉 0으로 두면 죽은 run이 슬롯을
+          # 영구 점유해도 아무도 회수하지 않는다. run이 끝난(성공/실패/취소 무관) 지 1시간 지나도
+          # 슬롯이 안 풀려 있으면 daemon이 강제로 회수하도록 명시.
+          runMonitoring:
+            enabled: true
+            startTimeoutSeconds: 300
+            maxResumeRunAttempts: 0
+            pollIntervalSeconds: 120
+            freeSlotsAfterRunEndSeconds: 3600
         # Chart 내장 ingress 미사용 — Traefik IngressRoute(manifests/traefik-configs/dagster.yaml)로 노출.
         ingress:
           enabled: false
