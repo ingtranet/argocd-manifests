@@ -11,7 +11,14 @@ parameters:
   share: /mnt/burrow/warm/@k8s
   subDir: nfs-csi/${pv.metadata.name}
   mountPermissions: "0"
+  # NFS 서버(ganesha)가 멀티홈이라 리눅스 클라이언트가 v4.1+에서 세션 트렁킹을 시도하는데,
+  # ganesha는 BIND_CONN_TO_SESSION이 미구현이라 타이밍에 따라 EREMOTEIO가 난다. v4.0은 세션이 없어 안전.
+  # 아래 시크릿은 컨트롤러의 CreateVolume/DeleteVolume 내부 마운트에 적용된다
+  # (드라이버는 PV/SC의 mountOptions가 아니라 secret의 mountoptions 키를 읽는다).
+  csi.storage.k8s.io/provisioner-secret-name: nfs-mount-options
+  csi.storage.k8s.io/provisioner-secret-namespace: kube-system
 reclaimPolicy: Delete
 volumeBindingMode: Immediate
+# 파드의 볼륨 마운트에 적용된다
 mountOptions:
-  - nfsvers=4.1
+  - nfsvers=4.0
