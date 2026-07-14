@@ -8,7 +8,7 @@ metadata:
 provisioner: nfs.csi.k8s.io
 parameters:
   server: 10.3.64.241
-  share: /mnt/burrow/warm/@k8s
+  share: /mnt/burrow/hot/k8s
   subDir: nfs-csi/${pv.metadata.name}
   mountPermissions: "0"
   # NFS 서버(ganesha)가 멀티홈이라 리눅스 클라이언트가 v4.1+에서 세션 트렁킹을 시도하는데,
