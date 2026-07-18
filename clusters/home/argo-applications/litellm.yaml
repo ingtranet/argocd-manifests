@@ -70,9 +70,39 @@ spec:
                     api_base: http://flux2-klein-9b:8000/v1
                     api_key: dummy
                     mode: image_generation
+                # 네임스페이스 규칙: local/=로컬 강제, openrouter/=OpenRouter, nvidia_nim/=NVIDIA NIM,
+                # auto/=자동 전환(로컬 우선 → 실패 시 폴백). 키는 naraninyeo와 동일값 재사용(litellm-env).
+                # ── 로컬 chat LLM (클러스터 내부 gemma-4-e4b) ──
+                - model_name: local/google/gemma-4-e4b-it
+                  litellm_params:
+                    model: openai/gemma-4-e4b-it
+                    api_base: http://gemma-4-e4b:8000/v1
+                    api_key: dummy
+                # ── OpenRouter 전체(와일드카드, BYOK) ──
+                - model_name: openrouter/*
+                  litellm_params:
+                    model: openrouter/*
+                    api_key: os.environ/OPENROUTER_API_KEY
+                # ── NVIDIA NIM 전체(와일드카드, 무료 티어, integrate.api.nvidia.com) ──
+                - model_name: nvidia_nim/*
+                  litellm_params:
+                    model: nvidia_nim/*
+                    api_key: os.environ/NVIDIA_API_KEY
+                # ── 자동 전환: 로컬 우선 → NIM → OpenRouter (아래 fallbacks) ──
+                - model_name: auto/google/gemma-4-e4b-it
+                  litellm_params:
+                    model: openai/gemma-4-e4b-it
+                    api_base: http://gemma-4-e4b:8000/v1
+                    api_key: dummy
               litellm_settings:
                 drop_params: true
                 set_verbose: false
+                # auto/ 모델은 로컬 실패 시 NIM(무료·빠름 nemotron), 그다음 OpenRouter(gemini)로 전환.
+                # 폴백 대상은 위 wildcard(nvidia_nim/*, openrouter/*)가 처리. 슬러그는 naraninyeo 검증값.
+                fallbacks:
+                  - auto/google/gemma-4-e4b-it:
+                      - nvidia_nim/nvidia/nemotron-3-nano-30b-a3b
+                      - openrouter/google/gemini-3.1-flash-lite
               router_settings:
                 num_retries: 0
           service:
