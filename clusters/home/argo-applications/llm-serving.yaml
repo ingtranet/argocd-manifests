@@ -20,9 +20,33 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: llm-serving
+  syncPolicy:
+    syncOptions:
+      # litellm placeholder Secret(litellm/secrets.yaml)에 수동 주입된 실제 값을
+      # sync 때 덮어쓰지 않도록. Helm chart 본체는 litellm.yaml Application 이 관리.
+      - RespectIgnoreDifferences=true
   ignoreDifferences:
     - group: apps
       kind: Deployment
       name: qwen3-vl-embedding-2b-runpod
       jsonPointers:
         - /spec/replicas
+    # litellm placeholder Secret 3종 — 클러스터 수동주입값 보존(dagster 패턴).
+    - group: ""
+      kind: Secret
+      name: litellm-dbcreds
+      jsonPointers:
+        - /data
+        - /stringData
+    - group: ""
+      kind: Secret
+      name: litellm-env
+      jsonPointers:
+        - /data
+        - /stringData
+    - group: ""
+      kind: Secret
+      name: litellm-redis-auth
+      jsonPointers:
+        - /data
+        - /stringData

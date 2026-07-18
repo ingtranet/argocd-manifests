@@ -1,0 +1,126 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: litellm
+  namespace: argocd
+spec:
+  project: default
+  # 공식 litellm Helm chart(OCI). chart 1.1.0은 git main 에만 있고 OCI 미배포라,
+  # 레지스트리에 배포된 최고 안정 버전 0.1.100 을 사용한다.
+  source:
+    path: .
+    repoURL: oci://ghcr.io/berriai/litellm-helm
+    targetRevision: 0.1.100
+    helm:
+      releaseName: litellm
+      valuesObject:
+        # 현행 replicas 유지.
+        replicaCount: 3
+        # Service/ConfigMap 이름을 litellm/litellm-config 로 고정 →
+        # 기존 Traefik IngressRoute(traefik-configs/litellm.yaml)와 클러스터 내부
+        # 클라이언트가 http://litellm:4000 으로 무변경 접근.
+        fullnameOverride: litellm
+        image:
+          # DB-optimized 이미지(부팅 시 prisma 마이그레이션 자동 수행 → 별도 migration Job 불필요).
+          # 태그는 현행(v1.83.14-stable.patch.3)과 동일 stable 라인에 핀. 기본 태그 main-latest 는
+          # rolling 이라 금지. patch.3 은 non-db 이미지에만 존재해 base stable 로 핀.
+          repository: ghcr.io/berriai/litellm-database
+          tag: v1.83.14-stable
+          pullPolicy: IfNotPresent
+        service:
+          type: ClusterIP
+          port: 4000
+        # chart 내장 ingress 미사용 — Traefik IngressRoute 로 노출.
+        ingress:
+          enabled: false
+        # LITELLM_SALT_KEY 등 env 를 envFrom 으로 주입(placeholder secret, manifests/llm-serving/litellm/secrets.yaml).
+        # chart 는 salt key 를 세팅하지 않는다.
+        environmentSecrets:
+          - litellm-env
+        # 메타DB(virtual key/spend/log)는 dagster/airflow 와 동일 인스턴스 postgresql.vd.ingtra.net 재사용.
+        # DB 'litellm' 은 사전 수동 생성 필요. useExisting 시 chart 가 DB secret 을 만들지 않으므로
+        # litellm-dbcreds(placeholder)를 직접 참조. deployStandalone=false 로 내장 postgres 미배포.
+        db:
+          useExisting: true
+          deployStandalone: false
+          endpoint: postgresql.vd.ingtra.net
+          database: litellm
+          secret:
+            name: litellm-dbcreds
+            usernameKey: username
+            passwordKey: password
+        # 멀티 pod(3 replica) 코디네이션(cross-pod rate limit/spend)용 내장 redis.
+        # chart 가 REDIS_HOST/PORT/PASSWORD 를 주입하면 litellm proxy 가 내부 usage 캐시에 사용한다.
+        # 응답 캐싱(litellm_settings.cache)은 의도적으로 끔 — 이미지 생성/임베딩 응답이 캐시되면 곤란.
+        # persistence off(코디네이션 데이터는 ephemeral → PV 불필요).
+        # auth.existingSecret 을 쓰지 않으면 bitnami 가 매 sync 마다 새 비밀번호를 렌더해 드리프트가 남.
+        # networkPolicy off — 홈 클러스터에서 불필요한 정책으로 litellm→redis 를 막지 않도록.
+        redis:
+          enabled: true
+          architecture: standalone
+          auth:
+            enabled: true
+            existingSecret: litellm-redis-auth
+            existingSecretPasswordKey: redis-password
+          master:
+            persistence:
+              enabled: false
+          networkPolicy:
+            enabled: false
+        # config.yaml 로 렌더됨. 기존 model_list/litellm_settings/router_settings 를 그대로 이전.
+        # 모든 백엔드 api_key 는 dummy(내부 서비스).
+        proxy_config:
+          model_list:
+            - model_name: google/embeddinggemma-300m
+              litellm_params:
+                model: hosted_vllm//models/embeddinggemma-300m
+                api_base: http://embedding-lb/v1
+                api_key: dummy
+                max_parallel_requests: 256
+            - model_name: google/gemma-4-e4b-it
+              litellm_params:
+                model: openai/gemma-4-e4b-it
+                api_base: http://gemma-4-e4b:8000/v1
+                api_key: dummy
+            - model_name: black-forest-labs/FLUX.2-klein-4B
+              litellm_params:
+                model: openai/black-forest-labs/FLUX.2-klein-4B
+                api_base: http://flux2-klein:8000/v1
+                api_key: dummy
+                mode: image_generation
+            - model_name: black-forest-labs/FLUX.2-klein-9B
+              litellm_params:
+                model: openai/black-forest-labs/FLUX.2-klein-9B
+                api_base: http://flux2-klein-9b:8000/v1
+                api_key: dummy
+                mode: image_generation
+          litellm_settings:
+            drop_params: true
+            callbacks: []
+            success_callback: []
+            failure_callback: []
+            set_verbose: false
+          router_settings:
+            num_retries: 0
+          # master key 활성화 → admin UI 로그인 + virtual key/spend 관리 가능.
+          # 단 OSS litellm 은 master key 를 켜면 LLM 엔드포인트도 인증을 요구한다(public_routes 는
+          # Enterprise 전용). 호출자는 Authorization: Bearer <key> 필요. PROXY_MASTER_KEY 는
+          # chart 가 litellm-masterkey secret 에서 주입.
+          general_settings:
+            master_key: os.environ/PROXY_MASTER_KEY
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: llm-serving
+  syncPolicy:
+    syncOptions:
+      # 아래 ignoreDifferences 를 sync 가 존중하도록.
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    # chart 의 secret-masterkey.yaml 은 lookup 없이 randAlphaNum 으로 매 렌더마다 새 master key 를
+    # 생성한다 → 재sync 때마다 키가 바뀌면 발급된 virtual key 가 전부 무효화된다. /data 를 무시해
+    # 클러스터에 사전 주입한 실제 master key 를 보존한다(사전 수동 주입 필요).
+    - group: ""
+      kind: Secret
+      name: litellm-masterkey
+      jsonPointers:
+        - /data
