@@ -106,13 +106,14 @@ spec:
             - litellm-env
           service:
             port: 4001
+          # backend는 1Gi에서 기동 중 OOMKilled(137) → 2Gi로 상향.
           resources:
             requests:
               cpu: 100m
-              memory: 512Mi
+              memory: 1Gi
             limits:
               cpu: "1"
-              memory: 1Gi
+              memory: 2Gi
           hpa:
             enabled: true
             minReplicas: 1
