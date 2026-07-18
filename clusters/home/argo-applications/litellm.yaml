@@ -88,9 +88,12 @@ spec:
                   litellm_params:
                     model: nvidia_nim/*
                     api_key: os.environ/NVIDIA_API_KEY
-                # ── Google AI Studio 전체(와일드카드, gemini provider, generativelanguage.googleapis.com) ──
-                # 키 이름이 litellm 기본(GEMINI_API_KEY)이 아니라 GOOGLE_AI_STUDIO_API_KEY라 명시 참조.
-                - model_name: gemini/*
+                # ── Google AI Studio 전체(와일드카드) ──
+                # 호출 이름은 google_ai_studio/* (직관적)이지만 litellm 실제 provider는 gemini
+                # (generativelanguage.googleapis.com). * 매칭분을 gemini/*에 대입 →
+                # google_ai_studio/gemini-2.5-flash → gemini/gemini-2.5-flash.
+                # 키 이름도 litellm 기본(GEMINI_API_KEY)이 아니라 GOOGLE_AI_STUDIO_API_KEY라 명시 참조.
+                - model_name: google_ai_studio/*
                   litellm_params:
                     model: gemini/*
                     api_key: os.environ/GOOGLE_AI_STUDIO_API_KEY
