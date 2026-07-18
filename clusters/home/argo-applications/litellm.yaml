@@ -113,6 +113,10 @@ spec:
                 set_verbose: false
               router_settings:
                 num_retries: 0
+              # 프롬프트 로깅: 각 요청의 프롬프트+응답을 DB(LiteLLM_SpendLogs)에 저장 → admin UI Logs에서 조회.
+              # spend logs 자체는 DB 연결 시 기본 ON, 이 옵션이 메시지 본문까지 저장. 민감정보 로깅 유의.
+              general_settings:
+                store_prompts_in_spend_logs: true
           service:
             port: 4000
           # 홈 클러스터라 기본값(req cpu1/mem4Gi)에서 낮춤.
