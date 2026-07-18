@@ -97,6 +97,14 @@ spec:
                   litellm_params:
                     model: gemini/*
                     api_key: os.environ/GOOGLE_AI_STUDIO_API_KEY
+                # ── jaeho 자체호스팅 llama.cpp (Qwen3.6-27B, OpenAI 호환, 무인증) ──
+                # llm.jaehojang.cc는 사외 public 엔드포인트(정상 인증서). 서버 슬러그는 바뀔 수 있음
+                # (naraninyeo 참고) — 현재 /v1/models = unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q4_K_XL.
+                - model_name: jaeho/qwen3.6-27b
+                  litellm_params:
+                    model: openai/unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q4_K_XL
+                    api_base: https://llm.jaehojang.cc/v1
+                    api_key: dummy
                 # ── 자동 전환: 로컬 우선 → NIM → OpenRouter (아래 fallbacks) ──
                 - model_name: auto/google/gemma-4-e4b-it
                   litellm_params:
