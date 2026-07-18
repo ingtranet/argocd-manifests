@@ -54,29 +54,32 @@ spec:
             # 기존 model_list/settings 그대로 이전. api_key는 전부 dummy(내부 백엔드).
             # master key는 chart가 env로 주입하므로 general_settings.master_key 불필요.
             proxy_config:
+              # 네임스페이스 규칙: local/=클러스터 내부 자체호스팅, jaeho/=jaeho 자체호스팅(외부),
+              # openrouter/·nvidia_nim/·google_ai_studio/=클라우드 provider 와일드카드.
+              # (gemma-4-e4b는 백엔드 노드 장애로 제거. auto 페일오버는 same-model 방식으로 추후 재설계.)
               model_list:
-                - model_name: google/embeddinggemma-300m
+                # ── 로컬 임베딩 (클러스터 내부 llama.cpp) ──
+                - model_name: local/google/embeddinggemma-300m
                   litellm_params:
                     model: hosted_vllm//models/embeddinggemma-300m
-                    # gemma/flux처럼 직접 ClusterIP 서비스 사용. 구 embedding-lb(traefik ExternalName)는
-                    # http→https 302 redirect라 litellm(aiohttp)이 self-signed 인증서로 SSL 연결→검증 실패.
-                    # (litellm_settings.ssl_verify=false는 hosted_vllm aiohttp 경로엔 안 먹힘)
+                    # 직접 ClusterIP 사용. embedding-lb(traefik)는 http→https 302 redirect라
+                    # litellm(aiohttp)이 self-signed 인증서로 SSL 연결→검증 실패라 회피.
                     api_base: http://embeddinggemma-llamacpp:8000/v1
                     api_key: dummy
                     max_parallel_requests: 256
-                - model_name: black-forest-labs/FLUX.2-klein-9B
+                # ── 로컬 이미지 생성 (클러스터 내부) ──
+                - model_name: local/black-forest-labs/FLUX.2-klein-9B
                   litellm_params:
                     model: openai/black-forest-labs/FLUX.2-klein-9B
                     api_base: http://flux2-klein-9b:8000/v1
                     api_key: dummy
                     mode: image_generation
-                # 네임스페이스 규칙: local/=로컬 강제, openrouter/=OpenRouter, nvidia_nim/=NVIDIA NIM,
-                # auto/=자동 전환(로컬 우선 → 실패 시 폴백). 키는 naraninyeo와 동일값 재사용(litellm-env).
-                # ── 로컬 chat LLM (클러스터 내부 gemma-4-e4b) ──
-                - model_name: local/google/gemma-4-e4b-it
+                # ── jaeho 자체호스팅 llama.cpp (Qwen3.6-27B, OpenAI 호환, 무인증, 외부 public) ──
+                # 서버 슬러그는 바뀔 수 있음(naraninyeo 참고) — 현재 unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q4_K_XL.
+                - model_name: jaeho/qwen/qwen3.6-27b
                   litellm_params:
-                    model: openai/gemma-4-e4b-it
-                    api_base: http://gemma-4-e4b:8000/v1
+                    model: openai/unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q4_K_XL
+                    api_base: https://llm.jaehojang.cc/v1
                     api_key: dummy
                 # ── OpenRouter 전체(와일드카드, BYOK) ──
                 - model_name: openrouter/*
@@ -89,37 +92,16 @@ spec:
                     model: nvidia_nim/*
                     api_key: os.environ/NVIDIA_API_KEY
                 # ── Google AI Studio 전체(와일드카드) ──
-                # 호출 이름은 google_ai_studio/* (직관적)이지만 litellm 실제 provider는 gemini
-                # (generativelanguage.googleapis.com). * 매칭분을 gemini/*에 대입 →
+                # 호출 이름 google_ai_studio/*를 실제 provider gemini/*에 매핑(* 대입):
                 # google_ai_studio/gemini-2.5-flash → gemini/gemini-2.5-flash.
                 # 키 이름도 litellm 기본(GEMINI_API_KEY)이 아니라 GOOGLE_AI_STUDIO_API_KEY라 명시 참조.
                 - model_name: google_ai_studio/*
                   litellm_params:
                     model: gemini/*
                     api_key: os.environ/GOOGLE_AI_STUDIO_API_KEY
-                # ── jaeho 자체호스팅 llama.cpp (Qwen3.6-27B, OpenAI 호환, 무인증) ──
-                # llm.jaehojang.cc는 사외 public 엔드포인트(정상 인증서). 서버 슬러그는 바뀔 수 있음
-                # (naraninyeo 참고) — 현재 /v1/models = unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q4_K_XL.
-                - model_name: jaeho/qwen3.6-27b
-                  litellm_params:
-                    model: openai/unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q4_K_XL
-                    api_base: https://llm.jaehojang.cc/v1
-                    api_key: dummy
-                # ── 자동 전환: 로컬 우선 → NIM → OpenRouter (아래 fallbacks) ──
-                - model_name: auto/google/gemma-4-e4b-it
-                  litellm_params:
-                    model: openai/gemma-4-e4b-it
-                    api_base: http://gemma-4-e4b:8000/v1
-                    api_key: dummy
               litellm_settings:
                 drop_params: true
                 set_verbose: false
-                # auto/ 모델은 로컬 실패 시 NIM(무료·빠름 nemotron), 그다음 OpenRouter(gemini)로 전환.
-                # 폴백 대상은 위 wildcard(nvidia_nim/*, openrouter/*)가 처리. 슬러그는 naraninyeo 검증값.
-                fallbacks:
-                  - auto/google/gemma-4-e4b-it:
-                      - nvidia_nim/nvidia/nemotron-3-nano-30b-a3b
-                      - openrouter/google/gemini-3.1-flash-lite
               router_settings:
                 num_retries: 0
           service:
