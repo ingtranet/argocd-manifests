@@ -58,7 +58,10 @@ spec:
                 - model_name: google/embeddinggemma-300m
                   litellm_params:
                     model: hosted_vllm//models/embeddinggemma-300m
-                    api_base: http://embedding-lb/v1
+                    # gemma/flux처럼 직접 ClusterIP 서비스 사용. 구 embedding-lb(traefik ExternalName)는
+                    # http→https 302 redirect라 litellm(aiohttp)이 self-signed 인증서로 SSL 연결→검증 실패.
+                    # (litellm_settings.ssl_verify=false는 hosted_vllm aiohttp 경로엔 안 먹힘)
+                    api_base: http://embeddinggemma-llamacpp:8000/v1
                     api_key: dummy
                     max_parallel_requests: 256
                 - model_name: google/gemma-4-e4b-it
@@ -81,10 +84,6 @@ spec:
               litellm_settings:
                 drop_params: true
                 set_verbose: false
-                # 내부 백엔드 중 embedding-lb(traefik ExternalName)는 http→https 302 redirect라
-                # litellm이 self-signed 사내 인증서로 SSL 연결 → 검증 실패(CERTIFICATE_VERIFY_FAILED).
-                # 모든 백엔드가 사내(내부)이므로 인증서 검증을 끈다.
-                ssl_verify: false
               router_settings:
                 num_retries: 0
           service:
