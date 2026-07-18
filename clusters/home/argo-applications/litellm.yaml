@@ -81,6 +81,10 @@ spec:
               litellm_settings:
                 drop_params: true
                 set_verbose: false
+                # 내부 백엔드 중 embedding-lb(traefik ExternalName)는 http→https 302 redirect라
+                # litellm이 self-signed 사내 인증서로 SSL 연결 → 검증 실패(CERTIFICATE_VERIFY_FAILED).
+                # 모든 백엔드가 사내(내부)이므로 인증서 검증을 끈다.
+                ssl_verify: false
               router_settings:
                 num_retries: 0
           service:
