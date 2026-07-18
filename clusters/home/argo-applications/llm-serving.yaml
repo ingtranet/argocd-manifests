@@ -34,6 +34,12 @@ spec:
     # litellm placeholder Secret 3종 — 클러스터 수동주입값 보존(dagster 패턴).
     - group: ""
       kind: Secret
+      name: litellm-masterkey
+      jsonPointers:
+        - /data
+        - /stringData
+    - group: ""
+      kind: Secret
       name: litellm-dbcreds
       jsonPointers:
         - /data
@@ -41,12 +47,6 @@ spec:
     - group: ""
       kind: Secret
       name: litellm-env
-      jsonPointers:
-        - /data
-        - /stringData
-    - group: ""
-      kind: Secret
-      name: litellm-redis-auth
       jsonPointers:
         - /data
         - /stringData

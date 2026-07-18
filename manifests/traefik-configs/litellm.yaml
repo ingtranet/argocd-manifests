@@ -1,3 +1,9 @@
+# litellm(componentized) 단일 호스트 경로 분기.
+#   /ui, /_next, /litellm-asset-prefix, 루트, 루트 *.txt(Next.js RSC) → litellm-ui:3000
+#   LLM 데이터플레인 prefix(/v1/chat, /v1/embeddings, /v1/images, /health ...) → litellm-gateway:4000
+#   그 외 전부(catch-all: /key,/user,/team,/model/info,/sso ...) → litellm-backend:4001
+# chart 내장 ingress는 AWS ALB 전용(ImplementationSpecific 와일드카드)이라 미사용, Traefik으로 재현.
+# 우선순위(priority): ui(100) > gateway(50) > backend(1). Traefik은 매칭 라우트 중 최고 priority 채택.
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
@@ -6,12 +12,56 @@ spec:
   entryPoints:
     - websecure
   routes:
+    # --- UI (대시보드) ---
     - kind: Rule
-      match: Host(`litellm.ig.ingtra.net`)
+      priority: 100
+      match: >-
+        Host(`litellm.ig.ingtra.net`) &&
+        (Path(`/`) || Path(`/favicon.ico`) || PathPrefix(`/ui`) ||
+         PathPrefix(`/_next`) || PathPrefix(`/litellm-asset-prefix`) ||
+         PathRegexp(`^/[^/]+\.txt$`))
       services:
         - kind: Service
-          name: litellm
+          name: litellm-ui
+          namespace: llm-serving
+          port: 3000
+    # --- Gateway (LLM 데이터플레인) ---
+    # chart gateway allowlist를 반영한 표준 OpenAI/Anthropic 호환 + provider passthrough + health.
+    # 관리 라우트(/key,/user,/team,/model/info 등)는 여기 없어 catch-all→backend로 감.
+    - kind: Rule
+      priority: 50
+      match: >-
+        Host(`litellm.ig.ingtra.net`) &&
+        (PathPrefix(`/v1/chat`) || PathPrefix(`/chat`) ||
+         PathPrefix(`/v1/completions`) || PathPrefix(`/completions`) ||
+         PathPrefix(`/v1/embeddings`) || PathPrefix(`/embeddings`) ||
+         PathPrefix(`/v1/moderations`) || PathPrefix(`/moderations`) ||
+         PathPrefix(`/v1/audio`) || PathPrefix(`/audio`) ||
+         PathPrefix(`/v1/images`) || PathPrefix(`/images`) ||
+         PathPrefix(`/v1/files`) || PathPrefix(`/files`) ||
+         PathPrefix(`/v1/batches`) || PathPrefix(`/batches`) ||
+         PathPrefix(`/v1/responses`) || PathPrefix(`/responses`) ||
+         PathPrefix(`/v1/rerank`) || PathPrefix(`/v2/rerank`) || PathPrefix(`/rerank`) ||
+         PathPrefix(`/v1/messages`) || PathPrefix(`/messages`) ||
+         PathPrefix(`/v1/realtime`) || PathPrefix(`/realtime`) ||
+         PathPrefix(`/v1/models`) || PathPrefix(`/models`) ||
+         PathPrefix(`/openai`) || PathPrefix(`/engines`) ||
+         PathPrefix(`/anthropic`) || PathPrefix(`/vertex_ai`) ||
+         PathPrefix(`/gemini`) || PathPrefix(`/bedrock`) || PathPrefix(`/vllm`) ||
+         PathPrefix(`/health`) || PathPrefix(`/metrics`) || Path(`/test`))
+      services:
+        - kind: Service
+          name: litellm-gateway
           namespace: llm-serving
           port: 4000
+    # --- Backend (관리 API, catch-all) ---
+    - kind: Rule
+      priority: 1
+      match: Host(`litellm.ig.ingtra.net`) && PathPrefix(`/`)
+      services:
+        - kind: Service
+          name: litellm-backend
+          namespace: llm-serving
+          port: 4001
   tls:
     secretName: ig-ingtra-net-tls
