@@ -88,6 +88,12 @@ spec:
                   litellm_params:
                     model: nvidia_nim/*
                     api_key: os.environ/NVIDIA_API_KEY
+                # ── Google AI Studio 전체(와일드카드, gemini provider, generativelanguage.googleapis.com) ──
+                # 키 이름이 litellm 기본(GEMINI_API_KEY)이 아니라 GOOGLE_AI_STUDIO_API_KEY라 명시 참조.
+                - model_name: gemini/*
+                  litellm_params:
+                    model: gemini/*
+                    api_key: os.environ/GOOGLE_AI_STUDIO_API_KEY
                 # ── 자동 전환: 로컬 우선 → NIM → OpenRouter (아래 fallbacks) ──
                 - model_name: auto/google/gemma-4-e4b-it
                   litellm_params:
