@@ -20,9 +20,14 @@ OUTPUT_FOR = {
     "base64_binary": "pooler_output_binary",
 }
 
-# base64는 공식 enum에 없지만 OpenAI SDK가 생략 시 자동으로 붙이는 값이다.
-# 공식 기본값(base64_int8)과 같은 의미를 주도록 별칭 처리한다.
-ALIASES = {"base64": "base64_int8"}
+# base64는 공식 enum에 없다(미정의 — 공식 API는 422로 거부). OpenAI SDK 계열이
+# 실제로 보내는 값이고 그들은 float32로 디코딩하므로 base64_float32의 별칭으로 둔다.
+#
+# 한때 base64_int8 별칭으로 뒀다가 되돌렸다(2026-07-22). 근거였던 "litellm이 생략 시
+# base64를 자동으로 붙인다"가 실측에서 거짓으로 드러났기 때문 — litellm은
+# encoding_format: "float"을 보낸다. 반면 표준 OpenAI SDK는 정말 base64를 보내고
+# float32로 읽으므로, int8을 주면 길이 1/4의 쓰레기 값을 에러 없이 받게 된다.
+ALIASES = {"base64": "base64_float32"}
 
 DEFAULT_MODEL_DIR = os.environ.get(
     "MODEL_DIR", "/models/perplexity-ai-pplx-embed-v1-0.6b-int8"

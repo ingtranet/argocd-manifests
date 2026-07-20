@@ -22,12 +22,12 @@ def test_output_name_maps_each_encoding_format():
     assert output_name("base64_binary") == "pooler_output_binary"
 
 
-def test_base64_is_alias_of_base64_int8():
-    """공식 enum에 base64는 없다. OpenAI SDK가 생략 시 자동으로 붙이는 값이라
-    공식 기본값(base64_int8)과 같은 의미를 준다."""
-    assert output_name("base64") == output_name("base64_int8")
-    graph_int8 = np.array([[85, -72, 0, 12, 5, -9, 30, -1]], dtype=np.int8)
-    assert postprocess(graph_int8, "base64") == postprocess(graph_int8, "base64_int8")
+def test_base64_is_alias_of_base64_float32():
+    """공식 enum에 base64는 없다(공식은 422). 표준 OpenAI SDK 가 보내고 float32로
+    디코딩하는 값이라 base64_float32에 맞춘다 — int8을 주면 길이 1/4의 쓰레기 값을
+    에러 없이 받게 된다."""
+    assert output_name("base64") == output_name("base64_float32")
+    assert postprocess(POOLED, "base64") == postprocess(POOLED, "base64_float32")
 
 
 def test_output_name_rejects_unknown():

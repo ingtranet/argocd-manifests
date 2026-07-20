@@ -116,11 +116,16 @@ def test_too_many_inputs_are_rejected(client):
     assert r.status_code == 422
 
 
-def test_base64_alias_returns_int8(client):
-    """OpenAI SDK가 생략 시 붙이는 base64가 공식 기본값과 같은 것을 돌려줘야 한다."""
+def test_base64_alias_returns_float32(client):
+    """표준 OpenAI SDK 가 보내는 base64는 float32로 해석되어야 한다."""
     a = client.post("/v1/embeddings", json={"input": "hello", "encoding_format": "base64"})
-    b = client.post("/v1/embeddings", json={"input": "hello"})
+    b = client.post(
+        "/v1/embeddings", json={"input": "hello", "encoding_format": "base64_float32"}
+    )
     assert a.json()["data"][0]["embedding"] == b.json()["data"][0]["embedding"]
+    # 기본값(base64_int8)과는 달라야 한다.
+    c = client.post("/v1/embeddings", json={"input": "hello"})
+    assert a.json()["data"][0]["embedding"] != c.json()["data"][0]["embedding"]
 
 
 def test_model_name_is_echoed(client):

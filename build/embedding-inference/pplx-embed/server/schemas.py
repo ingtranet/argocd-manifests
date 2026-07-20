@@ -6,8 +6,8 @@ from pydantic import BaseModel, Field, field_validator
 # embeddings-post)의 enum은 base64_int8 / base64_binary 둘뿐이고 기본값은 base64_int8.
 #   base64_int8    : signed int8 → base64 (공식, 기본값)
 #   base64_binary  : 부호 비트를 packbits → base64 (1024차원 = 128바이트, 공식)
-#   base64         : base64_int8의 별칭. OpenAI SDK가 encoding_format 생략 시 자동으로
-#                    채워 넣는 값이라, 공식 기본값과 같은 의미를 주도록 맞춘다.
+#   base64         : base64_float32의 별칭. 공식 enum에는 없는 값이지만(공식은 422),
+#                    OpenAI SDK 계열이 보내고 float32로 디코딩하므로 그에 맞춘다.
 #   base64_float32 : 확장. float32 little-endian → base64 (무손실)
 #   float          : 확장. L2 정규화된 float 배열(JSON)
 EncodingFormat = Literal[

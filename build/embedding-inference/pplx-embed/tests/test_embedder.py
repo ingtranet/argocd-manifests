@@ -8,7 +8,7 @@ import pytest
     [
         ("float", "pooler_output"),
         ("base64_float32", "pooler_output"),
-        ("base64", "pooler_output_int8"),
+        ("base64", "pooler_output"),
         ("base64_int8", "pooler_output_int8"),
         ("base64_binary", "pooler_output_binary"),
     ],
