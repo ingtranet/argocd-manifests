@@ -137,6 +137,19 @@ spec:
                 store_prompts_in_spend_logs: true
           service:
             port: 4000
+          # gateway는 :4000 바인딩까지 ~50s+ 소요(모델 register+prisma+DB connect).
+          # 이 chart는 startupProbe 미지원(템플릿에 gateway.livenessProbe/readinessProbe만 존재)이라
+          # liveness initialDelaySeconds를 크게 잡아 slow-start vs liveness 레이스를 막는다.
+          # (2026-07-21: 노드 4/5 NotReady로 startup이 51s까지 늘어 새 pod가 40s에 liveness-kill →
+          #  crash-loop. 근본은 노드 복구지만 probe 여유로 방어.)
+          livenessProbe:
+            httpGet: {path: /health/liveliness, port: http}
+            initialDelaySeconds: 120
+            periodSeconds: 15
+          readinessProbe:
+            httpGet: {path: /health/readiness, port: http}
+            initialDelaySeconds: 10
+            periodSeconds: 10
           # 홈 클러스터라 기본값(req cpu1/mem4Gi)에서 낮춤.
           resources:
             requests:
@@ -145,10 +158,11 @@ spec:
             limits:
               cpu: "2"
               memory: 2Gi
+          # 헬시 노드 1개(2026-07-21 4/5 NotReady)뿐이라 3 replica는 낭비 → 1로 고정.
           hpa:
             enabled: true
             minReplicas: 1
-            maxReplicas: 3
+            maxReplicas: 1
             targetCPUUtilizationPercentage: 70
             targetMemoryUtilizationPercentage: 80
         # ---------- backend: 관리 API(/key,/user,/team,...) ----------
