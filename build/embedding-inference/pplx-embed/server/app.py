@@ -13,7 +13,7 @@ EMBED_LATENCY = Histogram(
     "pplx_embed_request_seconds", "End-to-end embedding request latency"
 )
 EMBED_TOTAL = Counter(
-    "pplx_embed_embeddings_total", "Total embedded inputs", ["quantization"]
+    "pplx_embed_embeddings_total", "Total embedded inputs", ["encoding_format"]
 )
 EMBED_ERRORS = Counter(
     "pplx_embed_errors_total", "Total failed embedding requests", ["reason"]
@@ -43,25 +43,20 @@ async def health():
 @app.post("/v1/embeddings", response_model=EmbeddingResponse)
 async def embeddings(req: EmbeddingRequest, request: Request):
     texts = [req.input] if isinstance(req.input, str) else req.input
-    if not texts:
-        raise HTTPException(status_code=422, detail="input must not be empty")
 
     embedder = request.app.state.embedder
     try:
         with EMBED_LATENCY.time():
             vectors, tokens = await run_in_threadpool(
-                embedder.embed, texts, req.quantization
+                embedder.embed, texts, req.encoding_format, req.dimensions
             )
-        EMBED_TOTAL.labels(quantization=req.quantization).inc(len(texts))
+        EMBED_TOTAL.labels(encoding_format=req.encoding_format).inc(len(texts))
     except Exception as e:
         EMBED_ERRORS.labels(reason=type(e).__name__).inc()
         raise HTTPException(status_code=500, detail=str(e))
 
     return EmbeddingResponse(
-        data=[
-            EmbeddingDatum(index=i, embedding=v.tolist())
-            for i, v in enumerate(vectors)
-        ],
+        data=[EmbeddingDatum(index=i, embedding=v) for i, v in enumerate(vectors)],
         model=req.model or MODEL_ID,
         usage=Usage(prompt_tokens=tokens, total_tokens=tokens),
     )

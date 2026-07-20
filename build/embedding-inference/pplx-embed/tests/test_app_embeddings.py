@@ -1,4 +1,12 @@
+import base64
+
 import numpy as np
+
+HIDDEN = 8  # conftest.FakeSession의 임베딩 차원
+
+
+def _int8(b64):
+    return np.frombuffer(base64.b64decode(b64), dtype=np.int8)
 
 
 def test_single_string_input_returns_one_embedding(client):
@@ -9,44 +17,77 @@ def test_single_string_input_returns_one_embedding(client):
     assert len(body["data"]) == 1
     assert body["data"][0]["object"] == "embedding"
     assert body["data"][0]["index"] == 0
-    assert len(body["data"][0]["embedding"]) == 8
+
+
+def test_default_encoding_is_base64_int8(client):
+    """공식 API 기본값과 같아야 한다 — 나중에 API 폴백 시 해석이 갈리지 않도록."""
+    r = client.post("/v1/embeddings", json={"input": "hello"})
+    emb = r.json()["data"][0]["embedding"]
+    assert isinstance(emb, str)
+    assert len(_int8(emb)) == HIDDEN
+
+
+def test_float_encoding_returns_normalized_array(client):
+    r = client.post("/v1/embeddings", json={"input": "hello", "encoding_format": "float"})
+    emb = r.json()["data"][0]["embedding"]
+    assert isinstance(emb, list)
+    assert np.isclose(np.linalg.norm(emb), 1.0, atol=1e-6)
+
+
+def test_base64_encoding_is_float32(client):
+    r = client.post("/v1/embeddings", json={"input": "hello", "encoding_format": "base64"})
+    emb = np.frombuffer(base64.b64decode(r.json()["data"][0]["embedding"]), dtype="<f4")
+    assert len(emb) == HIDDEN
+    assert np.isclose(np.linalg.norm(emb), 1.0, atol=1e-6)
+
+
+def test_base64_binary_is_packed(client):
+    r = client.post(
+        "/v1/embeddings", json={"input": "hello", "encoding_format": "base64_binary"}
+    )
+    packed = base64.b64decode(r.json()["data"][0]["embedding"])
+    assert len(packed) == HIDDEN // 8
+
+
+def test_dimensions_truncates_output(client):
+    r = client.post("/v1/embeddings", json={"input": "hello", "dimensions": 128})
+    # FakeSession은 8차원이라 128을 요청해도 슬라이스는 8에서 멈춘다.
+    # 여기서 확인하는 것은 dimensions가 거부되지 않고 경로를 탄다는 것.
+    assert r.status_code == 200
+
+
+def test_dimensions_below_minimum_is_rejected(client):
+    r = client.post("/v1/embeddings", json={"input": "hello", "dimensions": 64})
+    assert r.status_code == 422
+
+
+def test_dimensions_above_maximum_is_rejected(client):
+    r = client.post("/v1/embeddings", json={"input": "hello", "dimensions": 2048})
+    assert r.status_code == 422
+
+
+def test_dimensions_must_be_multiple_of_8(client):
+    """base64_binary가 packbits라 8의 배수가 아니면 바이트 경계가 어긋난다."""
+    r = client.post("/v1/embeddings", json={"input": "hello", "dimensions": 130})
+    assert r.status_code == 422
 
 
 def test_batch_input_preserves_order_and_index(client):
     texts = ["alpha", "beta gamma", "delta epsilon zeta"]
-    r = client.post("/v1/embeddings", json={"input": texts})
-    assert r.status_code == 200
+    r = client.post("/v1/embeddings", json={"input": texts, "encoding_format": "float"})
     data = r.json()["data"]
     assert [d["index"] for d in data] == [0, 1, 2]
 
     # 개별 호출 결과와 배치 결과가 같아야 한다(패딩이 값을 오염시키지 않음).
     for i, t in enumerate(texts):
-        single = client.post("/v1/embeddings", json={"input": t}).json()["data"][0]
+        single = client.post(
+            "/v1/embeddings", json={"input": t, "encoding_format": "float"}
+        ).json()["data"][0]
         assert np.allclose(single["embedding"], data[i]["embedding"], atol=1e-6)
 
 
-def test_default_quantization_is_normalized_float(client):
-    r = client.post("/v1/embeddings", json={"input": "hello"})
-    emb = np.array(r.json()["data"][0]["embedding"])
-    assert np.isclose(np.linalg.norm(emb), 1.0, atol=1e-6)
-
-
-def test_int8_quantization_returns_integers_in_range(client):
-    r = client.post("/v1/embeddings", json={"input": "hello", "quantization": "int8"})
-    emb = r.json()["data"][0]["embedding"]
-    assert all(float(v).is_integer() for v in emb)
-    assert all(-128 <= v <= 127 for v in emb)
-
-
-def test_ubinary_quantization_packs_dimensions(client):
-    r = client.post("/v1/embeddings", json={"input": "hello", "quantization": "ubinary"})
-    emb = r.json()["data"][0]["embedding"]
-    assert len(emb) == 1  # 8차원 → 1바이트
-    assert all(0 <= v <= 255 for v in emb)
-
-
-def test_invalid_quantization_is_rejected(client):
-    r = client.post("/v1/embeddings", json={"input": "hello", "quantization": "int4"})
+def test_invalid_encoding_format_is_rejected(client):
+    r = client.post("/v1/embeddings", json={"input": "hello", "encoding_format": "int4"})
     assert r.status_code == 422
 
 
@@ -58,7 +99,18 @@ def test_usage_counts_non_padding_tokens(client):
 
 
 def test_empty_input_list_is_rejected(client):
-    r = client.post("/v1/embeddings", json={"input": []})
+    assert client.post("/v1/embeddings", json={"input": []}).status_code == 422
+
+
+def test_empty_string_is_rejected(client):
+    """공식 문서: Empty strings are not allowed."""
+    assert client.post("/v1/embeddings", json={"input": ""}).status_code == 422
+    assert client.post("/v1/embeddings", json={"input": ["ok", "  "]}).status_code == 422
+
+
+def test_too_many_inputs_are_rejected(client):
+    """공식 문서: Max 512 texts per request."""
+    r = client.post("/v1/embeddings", json={"input": ["x"] * 513})
     assert r.status_code == 422
 
 

@@ -1,28 +1,33 @@
+import base64
 import os
 
 import numpy as np
 
-# 요청된 표현별로 ONNX 그래프에서 받아올 출력.
+# 요청된 encoding_format별로 ONNX 그래프에서 받아올 출력.
 #
-# int8 / binary는 그래프가 직접 내는 공식 출력을 그대로 쓴다 — 우리가 tanh·반올림을
-# 재구현하면 export가 바뀌었을 때 조용히 어긋날 수 있다.
-# float는 그래프에 없는 표현이라 pooler_output(tanh 적용 *전* 값)에서 만든다.
-# ubinary도 그래프에 없지만 binary에서 그대로 유도된다.
+# base64_int8 / base64_binary는 그래프가 직접 내는 공식 출력을 그대로 쓴다 — 우리가
+# tanh·반올림·부호판정을 재구현하면 export가 바뀌었을 때 조용히 어긋날 수 있다.
+# float / base64는 그래프에 없는 무손실 표현이라 pooler_output(tanh 적용 *전* 값)에서
+# 만든다.
 #
 # 출력을 전부(run(None)) 받지 않는 이유: last_hidden_state가 batch×seq×1024라
 # batch 8 / seq 321에서도 10.5MB, batch 32 / seq 2048이면 268MB를 매 요청 복사한다.
 # 지연 차이는 없지만(연산은 어차피 수행됨) 메모리 스파이크가 크다.
 OUTPUT_FOR = {
     "float": "pooler_output",
-    "int8": "pooler_output_int8",
-    "binary": "pooler_output_binary",
-    "ubinary": "pooler_output_binary",
+    "base64": "pooler_output",
+    "base64_int8": "pooler_output_int8",
+    "base64_binary": "pooler_output_binary",
 }
 
 DEFAULT_MODEL_DIR = os.environ.get(
     "MODEL_DIR", "/models/perplexity-ai-pplx-embed-v1-0.6b-int8"
 )
 DEFAULT_MAX_LENGTH = int(os.environ.get("MAX_LENGTH", "2048"))
+
+# schemas.EmbeddingRequest.encoding_format의 기본값과 반드시 같아야 한다
+# (테스트 test_embedder_default_matches_schema_default가 지킨다).
+DEFAULT_ENCODING_FORMAT = "base64_int8"
 
 
 def cgroup_cpu_limit(root: str = "/sys/fs/cgroup"):
@@ -54,8 +59,8 @@ def effective_cpu_count(root: str = "/sys/fs/cgroup") -> int:
     """이 프로세스가 실제로 쓸 수 있는 코어 수.
 
     onnxruntime은 기본적으로 호스트 전체 코어 수만큼 intra-op 스레드를 띄운다.
-    cgroup limit(우리는 4)을 무시하므로, 코어 많은 노드에서는 CFS 스로틀링과
-    컨텍스트 스위칭 때문에 오히려 느려진다. 그래서 limit을 직접 읽어 넘긴다.
+    cgroup limit을 무시하므로, 코어 많은 노드에서는 CFS 스로틀링과 컨텍스트
+    스위칭 때문에 오히려 느려진다. 그래서 limit을 직접 읽어 넘긴다.
     """
     host = os.cpu_count() or 1
     limit = cgroup_cpu_limit(root)
@@ -64,33 +69,52 @@ def effective_cpu_count(root: str = "/sys/fs/cgroup") -> int:
     return max(1, min(host, int(limit)))
 
 
-def output_name(kind: str) -> str:
-    """요청된 표현을 만들기 위해 그래프에서 받아야 할 출력 이름."""
+def output_name(encoding_format: str) -> str:
+    """요청된 인코딩을 만들기 위해 그래프에서 받아야 할 출력 이름."""
     try:
-        return OUTPUT_FOR[kind]
+        return OUTPUT_FOR[encoding_format]
     except KeyError:
-        raise ValueError(f"Invalid quantization type: {kind}") from None
+        raise ValueError(f"Invalid encoding_format: {encoding_format}") from None
 
 
-def postprocess(raw: np.ndarray, kind: str) -> np.ndarray:
-    """그래프 출력을 최종 응답 벡터로 변환한다.
+def truncate(raw: np.ndarray, dimensions):
+    """Matryoshka 차원 축소.
 
-    int8 / binary는 손댈 것이 없다(공식 출력 그대로).
+    tanh / 반올림 / 부호판정은 모두 elementwise라 슬라이싱과 교환 가능하다.
+    그래서 그래프 출력을 그대로 자르면 되고, 잘라낸 뒤 재정규화만 하면 된다
+    (float 경로의 정규화는 postprocess에서 수행).
+    base64_binary는 packbits 전 부호 배열이라 여기서 자르는 것이 맞다.
+    """
+    if dimensions is None:
+        return raw
+    return raw[:, :dimensions]
+
+
+def postprocess(raw: np.ndarray, encoding_format: str):
+    """그래프 출력을 최종 응답 값으로 변환한다.
+
     float는 tanh 후 L2 정규화 — 정규화는 벡터당 스칼라 나눗셈이라 방향(=코사인)을
     바꾸지 않으므로, int8과 같은 공간에 있으면서 반올림 손실만 없앤 값이 된다.
-    ubinary는 공식 PackedBinaryQuantizer와 같다: binary가 x>=0에서 +1이므로
-    packbits(binary > 0) == packbits(x >= 0).
+    base64_binary는 공식 PackedBinaryQuantizer와 같다: binary 출력이 x>=0에서
+    +1이므로 packbits(binary > 0) == packbits(x >= 0).
     """
-    if kind == "float":
+    if encoding_format in ("float", "base64"):
         v = np.tanh(raw).astype(np.float32)
         norm = np.linalg.norm(v, axis=-1, keepdims=True)
         # 전부 0인 벡터에서 0으로 나누지 않도록.
-        return v / np.where(norm == 0, 1.0, norm)
-    if kind == "ubinary":
-        return np.packbits(raw > 0, axis=-1)
-    if kind in ("int8", "binary"):
-        return raw
-    raise ValueError(f"Invalid quantization type: {kind}")
+        v = v / np.where(norm == 0, 1.0, norm)
+        if encoding_format == "float":
+            return [row.tolist() for row in v]
+        return [base64.b64encode(row.tobytes()).decode() for row in v]
+
+    if encoding_format == "base64_int8":
+        return [base64.b64encode(row.tobytes()).decode() for row in raw]
+
+    if encoding_format == "base64_binary":
+        packed = np.packbits(raw > 0, axis=-1)
+        return [base64.b64encode(row.tobytes()).decode() for row in packed]
+
+    raise ValueError(f"Invalid encoding_format: {encoding_format}")
 
 
 class PplxEmbedder:
@@ -145,13 +169,18 @@ class PplxEmbedder:
         )
         return cls(session=session, tokenizer=tokenizer, max_length=max_length)
 
-    def embed(self, texts: list[str], quantization: str = "float"):
-        """(벡터 배열, 패딩 제외 토큰 수)를 돌려준다."""
-        name = output_name(quantization)
+    def embed(
+        self,
+        texts: list[str],
+        encoding_format: str = DEFAULT_ENCODING_FORMAT,
+        dimensions=None,
+    ):
+        """(인코딩된 임베딩 리스트, 패딩 제외 토큰 수)를 돌려준다."""
+        name = output_name(encoding_format)
 
         encs = self._tokenizer.encode_batch(texts)
         ids = np.array([e.ids for e in encs], dtype=np.int64)
         mask = np.array([e.attention_mask for e in encs], dtype=np.int64)
 
         (raw,) = self._session.run([name], {"input_ids": ids, "attention_mask": mask})
-        return postprocess(raw, quantization), int(mask.sum())
+        return postprocess(truncate(raw, dimensions), encoding_format), int(mask.sum())
