@@ -153,11 +153,11 @@ spec:
                     model: gemini/*
                     api_key: os.environ/GOOGLE_AI_STUDIO_API_KEY
               litellm_settings:
-                # false: 지원되지 않는 파라미터를 조용히 버리지 않고 에러로 드러낸다.
-                # (true였을 때 pplx-embed의 dimensions/encoding_format 같은 값이
-                #  전달 여부를 알 수 없이 사라질 수 있었다. 대신 특정 provider가
-                #  못 받는 파라미터를 보내면 이제 요청이 실패한다.)
-                drop_params: false
+                # false로 잠깐 바꿨다가 되돌림(2026-07-22) — 지원 안 되는 파라미터가
+                # 에러로 드러나는 이점보다, 여러 provider 호출이 깨지는 손해가 컸다.
+                # pplx-embed의 dimensions/encoding_format은 OpenAI 표준 파라미터라
+                # true에서도 통과한다.
+                drop_params: true
                 set_verbose: false
               router_settings:
                 num_retries: 0
