@@ -19,13 +19,12 @@ spec:
         # 서비스 이름을 litellm-gateway / litellm-backend / litellm-ui 로 고정.
         fullnameOverride: litellm
         # DB 스키마 마이그레이션 — litellm-migrations 이미지로 PreSync(helm pre-install/upgrade) hook 실행.
-        # 2026-07-21 DISABLED: prisma-python이 migrate 시 nodeenv로 Node.js를 nodejs.org에서 받고
-        # prisma CLI를 registry.npmjs.org/binaries.prisma.sh에서 받는데 이 클러스터엔 인터넷 egress가
-        # 없어 PreSync가 60s×4 타임아웃→실패, 모든 sync를 무기한 블록함. _prisma_migrations ledger는
-        # 이미 최신(적용할 migration 0개)이라 끄는 게 안전. ★chart 버전 업 할 땐 egress(위 3개 호스트)
-        # 뚫고 이 값을 true로 되돌린 뒤 sync할 것.
+        # ★egress 필수: prisma-python이 migrate 시 nodeenv로 Node.js(nodejs.org)를 받고 prisma CLI를
+        # registry.npmjs.org에서 받는다. 이 두 호스트로 나가는 egress가 없으면 PreSync가 60s×4
+        # 타임아웃→실패로 모든 sync를 무기한 블록한다(2026-07-21 방화벽 개방 후 정상화, ~30s에 완료).
+        # binaries.prisma.sh는 엔진이 이미지 번들이라 불필요.
         migrationJob:
-          enabled: false
+          enabled: true
         # master key(=API 인증 토큰). 클러스터에 사전 주입한 Secret 재사용. chart가 gateway/backend에
         # LITELLM_MASTER_KEY로 주입하며, 이 chart는 lookup 없이 재생성하지 않고 Secret 참조만 하므로
         # 별도 ignoreDifferences 불필요(구 chart의 randAlphaNum 재생성 함정 없음).
