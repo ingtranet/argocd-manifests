@@ -51,7 +51,9 @@ spec:
               mountPath: /models
       containers:
         - name: llamacpp
-          image: zot.ingtra.net/ghcr.io/ggml-org/llama.cpp:server
+          # :server는 갱신되는 태그라 재현성이 없음(GPU 형제는 immutable 빌드에 고정) —
+          # 특정 빌드 태그로 핀. 최신 빌드는 ghcr.io/ggml-org/llama.cpp 패키지 페이지에서 확인.
+          image: zot.ingtra.net/ghcr.io/ggml-org/llama.cpp:server-b10068
           # ENTRYPOINT is llama-server; these args are appended.
           args:
             - -m
