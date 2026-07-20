@@ -74,6 +74,13 @@ spec:
                     api_base: http://embeddinggemma-llamacpp:8000/v1
                     api_key: dummy
                     max_parallel_requests: 256
+                # ── 로컬 임베딩 CPU fallback (GPU 노드 장애 시 router_settings.fallbacks로 전환) ──
+                - model_name: local/google/embeddinggemma-300m-cpu
+                  litellm_params:
+                    model: hosted_vllm//models/embeddinggemma-300m-cpu
+                    api_base: http://embeddinggemma-llamacpp-cpu:8000/v1
+                    api_key: dummy
+                    max_parallel_requests: 256
                 # ── 로컬 이미지 생성 (클러스터 내부) ──
                 # 호출 이름은 소문자 통일. litellm_params.model은 백엔드가 기대하는 실제 id라 원본 케이스 유지.
                 - model_name: local/black-forest-labs/flux.2-klein-9b
@@ -138,6 +145,10 @@ spec:
                 set_verbose: false
               router_settings:
                 num_retries: 0
+                # GPU embeddinggemma 실패(5xx/timeout/connection error) 시 CPU로 즉시 전환.
+                # num_retries: 0이라 GPU 자체 재시도는 없음 — 실패하면 바로 CPU로 넘어감.
+                fallbacks:
+                  - local/google/embeddinggemma-300m: ["local/google/embeddinggemma-300m-cpu"]
               # 프롬프트 로깅: 각 요청의 프롬프트+응답을 DB(LiteLLM_SpendLogs)에 저장 → admin UI Logs에서 조회.
               # spend logs 자체는 DB 연결 시 기본 ON, 이 옵션이 메시지 본문까지 저장. 민감정보 로깅 유의.
               general_settings:
