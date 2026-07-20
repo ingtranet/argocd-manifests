@@ -90,6 +90,24 @@ spec:
                     model: openai/unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q4_K_XL
                     api_base: https://llm.jaehojang.cc/v1
                     api_key: dummy
+                # ── ChatGPT 계정 OAuth 프록시 (openai-oauth, 내 Apple Silicon 박스) ──
+                # gemma와 같은 10.2.0.49 박스에서 `openai-oauth` LaunchAgent가 도는 무인증 프록시
+                # (127.0.0.1→--host 0.0.0.0, :10531). ChatGPT 구독 계정으로 codex 프런티어 모델 접근.
+                # ★프록시 자체는 무인증이므로 LAN 노출임 — 접근 통제는 litellm master/virtual key에 의존.
+                # 방화벽: 10.2.0.49의 38001은 이미 개방됨, 10531도 동일하게 열려야 도달(요확인).
+                # 채팅은 와일드카드로 신규 gpt-5.6-* 변형 자동 대응. /v1/models id 예: gpt-5.6-sol/terra/luna, gpt-5.5.
+                - model_name: openai_oauth/openai/*
+                  litellm_params:
+                    model: openai/*
+                    api_base: http://10.2.0.49:10531/v1
+                    api_key: dummy
+                # 이미지 생성은 mode 지정이 필요해 명시 엔트리로 분리(와일드카드보다 exact match 우선).
+                - model_name: openai_oauth/openai/gpt-image-2
+                  litellm_params:
+                    model: openai/gpt-image-2
+                    api_base: http://10.2.0.49:10531/v1
+                    api_key: dummy
+                    mode: image_generation
                 # ── OpenRouter 전체(와일드카드, BYOK) ──
                 - model_name: openrouter/*
                   litellm_params:
