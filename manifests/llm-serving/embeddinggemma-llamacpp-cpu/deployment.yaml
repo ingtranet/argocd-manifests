@@ -1,0 +1,125 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: embeddinggemma-llamacpp-cpu
+  labels:
+    app: embeddinggemma-llamacpp-cpu
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: embeddinggemma-llamacpp-cpu
+  template:
+    metadata:
+      labels:
+        app: embeddinggemma-llamacpp-cpu
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      initContainers:
+        - name: download-model
+          image: python:3.11-slim
+          command:
+            - sh
+            - -c
+            - |
+              MODEL=/models/ggml-org-embeddinggemma-300M-GGUF/embeddinggemma-300M-Q8_0.gguf
+              if [ -f "$MODEL" ]; then
+                echo "GGUF already present, skipping download."
+              else
+                pip install huggingface_hub && \
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('ggml-org/embeddinggemma-300M-GGUF', local_dir='/models/ggml-org-embeddinggemma-300M-GGUF', allow_patterns=['embeddinggemma-300M-Q8_0.gguf'])"
+              fi
+          env:
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
+          volumeMounts:
+            - name: models
+              mountPath: /models
+      containers:
+        - name: llamacpp
+          image: zot.ingtra.net/ghcr.io/ggml-org/llama.cpp:server
+          # ENTRYPOINT is llama-server; these args are appended.
+          args:
+            - -m
+            - /models/ggml-org-embeddinggemma-300M-GGUF/embeddinggemma-300M-Q8_0.gguf
+            - --host
+            - "0.0.0.0"
+            - --port
+            - "8080"
+            - -c
+            - "2048"
+            # Embedding은 non-causal이라 시퀀스 전체가 한 ubatch 안에 들어가야 한다.
+            # ubatch(-ub) 기본값 512면 512토큰 초과 입력이 500을 낸다. ctx(2048)와
+            # 동일하게 올려 2048토큰까지 처리. -b >= -ub 보장 위해 둘 다 명시.
+            - -b
+            - "2048"
+            - -ub
+            - "2048"
+            - --embeddings
+            # EmbeddingGemma uses mean pooling + L2 normalization; match GPU pooling output.
+            - --pooling
+            - mean
+            - --embd-normalize
+            - "2"
+            # Served model name for OpenAI /v1/embeddings, so litellm's model field matches.
+            - --alias
+            - google/embeddinggemma-300m-cpu
+            - --metrics
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 60
+            timeoutSeconds: 30
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: models
+              mountPath: /models
+        - name: nginx
+          image: nginx:1.27-alpine
+          ports:
+            - containerPort: 8000
+              name: http
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: models
+          hostPath:
+            path: /data/cache/hf-models
+            type: DirectoryOrCreate
+        - name: nginx-config
+          configMap:
+            name: embeddinggemma-llamacpp-cpu-nginx-config
