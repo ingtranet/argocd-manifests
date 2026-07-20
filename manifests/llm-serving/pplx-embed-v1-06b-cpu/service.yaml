@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pplx-embed-v1-06b-cpu
+  labels:
+    app: pplx-embed-v1-06b-cpu
+spec:
+  selector:
+    app: pplx-embed-v1-06b-cpu
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
+  type: ClusterIP

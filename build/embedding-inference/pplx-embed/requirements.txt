@@ -1,0 +1,8 @@
+# ORT 1.27+ 필요 — 1.9.x 대(TEI 번들)는 pplx int8 그래프의
+# com.microsoft::GatherBlockQuantized `bits` 속성을 모른다.
+onnxruntime>=1.27
+tokenizers>=0.21
+numpy
+fastapi
+uvicorn[standard]
+prometheus-client

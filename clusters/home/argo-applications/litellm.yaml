@@ -81,6 +81,18 @@ spec:
                     api_base: http://embeddinggemma-llamacpp-cpu:8000/v1
                     api_key: dummy
                     max_parallel_requests: 256
+                # ── 로컬 임베딩 pplx-embed (자체 ONNX Runtime 서버, int8 그래프) ──
+                # embeddinggemma와 벡터 공간이 다르므로 fallback으로 엮지 않는다 —
+                # 별도 모델명으로만 호출할 것(인덱스 호환성 없음).
+                # 기본 출력은 L2 정규화된 float. int8/binary/ubinary는 요청 body의
+                # quantization 필드로 고를 수 있으나 litellm이 그 필드를 통과시키지
+                # 않으므로, 필요하면 Service를 직접 호출할 것.
+                - model_name: local/perplexity-ai/pplx-embed-v1-0.6b
+                  litellm_params:
+                    model: openai/perplexity-ai/pplx-embed-v1-0.6b
+                    api_base: http://pplx-embed-v1-06b-cpu:8000/v1
+                    api_key: dummy
+                    max_parallel_requests: 8
                 # ── 로컬 이미지 생성 (클러스터 내부) ──
                 # 호출 이름은 소문자 통일. litellm_params.model은 백엔드가 기대하는 실제 id라 원본 케이스 유지.
                 - model_name: local/black-forest-labs/flux.2-klein-9b
