@@ -179,6 +179,16 @@ spec:
             - litellm-env
           service:
             port: 4001
+          # gateway와 동일한 slow-startup vs liveness 레이스 방지(startupProbe 미지원 chart).
+          # backend도 :4001 바인딩까지 오래 걸려 chart 기본 liveness(10s)에 crash-loop → 120s로.
+          livenessProbe:
+            httpGet: {path: /health/liveliness, port: http}
+            initialDelaySeconds: 120
+            periodSeconds: 15
+          readinessProbe:
+            httpGet: {path: /health/readiness, port: http}
+            initialDelaySeconds: 10
+            periodSeconds: 10
           # backend는 1Gi에서 기동 중 OOMKilled(137) → 2Gi로 상향.
           resources:
             requests:
