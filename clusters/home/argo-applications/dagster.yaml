@@ -18,6 +18,9 @@ spec:
     helm:
       releaseName: dagster
       valuesObject:
+        # dagster 사용 통계(telemetry.dagster.io) 전송 비활성화.
+        telemetry:
+          enabled: false
         # 외부 Postgres 재사용 (Airflow와 동일 인스턴스 postgresql.vd.ingtra.net).
         # DB 'dagster'는 사전 생성 필요. password는 external-secret으로 주입.
         postgresql:
