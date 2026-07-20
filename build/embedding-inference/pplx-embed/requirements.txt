@@ -1,6 +1,11 @@
-# ORT 1.27+ 필요 — 1.9.x 대(TEI 번들)는 pplx int8 그래프의
-# com.microsoft::GatherBlockQuantized `bits` 속성을 모른다.
-onnxruntime>=1.27
+# 최소 1.23.0 — 이분 탐색으로 확인(2026-07-22). 1.22.1 까지는 pplx int8 그래프의
+# com.microsoft::GatherBlockQuantized `bits` 속성에서 "Unrecognized attribute: bits"
+# 로 로드 실패하고, 1.23.0 부터 로드된다. TEI 를 못 쓴 이유도 이것 —
+# TEI 는 v1.9.2~main 전부 Rust ort 2.0.0-rc.10 을 핀해두고 있다.
+#
+# 1.23 / 1.25 / 1.27 의 int8·binary 출력은 바이트 단위로 동일하고, float 경로는
+# 최대 7.5e-07 차이(코사인 1.0)라 버전 간 재색인은 필요 없다.
+onnxruntime>=1.23
 tokenizers>=0.21
 numpy
 fastapi
