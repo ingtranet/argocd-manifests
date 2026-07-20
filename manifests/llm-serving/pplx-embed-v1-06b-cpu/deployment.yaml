@@ -64,7 +64,7 @@ spec:
           # TEI를 쓰지 않는 이유는 그 Dockerfile 주석 참고 — 요약하면 TEI 번들
           # onnxruntime이 int8 그래프의 GatherBlockQuantized `bits`를 모르고,
           # fp32 그래프는 5.3GB를 먹어 이 노드에서 evict 됐다.
-          image: zot.ingtra.net/library/embedding-inference:pplx-embed-7ea4d14
+          image: zot.ingtra.net/library/embedding-inference:pplx-embed-54165fd
           env:
             - name: MODEL_DIR
               value: /models/perplexity-ai-pplx-embed-v1-0.6b-int8
