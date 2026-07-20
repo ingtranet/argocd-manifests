@@ -34,8 +34,10 @@ def test_float_encoding_returns_normalized_array(client):
     assert np.isclose(np.linalg.norm(emb), 1.0, atol=1e-6)
 
 
-def test_base64_encoding_is_float32(client):
-    r = client.post("/v1/embeddings", json={"input": "hello", "encoding_format": "base64"})
+def test_base64_float32_encoding(client):
+    r = client.post(
+        "/v1/embeddings", json={"input": "hello", "encoding_format": "base64_float32"}
+    )
     emb = np.frombuffer(base64.b64decode(r.json()["data"][0]["embedding"]), dtype="<f4")
     assert len(emb) == HIDDEN
     assert np.isclose(np.linalg.norm(emb), 1.0, atol=1e-6)
@@ -112,6 +114,13 @@ def test_too_many_inputs_are_rejected(client):
     """공식 문서: Max 512 texts per request."""
     r = client.post("/v1/embeddings", json={"input": ["x"] * 513})
     assert r.status_code == 422
+
+
+def test_base64_alias_returns_int8(client):
+    """OpenAI SDK가 생략 시 붙이는 base64가 공식 기본값과 같은 것을 돌려줘야 한다."""
+    a = client.post("/v1/embeddings", json={"input": "hello", "encoding_format": "base64"})
+    b = client.post("/v1/embeddings", json={"input": "hello"})
+    assert a.json()["data"][0]["embedding"] == b.json()["data"][0]["embedding"]
 
 
 def test_model_name_is_echoed(client):

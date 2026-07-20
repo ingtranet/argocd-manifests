@@ -15,10 +15,14 @@ import numpy as np
 # 지연 차이는 없지만(연산은 어차피 수행됨) 메모리 스파이크가 크다.
 OUTPUT_FOR = {
     "float": "pooler_output",
-    "base64": "pooler_output",
+    "base64_float32": "pooler_output",
     "base64_int8": "pooler_output_int8",
     "base64_binary": "pooler_output_binary",
 }
+
+# base64는 공식 enum에 없지만 OpenAI SDK가 생략 시 자동으로 붙이는 값이다.
+# 공식 기본값(base64_int8)과 같은 의미를 주도록 별칭 처리한다.
+ALIASES = {"base64": "base64_int8"}
 
 DEFAULT_MODEL_DIR = os.environ.get(
     "MODEL_DIR", "/models/perplexity-ai-pplx-embed-v1-0.6b-int8"
@@ -69,10 +73,15 @@ def effective_cpu_count(root: str = "/sys/fs/cgroup") -> int:
     return max(1, min(host, int(limit)))
 
 
+def canonical(encoding_format: str) -> str:
+    """별칭을 공식 이름으로 바꾼다."""
+    return ALIASES.get(encoding_format, encoding_format)
+
+
 def output_name(encoding_format: str) -> str:
     """요청된 인코딩을 만들기 위해 그래프에서 받아야 할 출력 이름."""
     try:
-        return OUTPUT_FOR[encoding_format]
+        return OUTPUT_FOR[canonical(encoding_format)]
     except KeyError:
         raise ValueError(f"Invalid encoding_format: {encoding_format}") from None
 
@@ -98,7 +107,9 @@ def postprocess(raw: np.ndarray, encoding_format: str):
     base64_binary는 공식 PackedBinaryQuantizer와 같다: binary 출력이 x>=0에서
     +1이므로 packbits(binary > 0) == packbits(x >= 0).
     """
-    if encoding_format in ("float", "base64"):
+    encoding_format = canonical(encoding_format)
+
+    if encoding_format in ("float", "base64_float32"):
         v = np.tanh(raw).astype(np.float32)
         norm = np.linalg.norm(v, axis=-1, keepdims=True)
         # 전부 0인 벡터에서 0으로 나누지 않도록.

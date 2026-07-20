@@ -2,13 +2,17 @@ from typing import Literal, Optional, Union
 
 from pydantic import BaseModel, Field, field_validator
 
-# 공식 API(docs.perplexity.ai/docs/embeddings/standard-embeddings)의 encoding_format.
-# base64_int8 / base64_binary가 공식, float / base64는 OpenAI 호환을 위한 우리 확장.
-#   base64_int8   : signed int8 → base64 (공식 기본값)
-#   base64_binary : 부호 비트를 packbits → base64 (1024차원 = 128바이트)
-#   float         : L2 정규화된 float 배열 (무손실, litellm/OpenAI 클라이언트가 그대로 읽음)
-#   base64        : float32 little-endian → base64 (OpenAI의 base64와 같은 형식)
-EncodingFormat = Literal["float", "base64", "base64_int8", "base64_binary"]
+# 공식 API의 encoding_format. OpenAPI 스펙(docs.perplexity.ai/api-reference/
+# embeddings-post)의 enum은 base64_int8 / base64_binary 둘뿐이고 기본값은 base64_int8.
+#   base64_int8    : signed int8 → base64 (공식, 기본값)
+#   base64_binary  : 부호 비트를 packbits → base64 (1024차원 = 128바이트, 공식)
+#   base64         : base64_int8의 별칭. OpenAI SDK가 encoding_format 생략 시 자동으로
+#                    채워 넣는 값이라, 공식 기본값과 같은 의미를 주도록 맞춘다.
+#   base64_float32 : 확장. float32 little-endian → base64 (무손실)
+#   float          : 확장. L2 정규화된 float 배열(JSON)
+EncodingFormat = Literal[
+    "float", "base64", "base64_int8", "base64_binary", "base64_float32"
+]
 
 # 공식 문서의 입력 상한.
 MAX_INPUTS = 512

@@ -7,7 +7,8 @@ import pytest
     "encoding_format,expected",
     [
         ("float", "pooler_output"),
-        ("base64", "pooler_output"),
+        ("base64_float32", "pooler_output"),
+        ("base64", "pooler_output_int8"),
         ("base64_int8", "pooler_output_int8"),
         ("base64_binary", "pooler_output_binary"),
     ],
@@ -20,7 +21,7 @@ def test_only_required_output_is_requested(fake_embedder, encoding_format, expec
 
 
 def test_last_hidden_state_is_never_requested(fake_embedder):
-    for f in ("float", "base64", "base64_int8", "base64_binary"):
+    for f in ("float", "base64", "base64_float32", "base64_int8", "base64_binary"):
         fake_embedder.embed(["hello"], f)
     requested = {n for c in fake_embedder._session.calls for n in c["output_names"]}
     assert "last_hidden_state" not in requested

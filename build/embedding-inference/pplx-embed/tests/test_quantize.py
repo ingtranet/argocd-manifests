@@ -3,7 +3,7 @@ import base64
 import numpy as np
 import pytest
 
-from server.embedder import OUTPUT_FOR, output_name, postprocess, truncate
+from server.embedder import ALIASES, OUTPUT_FOR, output_name, postprocess, truncate
 
 # tanh 전 pooled 값. 부호가 섞이도록 구성.
 POOLED = np.array(
@@ -17,9 +17,17 @@ POOLED = np.array(
 
 def test_output_name_maps_each_encoding_format():
     assert output_name("float") == "pooler_output"
-    assert output_name("base64") == "pooler_output"
+    assert output_name("base64_float32") == "pooler_output"
     assert output_name("base64_int8") == "pooler_output_int8"
     assert output_name("base64_binary") == "pooler_output_binary"
+
+
+def test_base64_is_alias_of_base64_int8():
+    """공식 enum에 base64는 없다. OpenAI SDK가 생략 시 자동으로 붙이는 값이라
+    공식 기본값(base64_int8)과 같은 의미를 준다."""
+    assert output_name("base64") == output_name("base64_int8")
+    graph_int8 = np.array([[85, -72, 0, 12, 5, -9, 30, -1]], dtype=np.int8)
+    assert postprocess(graph_int8, "base64") == postprocess(graph_int8, "base64_int8")
 
 
 def test_output_name_rejects_unknown():
@@ -36,9 +44,9 @@ def test_float_is_l2_normalized_tanh():
     assert np.allclose(np.linalg.norm(np.array(out), axis=-1), 1.0, atol=1e-6)
 
 
-def test_base64_is_float32_little_endian():
-    """OpenAI의 base64와 같은 형식 — float32 배열을 그대로 인코딩."""
-    out = postprocess(POOLED, "base64")
+def test_base64_float32_is_little_endian():
+    """확장 포맷 — float32 배열을 그대로 인코딩."""
+    out = postprocess(POOLED, "base64_float32")
     decoded = np.frombuffer(base64.b64decode(out[0]), dtype="<f4")
     assert np.allclose(decoded, np.array(postprocess(POOLED, "float")[0]), atol=1e-6)
 
@@ -107,4 +115,4 @@ def test_all_schema_formats_are_mapped():
 
     from server.schemas import EncodingFormat
 
-    assert set(get_args(EncodingFormat)) == set(OUTPUT_FOR)
+    assert set(get_args(EncodingFormat)) == set(OUTPUT_FOR) | set(ALIASES)
