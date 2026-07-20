@@ -19,9 +19,19 @@ def test_single_string_input_returns_one_embedding(client):
     assert body["data"][0]["index"] == 0
 
 
-def test_default_encoding_is_base64_int8(client):
-    """공식 API 기본값과 같아야 한다 — 나중에 API 폴백 시 해석이 갈리지 않도록."""
+def test_default_encoding_is_float(client):
+    """업계 표준(OpenAI/Voyage/Cohere/Jina)을 따른다. 공식 pplx 기본값(base64_int8)과는
+    의도적으로 다르므로, API 폴백 시에는 encoding_format 을 명시해야 한다."""
     r = client.post("/v1/embeddings", json={"input": "hello"})
+    emb = r.json()["data"][0]["embedding"]
+    assert isinstance(emb, list)
+    assert len(emb) == HIDDEN
+    assert np.isclose(np.linalg.norm(emb), 1.0, atol=1e-6)
+
+
+def test_official_default_still_available_explicitly(client):
+    """base64_int8 을 명시하면 공식 API 와 같은 형식을 준다."""
+    r = client.post("/v1/embeddings", json={"input": "hello", "encoding_format": "base64_int8"})
     emb = r.json()["data"][0]["embedding"]
     assert isinstance(emb, str)
     assert len(_int8(emb)) == HIDDEN
@@ -123,8 +133,8 @@ def test_base64_alias_returns_float32(client):
         "/v1/embeddings", json={"input": "hello", "encoding_format": "base64_float32"}
     )
     assert a.json()["data"][0]["embedding"] == b.json()["data"][0]["embedding"]
-    # 기본값(base64_int8)과는 달라야 한다.
-    c = client.post("/v1/embeddings", json={"input": "hello"})
+    # base64 별칭은 float32 이므로 int8 과 달라야 한다.
+    c = client.post("/v1/embeddings", json={"input": "hello", "encoding_format": "base64_int8"})
     assert a.json()["data"][0]["embedding"] != c.json()["data"][0]["embedding"]
 
 

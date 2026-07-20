@@ -24,10 +24,10 @@ MAX_DIMENSIONS = 1024
 class EmbeddingRequest(BaseModel):
     input: Union[str, list[str]]
     model: Optional[str] = None
-    # 공식 API와 같은 기본값. 나중에 api.perplexity.ai로 폴백할 때 응답 해석이
-    # 갈리지 않도록 맞춘다 — 소비 측은 base64 → int8로 디코딩해야 한다.
-    # 무손실 float가 필요하면 encoding_format="float"를 명시할 것.
-    encoding_format: EncodingFormat = "base64_int8"
+    # 업계 표준(OpenAI/Voyage/Cohere/Jina)을 따라 float. 공식 pplx API 기본값은
+    # base64_int8이라 이 부분만 의도적으로 다르다 — api.perplexity.ai 로 폴백할 때는
+    # encoding_format 을 명시해야 양쪽 응답이 같아진다.
+    encoding_format: EncodingFormat = "float"
     # Matryoshka. None이면 전체 차원(1024).
     dimensions: Optional[int] = Field(None, ge=MIN_DIMENSIONS, le=MAX_DIMENSIONS)
 

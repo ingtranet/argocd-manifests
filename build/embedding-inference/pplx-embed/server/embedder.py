@@ -36,7 +36,7 @@ DEFAULT_MAX_LENGTH = int(os.environ.get("MAX_LENGTH", "2048"))
 
 # schemas.EmbeddingRequest.encoding_format의 기본값과 반드시 같아야 한다
 # (테스트 test_embedder_default_matches_schema_default가 지킨다).
-DEFAULT_ENCODING_FORMAT = "base64_int8"
+DEFAULT_ENCODING_FORMAT = "float"
 
 
 def cgroup_cpu_limit(root: str = "/sys/fs/cgroup"):
