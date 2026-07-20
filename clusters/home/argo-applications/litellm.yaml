@@ -11,7 +11,10 @@ spec:
   # gateway(LLM 데이터플레인)/backend(관리 API)/ui(대시보드) 3개 서비스로 분리된다.
   source:
     path: .
-    repoURL: oci://ghcr.io/berriai/litellm/chart/litellm
+    # 이 클러스터는 인터넷 egress가 없어 repo-server가 ghcr.io를 직접 못 끈다(매니페스트
+    # 생성 시 DeadlineExceeded). 컨테이너 이미지처럼 chart도 내부 미러 zot.ingtra.net(ghcr proxy)
+    # 경유로 pull. digest는 ghcr 원본과 동일(sha256:8c2848...). 2026-07-21.
+    repoURL: oci://zot.ingtra.net/ghcr.io/berriai/litellm/chart/litellm
     targetRevision: 1.92.0
     helm:
       releaseName: litellm
