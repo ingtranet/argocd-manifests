@@ -22,8 +22,6 @@ spec:
     namespace: llm-serving
   syncPolicy:
     syncOptions:
-      # litellm placeholder Secret(litellm/secrets.yaml)에 수동 주입된 실제 값을
-      # sync 때 덮어쓰지 않도록. Helm chart 본체는 litellm.yaml Application 이 관리.
       - RespectIgnoreDifferences=true
   ignoreDifferences:
     - group: apps
@@ -31,22 +29,8 @@ spec:
       name: qwen3-vl-embedding-2b-runpod
       jsonPointers:
         - /spec/replicas
-    # litellm placeholder Secret 3종 — 클러스터 수동주입값 보존(dagster 패턴).
-    - group: ""
-      kind: Secret
-      name: litellm-masterkey
-      jsonPointers:
-        - /data
-        - /stringData
-    - group: ""
-      kind: Secret
-      name: litellm-dbcreds
-      jsonPointers:
-        - /data
-        - /stringData
-    - group: ""
-      kind: Secret
-      name: litellm-env
-      jsonPointers:
-        - /data
-        - /stringData
+    # litellm Secret 3종은 여기서 다루지 않는다. ignoreDifferences +
+    # RespectIgnoreDifferences 는 "적용은 하되 지정 필드를 desired 에서 빼고 적용"
+    # 이라 stringData/data 불일치로 뚫렸고, 2026-07-22 전체 sync 한 번에 3종이
+    # placeholder 로 덮였다. 지금은 매니페스트 쪽에 argocd.argoproj.io/hook: Skip
+    # 을 달아 Argo CD 가 아예 적용하지 않게 한다(manifests/llm-serving/litellm/secrets.yaml).
