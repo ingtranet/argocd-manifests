@@ -216,32 +216,8 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     namespace: dagster
-  syncPolicy:
-    syncOptions:
-      # placeholder Secret이 클러스터에 수동 주입된 실제 값을 sync 때 덮어쓰지 않도록
-      - RespectIgnoreDifferences=true
-  ignoreDifferences:
-    - group: ""
-      kind: Secret
-      name: dagster-postgresql-secret
-      jsonPointers:
-        - /data
-        - /stringData
-    - group: ""
-      kind: Secret
-      name: dagster-s3-secret
-      jsonPointers:
-        - /data
-        - /stringData
-    - group: ""
-      kind: Secret
-      name: dagster-findata-secret
-      jsonPointers:
-        - /data
-        - /stringData
-    - group: ""
-      kind: Secret
-      name: dagster-harvest-secret
-      jsonPointers:
-        - /data
-        - /stringData
+  # Secret 4종의 수동 주입값은 매니페스트 쪽 argocd.argoproj.io/hook: Skip 으로 지킨다
+  # (manifests/dagster/*-secret.yaml). 예전에는 ignoreDifferences +
+  # RespectIgnoreDifferences 를 썼는데, 그 조합은 "적용하되 지정 필드를 desired 에서
+  # 빼고 적용"이라 stringData/data 불일치로 뚫린다 — 2026-07-22 litellm 에서 실제로
+  # 3종이 placeholder 로 덮였다.
