@@ -63,27 +63,8 @@ spec:
             proxy_config:
               # 네임스페이스 규칙: local/=클러스터 내부 자체호스팅, jaeho/=jaeho 자체호스팅(외부),
               # openrouter/·nvidia_nim/·google_ai_studio/=클라우드 provider 와일드카드.
-              # (gemma-4-e4b는 백엔드 노드 장애로 제거. auto 페일오버는 same-model 방식으로 추후 재설계.)
               model_list:
-                # ── 로컬 임베딩 (클러스터 내부 llama.cpp) ──
-                - model_name: local/google/embeddinggemma-300m
-                  litellm_params:
-                    model: hosted_vllm//models/embeddinggemma-300m
-                    # 직접 ClusterIP 사용. embedding-lb(traefik)는 http→https 302 redirect라
-                    # litellm(aiohttp)이 self-signed 인증서로 SSL 연결→검증 실패라 회피.
-                    api_base: http://embeddinggemma-llamacpp:8000/v1
-                    api_key: dummy
-                    max_parallel_requests: 256
-                # ── 로컬 임베딩 CPU fallback (GPU 노드 장애 시 router_settings.fallbacks로 전환) ──
-                - model_name: local/google/embeddinggemma-300m-cpu
-                  litellm_params:
-                    model: hosted_vllm//models/embeddinggemma-300m-cpu
-                    api_base: http://embeddinggemma-llamacpp-cpu:8000/v1
-                    api_key: dummy
-                    max_parallel_requests: 256
                 # ── 로컬 임베딩 pplx-embed (Jetson primary, CPU fallback) ──
-                # embeddinggemma와 벡터 공간이 다르므로 embeddinggemma fallback으로 엮지 않는다 —
-                # 별도 모델명으로만 호출할 것(인덱스 호환성 없음).
                 # 기본 출력은 L2 정규화된 float. int8/binary/ubinary는 요청 body의
                 # quantization 필드로 고를 수 있으나 litellm이 그 필드를 통과시키지
                 # 않으므로, 필요하면 Service를 직접 호출할 것.
@@ -175,10 +156,7 @@ spec:
                 set_verbose: false
               router_settings:
                 num_retries: 0
-                # GPU embeddinggemma 실패(5xx/timeout/connection error) 시 CPU로 즉시 전환.
-                # num_retries: 0이라 GPU 자체 재시도는 없음 — 실패하면 바로 CPU로 넘어감.
                 fallbacks:
-                  - local/google/embeddinggemma-300m: ["local/google/embeddinggemma-300m-cpu"]
                   - local/perplexity-ai/pplx-embed-v1-0.6b: ["local/perplexity-ai/pplx-embed-v1-0.6b-cpu"]
               # 프롬프트 로깅: 각 요청의 프롬프트+응답을 DB(LiteLLM_SpendLogs)에 저장 → admin UI Logs에서 조회.
               # spend logs 자체는 DB 연결 시 기본 ON, 이 옵션이 메시지 본문까지 저장. 민감정보 로깅 유의.
