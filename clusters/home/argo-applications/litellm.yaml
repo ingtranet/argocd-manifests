@@ -81,13 +81,23 @@ spec:
                     api_base: http://embeddinggemma-llamacpp-cpu:8000/v1
                     api_key: dummy
                     max_parallel_requests: 256
-                # ── 로컬 임베딩 pplx-embed (자체 ONNX Runtime 서버, int8 그래프) ──
-                # embeddinggemma와 벡터 공간이 다르므로 fallback으로 엮지 않는다 —
+                # ── 로컬 임베딩 pplx-embed (Jetson primary, CPU fallback) ──
+                # embeddinggemma와 벡터 공간이 다르므로 embeddinggemma fallback으로 엮지 않는다 —
                 # 별도 모델명으로만 호출할 것(인덱스 호환성 없음).
                 # 기본 출력은 L2 정규화된 float. int8/binary/ubinary는 요청 body의
                 # quantization 필드로 고를 수 있으나 litellm이 그 필드를 통과시키지
                 # 않으므로, 필요하면 Service를 직접 호출할 것.
                 - model_name: local/perplexity-ai/pplx-embed-v1-0.6b
+                  litellm_params:
+                    model: openai/perplexity-ai/pplx-embed-v1-0.6b
+                    api_base: http://pplx-embed-v1-06b-jetson:8000/v1
+                    api_key: dummy
+                    max_parallel_requests: 8
+                    # drop_params: true 상태에서 dimensions가 드롭되는 것을 확인
+                    # (256을 보내도 1024 차원이 돌아옴). 이 모델에만 통과시킨다.
+                    # encoding_format은 이 목록 없이도 그대로 전달된다(검증됨).
+                    allowed_openai_params: ["dimensions"]
+                - model_name: local/perplexity-ai/pplx-embed-v1-0.6b-cpu
                   litellm_params:
                     model: openai/perplexity-ai/pplx-embed-v1-0.6b
                     api_base: http://pplx-embed-v1-06b-cpu:8000/v1
@@ -169,6 +179,7 @@ spec:
                 # num_retries: 0이라 GPU 자체 재시도는 없음 — 실패하면 바로 CPU로 넘어감.
                 fallbacks:
                   - local/google/embeddinggemma-300m: ["local/google/embeddinggemma-300m-cpu"]
+                  - local/perplexity-ai/pplx-embed-v1-0.6b: ["local/perplexity-ai/pplx-embed-v1-0.6b-cpu"]
               # 프롬프트 로깅: 각 요청의 프롬프트+응답을 DB(LiteLLM_SpendLogs)에 저장 → admin UI Logs에서 조회.
               # spend logs 자체는 DB 연결 시 기본 ON, 이 옵션이 메시지 본문까지 저장. 민감정보 로깅 유의.
               general_settings:
