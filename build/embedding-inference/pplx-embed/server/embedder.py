@@ -171,16 +171,30 @@ class PplxEmbedder:
         # 형상마다 패턴을 잡아 두느라 메모리만 늘어난다.
         opts.enable_mem_pattern = False
 
+        providers = [
+            provider.strip()
+            for provider in os.environ.get("ORT_PROVIDERS", "CPUExecutionProvider").split(",")
+            if provider.strip()
+        ]
         session = ort.InferenceSession(
             f"{model_dir}/onnx/model.onnx",
             sess_options=opts,
-            providers=["CPUExecutionProvider"],
+            providers=providers,
         )
+        active_providers = session.get_providers()
+        if os.environ.get("ORT_REQUIRE_CUDA", "").lower() in ("1", "true", "yes") and (
+            "CUDAExecutionProvider" not in active_providers
+        ):
+            raise RuntimeError(
+                "ORT_REQUIRE_CUDA is set, but CUDAExecutionProvider is not active: "
+                f"{active_providers}"
+            )
         tokenizer = Tokenizer.from_file(f"{model_dir}/tokenizer.json")
         print(
             f"[pplx-embed] loaded {model_dir} "
             f"intra_op_threads={threads} (host={os.cpu_count()}, "
-            f"cgroup_limit={cgroup_cpu_limit()}) max_length={max_length}",
+            f"cgroup_limit={cgroup_cpu_limit()}) providers={active_providers} "
+            f"max_length={max_length}",
             flush=True,
         )
         return cls(session=session, tokenizer=tokenizer, max_length=max_length)

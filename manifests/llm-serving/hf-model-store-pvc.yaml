@@ -1,0 +1,21 @@
+---
+# llm-serving 모델의 원본 보관소. 각 노드의 hostPath(/data/cache/hf-models)는
+# 런타임 캐시이고, 이쪽이 진짜 소스다.
+# initContainer에만 마운트한다 — 서빙 컨테이너에 붙이면 GGUF를 NFS(HDD)에서
+# mmap하게 되어 재폴트/스핀업 스톨이 추론 지연으로 나타난다.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: hf-model-store
+  annotations:
+    # burrow-warm-nfs는 reclaimPolicy: Delete다. 여기가 모델 원본이므로
+    # Argo가 prune으로도 지우지 못하게 막는다.
+    argocd.argoproj.io/sync-options: Delete=false,Prune=false
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: burrow-warm-nfs
+  # 명목값. csi-driver-nfs는 export의 subdir를 나눠줄 뿐 쿼터를 강제하지 않는다.
+  resources:
+    requests:
+      storage: 300Gi

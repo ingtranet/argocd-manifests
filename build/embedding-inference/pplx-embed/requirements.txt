@@ -5,7 +5,7 @@
 #
 # 1.23 / 1.25 / 1.27 의 int8·binary 출력은 바이트 단위로 동일하고, float 경로는
 # 최대 7.5e-07 차이(코사인 1.0)라 버전 간 재색인은 필요 없다.
-onnxruntime>=1.23
+onnxruntime>=1.23; platform_machine != "aarch64"
 tokenizers>=0.21
 numpy
 fastapi

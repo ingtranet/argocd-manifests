@@ -45,13 +45,16 @@ spec:
             - sh
             - -c
             - |
-              MODEL=/models/gemma-4-e4b-it-qat-q4_0-gguf/gemma-4-E4B_q4_0-it.gguf
-              if [ -f "$MODEL" ]; then
-                echo "GGUF already present, skipping download."
-              else
-                pip install huggingface_hub && \
-                python -c "from huggingface_hub import snapshot_download; snapshot_download('google/gemma-4-E4B-it-qat-q4_0-gguf', local_dir='/models/gemma-4-e4b-it-qat-q4_0-gguf', allow_patterns=['gemma-4-E4B_q4_0-it.gguf'])"
+              set -e; DIR=gemma-4-e4b-it-qat-q4_0-gguf; valid() { [ -f "$1/gemma-4-E4B_q4_0-it.gguf" ]; }
+              if valid "/models/$DIR"; then echo "local hit: $DIR"; exit 0; fi
+              if [ -e "/models/$DIR" ] && [ "$(find "/models/$DIR" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty local cache: /models/$DIR" >&2; exit 1; fi
+              if ! valid "/nas/$DIR"; then
+                if [ -e "/nas/$DIR" ] && [ "$(find "/nas/$DIR" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty NAS cache: /nas/$DIR" >&2; exit 1; fi
+                mkdir -p /nas/.staging; TMP="/nas/.staging/$DIR.$$"; rm -rf "$TMP"; pip install huggingface_hub
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('google/gemma-4-E4B-it-qat-q4_0-gguf', local_dir='$TMP', allow_patterns=['gemma-4-E4B_q4_0-it.gguf'])"
+                if ! mv -T "$TMP" "/nas/$DIR" 2>/dev/null; then rm -rf "$TMP"; fi
               fi
+              valid "/nas/$DIR" || { echo "NAS cache is invalid: /nas/$DIR" >&2; exit 1; }; TMP="/models/.tmp.$DIR.$$"; rm -rf "$TMP"; cp -a "/nas/$DIR" "$TMP"; mv -T "$TMP" "/models/$DIR" 2>/dev/null || rm -rf "$TMP"
           env:
             - name: HF_TOKEN
               valueFrom:
@@ -62,6 +65,8 @@ spec:
           volumeMounts:
             - name: models
               mountPath: /models
+            - name: model-store
+              mountPath: /nas
       containers:
         - name: llamacpp
           image: zot.ingtra.net/library/image-inference:llamacpp-b9568-9ad8669
@@ -130,6 +135,9 @@ spec:
           hostPath:
             path: /data/cache/hf-models
             type: DirectoryOrCreate
+        - name: model-store
+          persistentVolumeClaim:
+            claimName: hf-model-store
         - name: nginx-config
           configMap:
             name: gemma-4-e4b-nginx-config

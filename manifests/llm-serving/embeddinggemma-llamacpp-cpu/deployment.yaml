@@ -32,13 +32,16 @@ spec:
             - sh
             - -c
             - |
-              MODEL=/models/ggml-org-embeddinggemma-300M-GGUF/embeddinggemma-300M-Q8_0.gguf
-              if [ -f "$MODEL" ]; then
-                echo "GGUF already present, skipping download."
-              else
-                pip install huggingface_hub && \
-                python -c "from huggingface_hub import snapshot_download; snapshot_download('ggml-org/embeddinggemma-300M-GGUF', local_dir='/models/ggml-org-embeddinggemma-300M-GGUF', allow_patterns=['embeddinggemma-300M-Q8_0.gguf'])"
+              set -e; DIR=ggml-org-embeddinggemma-300M-GGUF; valid() { [ -f "$1/embeddinggemma-300M-Q8_0.gguf" ]; }
+              if valid "/models/$DIR"; then echo "local hit: $DIR"; exit 0; fi
+              if [ -e "/models/$DIR" ] && [ "$(find "/models/$DIR" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty local cache: /models/$DIR" >&2; exit 1; fi
+              if ! valid "/nas/$DIR"; then
+                if [ -e "/nas/$DIR" ] && [ "$(find "/nas/$DIR" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty NAS cache: /nas/$DIR" >&2; exit 1; fi
+                mkdir -p /nas/.staging; TMP="/nas/.staging/$DIR.$$"; rm -rf "$TMP"; pip install huggingface_hub
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('ggml-org/embeddinggemma-300M-GGUF', local_dir='$TMP', allow_patterns=['embeddinggemma-300M-Q8_0.gguf'])"
+                if ! mv -T "$TMP" "/nas/$DIR" 2>/dev/null; then rm -rf "$TMP"; fi
               fi
+              valid "/nas/$DIR" || { echo "NAS cache is invalid: /nas/$DIR" >&2; exit 1; }; TMP="/models/.tmp.$DIR.$$"; rm -rf "$TMP"; cp -a "/nas/$DIR" "$TMP"; mv -T "$TMP" "/models/$DIR" 2>/dev/null || rm -rf "$TMP"
           env:
             - name: HF_TOKEN
               valueFrom:
@@ -49,6 +52,8 @@ spec:
           volumeMounts:
             - name: models
               mountPath: /models
+            - name: model-store
+              mountPath: /nas
       containers:
         - name: llamacpp
           # :server는 갱신되는 태그라 재현성이 없음(GPU 형제는 immutable 빌드에 고정) —
@@ -122,6 +127,9 @@ spec:
           hostPath:
             path: /data/cache/hf-models
             type: DirectoryOrCreate
+        - name: model-store
+          persistentVolumeClaim:
+            claimName: hf-model-store
         - name: nginx-config
           configMap:
             name: embeddinggemma-llamacpp-cpu-nginx-config

@@ -40,14 +40,21 @@ spec:
               # 양자화 파일을 지정할 CLI 옵션이 없으므로, 받은 뒤 onnx/model.onnx로 배치한다.
               # external data 참조는 그래프 안에 'model_quantized.onnx_data'로 박혀 있으니
               # _data 파일 이름은 절대 바꾸지 말 것.
-              DIR=/models/perplexity-ai-pplx-embed-v1-0.6b-int8
-              if [ -f "$DIR/onnx/model.onnx" ]; then
-                echo "Model already present, skipping download."
-              else
-                pip install huggingface_hub && \
-                python -c "from huggingface_hub import snapshot_download; snapshot_download('perplexity-ai/pplx-embed-v1-0.6b', local_dir='$DIR', allow_patterns=['*.json','*.txt','tokenizer.json','onnx/model_quantized.onnx','onnx/model_quantized.onnx_data'])" && \
-                cp "$DIR/onnx/model_quantized.onnx" "$DIR/onnx/model.onnx"
+              set -e
+              DIR=perplexity-ai-pplx-embed-v1-0.6b-int8
+              valid() { [ -f "$1/onnx/model.onnx" ] && [ -f "$1/onnx/model_quantized.onnx_data" ]; }
+              if valid "/models/$DIR"; then echo "local hit: $DIR"; exit 0; fi
+              if [ -e "/models/$DIR" ] && [ "$(find "/models/$DIR" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty local cache: /models/$DIR" >&2; exit 1; fi
+              if ! valid "/nas/$DIR"; then
+                if [ -e "/nas/$DIR" ] && [ "$(find "/nas/$DIR" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty NAS cache: /nas/$DIR" >&2; exit 1; fi
+                mkdir -p /nas/.staging; TMP="/nas/.staging/$DIR.$$"; rm -rf "$TMP"
+                pip install huggingface_hub
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('perplexity-ai/pplx-embed-v1-0.6b', local_dir='$TMP', allow_patterns=['*.json','*.txt','tokenizer.json','onnx/model_quantized.onnx','onnx/model_quantized.onnx_data'])"
+                cp "$TMP/onnx/model_quantized.onnx" "$TMP/onnx/model.onnx"
+                if ! mv -T "$TMP" "/nas/$DIR" 2>/dev/null; then rm -rf "$TMP"; fi
               fi
+              if ! valid "/nas/$DIR"; then echo "NAS cache is invalid after download: /nas/$DIR" >&2; exit 1; fi
+              TMP="/models/.tmp.$DIR.$$"; rm -rf "$TMP"; cp -a "/nas/$DIR" "$TMP"; mv -T "$TMP" "/models/$DIR" 2>/dev/null || rm -rf "$TMP"
           env:
             - name: HF_TOKEN
               valueFrom:
@@ -58,6 +65,8 @@ spec:
           volumeMounts:
             - name: models
               mountPath: /models
+            - name: model-store
+              mountPath: /nas
       containers:
         - name: server
           # 자체 ONNX Runtime 서버(build/embedding-inference/pplx-embed).
@@ -135,6 +144,9 @@ spec:
           hostPath:
             path: /data/cache/hf-models
             type: DirectoryOrCreate
+        - name: model-store
+          persistentVolumeClaim:
+            claimName: hf-model-store
         - name: nginx-config
           configMap:
             name: pplx-embed-v1-06b-cpu-nginx-config

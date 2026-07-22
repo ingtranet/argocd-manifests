@@ -43,15 +43,17 @@ spec:
           args:
             - |
               set -e
-              MARKER=/models/hub/models--black-forest-labs--FLUX.2-klein-4B/.complete
-              if [ -f "$MARKER" ]; then
-                echo "Model already downloaded, skipping."
-              else
-                pip install --quiet huggingface_hub
-                python -c "from huggingface_hub import snapshot_download; \
-                  snapshot_download('black-forest-labs/FLUX.2-klein-4B', max_workers=1)"
-                touch "$MARKER"
+              set -e; KEY=models--black-forest-labs--FLUX.2-klein-4B; valid() { [ -f "$1/hub/$KEY/.complete" ]; }
+              if valid /models; then echo "local hit: $KEY"; exit 0; fi
+              if [ -e "/models/hub/$KEY" ] && [ "$(find "/models/hub/$KEY" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty local cache: /models/hub/$KEY" >&2; exit 1; fi
+              if ! valid /nas; then
+                if [ -e "/nas/hub/$KEY" ] && [ "$(find "/nas/hub/$KEY" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty NAS cache: /nas/hub/$KEY" >&2; exit 1; fi
+                mkdir -p /nas/.staging; TMP="/nas/.staging/$KEY.$$"; rm -rf "$TMP"; pip install --quiet huggingface_hub
+                HF_HOME="$TMP" python -c "from huggingface_hub import snapshot_download; snapshot_download('black-forest-labs/FLUX.2-klein-4B', max_workers=1)"
+                touch "$TMP/hub/$KEY/.complete"; mkdir -p /nas/hub
+                if ! mv -T "$TMP/hub/$KEY" "/nas/hub/$KEY" 2>/dev/null; then rm -rf "$TMP"; fi
               fi
+              valid /nas || { echo "NAS cache is invalid: /nas/hub/$KEY" >&2; exit 1; }; mkdir -p /models/hub; TMP="/models/hub/.tmp.$KEY.$$"; rm -rf "$TMP"; cp -a "/nas/hub/$KEY" "$TMP"; mv -T "$TMP" "/models/hub/$KEY" 2>/dev/null || rm -rf "$TMP"
           env:
             - name: HF_HOME
               value: /models
@@ -64,6 +66,8 @@ spec:
           volumeMounts:
             - name: models
               mountPath: /models
+            - name: model-store
+              mountPath: /nas
       containers:
         - name: flux2-klein
           image: zot.ingtra.net/library/image-inference:flux2-klein-4b-63d08d8
@@ -121,6 +125,9 @@ spec:
           hostPath:
             path: /data/cache/hf-models
             type: DirectoryOrCreate
+        - name: model-store
+          persistentVolumeClaim:
+            claimName: hf-model-store
         - name: nginx-config
           configMap:
             name: flux2-klein-nginx-config

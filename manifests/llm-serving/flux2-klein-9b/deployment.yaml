@@ -43,15 +43,16 @@ spec:
           args:
             - |
               set -e
-              MARKER=/models/hub/models--cookieshake--FLUX.2-klein-9B-bnb-nf4/.complete
-              if [ -f "$MARKER" ]; then
-                echo "Model already downloaded, skipping."
-              else
-                pip install --quiet huggingface_hub
-                python -c "from huggingface_hub import snapshot_download; \
-                  snapshot_download('cookieshake/FLUX.2-klein-9B-bnb-nf4', max_workers=1)"
-                touch "$MARKER"
+              set -e; KEY=models--cookieshake--FLUX.2-klein-9B-bnb-nf4; valid() { [ -f "$1/hub/$KEY/.complete" ]; }
+              if valid /models; then echo "local hit: $KEY"; exit 0; fi
+              if [ -e "/models/hub/$KEY" ] && [ "$(find "/models/hub/$KEY" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty local cache: /models/hub/$KEY" >&2; exit 1; fi
+              if ! valid /nas; then
+                if [ -e "/nas/hub/$KEY" ] && [ "$(find "/nas/hub/$KEY" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty NAS cache: /nas/hub/$KEY" >&2; exit 1; fi
+                mkdir -p /nas/.staging; TMP="/nas/.staging/$KEY.$$"; rm -rf "$TMP"; pip install --quiet huggingface_hub
+                HF_HOME="$TMP" python -c "from huggingface_hub import snapshot_download; snapshot_download('cookieshake/FLUX.2-klein-9B-bnb-nf4', max_workers=1)"; touch "$TMP/hub/$KEY/.complete"; mkdir -p /nas/hub
+                if ! mv -T "$TMP/hub/$KEY" "/nas/hub/$KEY" 2>/dev/null; then rm -rf "$TMP"; fi
               fi
+              valid /nas || { echo "NAS cache is invalid: /nas/hub/$KEY" >&2; exit 1; }; mkdir -p /models/hub; TMP="/models/hub/.tmp.$KEY.$$"; rm -rf "$TMP"; cp -a "/nas/hub/$KEY" "$TMP"; mv -T "$TMP" "/models/hub/$KEY" 2>/dev/null || rm -rf "$TMP"
           env:
             - name: HF_HOME
               value: /models
@@ -64,6 +65,8 @@ spec:
           volumeMounts:
             - name: models
               mountPath: /models
+            - name: model-store
+              mountPath: /nas
         - name: download-loras
           image: python:3.11-slim
           resources:
@@ -75,21 +78,18 @@ spec:
           args:
             - |
               set -e
-              pip install --quiet huggingface_hub
               fetch() {
-                local repo="$1"; local pat="$2"
-                local cachekey
-                cachekey=$(echo "$repo" | sed 's|/|--|g')
-                local dir="/models/hub/models--${cachekey}"
-                local marker="${dir}/.complete"
-                if [ -f "$marker" ] || [ -d "${dir}/snapshots" ]; then
-                  echo "$repo already downloaded, skipping."
-                  touch "$marker" 2>/dev/null || true
-                else
-                  python -c "from huggingface_hub import snapshot_download; \
-                    snapshot_download('$repo', allow_patterns=['$pat','README.md'])"
-                  touch "$marker"
+                repo="$1"; pat="$2"; key="models--$(echo "$repo" | sed 's|/|--|g')"
+                valid() { [ -f "/$1/hub/$key/.complete" ]; }
+                if valid models; then echo "local hit: $key"; return; fi
+                if [ -e "/models/hub/$key" ] && [ "$(find "/models/hub/$key" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty local cache: /models/hub/$key" >&2; return 1; fi
+                if ! valid nas; then
+                  if [ -e "/nas/hub/$key" ] && [ "$(find "/nas/hub/$key" -mindepth 1 -print -quit)" ]; then echo "invalid nonempty NAS cache: /nas/hub/$key" >&2; return 1; fi
+                  mkdir -p /nas/.staging; TMP="/nas/.staging/$key.$$"; rm -rf "$TMP"; pip install --quiet huggingface_hub
+                  HF_HOME="$TMP" python -c "from huggingface_hub import snapshot_download; snapshot_download('$repo', allow_patterns=['$pat','README.md'])"; touch "$TMP/hub/$key/.complete"; mkdir -p /nas/hub
+                  if ! mv -T "$TMP/hub/$key" "/nas/hub/$key" 2>/dev/null; then rm -rf "$TMP"; fi
                 fi
+                valid nas || { echo "NAS cache is invalid: /nas/hub/$key" >&2; return 1; }; mkdir -p /models/hub; TMP="/models/hub/.tmp.$key.$$"; rm -rf "$TMP"; cp -a "/nas/hub/$key" "$TMP"; mv -T "$TMP" "/models/hub/$key" 2>/dev/null || rm -rf "$TMP"
               }
               fetch dx8152/Flux2-Klein-9B-Enhanced-Details realistic.safetensors
               fetch dx8152/Flux2-Klein-9B-Consistency      Flux2-Klein-9B-consistency-V2.safetensors
@@ -105,6 +105,8 @@ spec:
           volumeMounts:
             - name: models
               mountPath: /models
+            - name: model-store
+              mountPath: /nas
       containers:
         - name: flux2-klein-9b
           image: zot.ingtra.net/library/image-inference:flux2-klein-9b-b50b8e0
@@ -205,6 +207,9 @@ spec:
           hostPath:
             path: /data/cache/hf-models
             type: DirectoryOrCreate
+        - name: model-store
+          persistentVolumeClaim:
+            claimName: hf-model-store
         - name: nginx-config
           configMap:
             name: flux2-klein-9b-nginx-config
