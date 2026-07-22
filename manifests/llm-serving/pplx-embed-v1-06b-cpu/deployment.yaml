@@ -90,13 +90,13 @@ spec:
           resources:
             requests:
               cpu: 500m
-              memory: 1Gi
+              memory: 1500Mi
             limits:
               # 실측 RSS 717MB(int8 가중치 706MB + 런타임)라 1.5Gi면 여유가 있다.
               # cpu 1.5는 cgroup cpu.max=150000/100000 → 서버가 intra_op를 1로 잡는다
               # (내림). 스레드를 늘리려면 limit을 정수로 올릴 것.
               cpu: "1500m"
-              memory: 1500Mi
+              memory: 2Gi
           ports:
             - containerPort: 8080
           startupProbe:
