@@ -74,7 +74,7 @@ spec:
               mountPath: /nas
       containers:
         - name: server
-          image: zot.ingtra.net/library/embedding-inference:pplx-embed-jetson-bbf1677
+          image: zot.ingtra.net/library/embedding-inference:pplx-embed-jetson-numpy1-101bca3
           env:
             - name: MODEL_DIR
               value: /models/perplexity-ai-pplx-embed-v1-0.6b-int8

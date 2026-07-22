@@ -1,3 +1,4 @@
 # JetPack 6 / CUDA 12 provider for the shared pplx-embed server.
 onnxruntime-gpu==1.23.0; platform_machine == "aarch64"
+numpy<2
 -r requirements.txt
