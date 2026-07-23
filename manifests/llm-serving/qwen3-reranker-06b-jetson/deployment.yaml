@@ -84,7 +84,7 @@ spec:
             - --pooling
             - rank
             - -c
-            - "8192"
+            - "2048"
             - -ngl
             - "99"
           resources:
