@@ -93,7 +93,7 @@ spec:
                 # Backend is openai-compatible (same /v1/rerank endpoint).
                 - model_name: local/nvidia/llama-nemotron-rerank-1b-v2
                   litellm_params:
-                    model: openai/nvidia/llama-nemotron-rerank-1b-v2
+                    model: hosted_vllm/nvidia/llama-nemotron-rerank-1b-v2
                     api_base: http://nemotron-rerank-jetson:8000/v1
                     api_key: dummy
                     mode: rerank
