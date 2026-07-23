@@ -164,7 +164,7 @@ async def run_llama_embedding(prompt: str) -> np.ndarray:
             "--embd-output-format", "json",
             "--ubatch-size", str(UBATCH_SIZE),
             "--ctx-size", str(CTX_SIZE),
-            "--flash-attn",
+            "--flash-attn", "auto",
             "-ngl", str(NGL),
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
