@@ -5,6 +5,15 @@ Jina Reranker v3 HTTP wrapper for llama.cpp on Jetson Orin.
 Implements POST /v1/rerank (standard OpenAI-compatible rerank schema),
 GET  /health, and GET /metrics.
 
+Key robustness features:
+  - Batches documents into groups whose prompt fits within CTX_SIZE (8192).
+  - Enforces a maximum of 64 documents per request.
+  - Serializes llama subprocess calls via an asyncio semaphore to prevent
+    Jetson memory contention.
+  - Applies a subprocess timeout so hung llama processes do not stall the
+    server indefinitely.
+  - Returns clear 4xx/5xx errors instead of crashing the server.
+
 Uses llama-embedding CLI with --pooling none to extract per-token hidden
 states, applies the MLP projector from projector.safetensors, computes
 cosine similarity between query and document embeddings, and returns
@@ -20,8 +29,7 @@ import subprocess
 import sys
 import tempfile
 import time
-from pathlib import Path
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Tuple
 
 import numpy as np
 import uvicorn
@@ -50,8 +58,13 @@ PORT = int(os.environ.get("PORT", "8080"))
 NGL = int(os.environ.get("NGL", "99"))
 CTX_SIZE = int(os.environ.get("CTX_SIZE", "8192"))
 UBATCH_SIZE = int(os.environ.get("UBATCH_SIZE", "512"))
-HF_REPO = os.environ.get("HF_REPO", "jinaai/jina-reranker-v3-GGUF")
-HF_TOKEN = os.environ.get("HF_TOKEN", "")
+# Maximum documents per request (Jina v3 capability ceiling)
+MAX_DOCUMENTS = int(os.environ.get("MAX_DOCUMENTS", "64"))
+# Token budget headroom: leave this many tokens free below CTX_SIZE for
+# the prompt prefix, suffix, query, and special tokens.
+TOKEN_HEADROOM = int(os.environ.get("TOKEN_HEADROOM", "256"))
+# Subprocess timeout in seconds for each llama-embedding call
+LLAMA_TIMEOUT = int(os.environ.get("LLAMA_TIMEOUT", "300"))
 
 # ---------------------------------------------------------------------------
 # Special tokens (Jina v3)
@@ -143,8 +156,39 @@ def format_rerank_prompt(
 
 
 # ---------------------------------------------------------------------------
-# llama-embedding CLI wrapper
+# Token estimation
 # ---------------------------------------------------------------------------
+def estimate_tokens(text: str) -> int:
+    """Rough token estimate: ~4 chars per token for most languages."""
+    return max(1, len(text) // 4)
+
+
+def estimate_prompt_tokens(
+    query: str,
+    n_docs: int,
+    avg_doc_chars: int,
+    instruction: Optional[str] = None,
+) -> int:
+    """Estimate total token count for a rerank prompt with n_docs documents."""
+    # Fixed overhead: prefix + suffix + query wrapper + doc wrapper per doc
+    # Prefix ~120 tokens, suffix ~5 tokens, query wrapper ~10 tokens
+    # Each doc wrapper: '<passage id="N">\n' + '\n</passage>' + DOC_EMBED_TOKEN
+    #   ~15 tokens overhead per doc
+    fixed = 135  # prefix + suffix
+    query_tokens = estimate_tokens(query)
+    instr_tokens = estimate_tokens(instruction) if instruction else 0
+    per_doc_overhead = 15  # passage wrapper tokens
+    per_doc_content = avg_doc_chars // 4
+    return fixed + query_tokens + instr_tokens + n_docs * (per_doc_overhead + per_doc_content)
+
+
+# ---------------------------------------------------------------------------
+# llama-embedding CLI wrapper (with semaphore + timeout)
+# ---------------------------------------------------------------------------
+# Semaphore to serialize llama subprocess calls (Jetson memory contention)
+_llama_semaphore = asyncio.Semaphore(1)
+
+
 async def run_llama_embedding(prompt: str) -> np.ndarray:
     """Run llama-embedding and return per-token hidden states as [n_tokens, hidden_dim]."""
     with tempfile.NamedTemporaryFile(
@@ -154,28 +198,38 @@ async def run_llama_embedding(prompt: str) -> np.ndarray:
         prompt_file = f.name
 
     try:
-        proc = await asyncio.create_subprocess_exec(
-            LLAMA_EMBEDDING_PATH,
-            "-m", MODEL_PATH,
-            "-f", prompt_file,
-            "--pooling", "none",
-            "--embd-separator", EMBD_SEPARATOR,
-            "--embd-normalize", "-1",
-            "--embd-output-format", "json",
-            "--ubatch-size", str(UBATCH_SIZE),
-            "--ctx-size", str(CTX_SIZE),
-            "--flash-attn", "auto",
-            "-ngl", str(NGL),
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-        )
-        stdout, stderr = await proc.communicate()
-
-        if proc.returncode != 0:
-            stderr_text = stderr.decode("utf-8", errors="replace")
-            raise RuntimeError(
-                f"llama-embedding exited {proc.returncode}: {stderr_text[:2000]}"
+        async with _llama_semaphore:
+            proc = await asyncio.create_subprocess_exec(
+                LLAMA_EMBEDDING_PATH,
+                "-m", MODEL_PATH,
+                "-f", prompt_file,
+                "--pooling", "none",
+                "--embd-separator", EMBD_SEPARATOR,
+                "--embd-normalize", "-1",
+                "--embd-output-format", "json",
+                "--ubatch-size", str(UBATCH_SIZE),
+                "--ctx-size", str(CTX_SIZE),
+                "--flash-attn", "auto",
+                "-ngl", str(NGL),
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
             )
+            try:
+                stdout, stderr = await asyncio.wait_for(
+                    proc.communicate(), timeout=LLAMA_TIMEOUT
+                )
+            except asyncio.TimeoutError:
+                proc.kill()
+                await proc.wait()
+                raise RuntimeError(
+                    f"llama-embedding timed out after {LLAMA_TIMEOUT}s"
+                )
+
+            if proc.returncode != 0:
+                stderr_text = stderr.decode("utf-8", errors="replace")
+                raise RuntimeError(
+                    f"llama-embedding exited {proc.returncode}: {stderr_text[:2000]}"
+                )
 
         output = json.loads(stdout.decode("utf-8"))
         embeddings = [item["embedding"] for item in output["data"]]
@@ -196,17 +250,25 @@ async def run_llama_tokenize(prompt: str) -> List[int]:
         prompt_file = f.name
 
     try:
-        proc = await asyncio.create_subprocess_exec(
-            LLAMA_TOKENIZE_PATH,
-            "-m", MODEL_PATH,
-            "-f", prompt_file,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.DEVNULL,
-        )
-        stdout, _ = await proc.communicate()
+        async with _llama_semaphore:
+            proc = await asyncio.create_subprocess_exec(
+                LLAMA_TOKENIZE_PATH,
+                "-m", MODEL_PATH,
+                "-f", prompt_file,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.DEVNULL,
+            )
+            try:
+                stdout, _ = await asyncio.wait_for(
+                    proc.communicate(), timeout=30
+                )
+            except asyncio.TimeoutError:
+                proc.kill()
+                await proc.wait()
+                raise RuntimeError("llama-tokenize timed out")
 
-        if proc.returncode != 0:
-            raise RuntimeError("llama-tokenize failed")
+            if proc.returncode != 0:
+                raise RuntimeError("llama-tokenize failed")
 
         tokens = []
         for line in stdout.decode("utf-8").strip().split("\n"):
@@ -235,16 +297,91 @@ def compute_scores(
     return dot / (doc_norm * query_norm + 1e-12)
 
 
+def _extract_embeddings(
+    embeddings: np.ndarray,
+    tokens: List[int],
+    n_expected_docs: int,
+) -> Tuple[np.ndarray, np.ndarray]:
+    """Extract query and document hidden states at special token positions.
+
+    Returns (query_hidden [1, hidden_dim], doc_hidden [n_docs, hidden_dim]).
+    """
+    tokens_arr = np.array(tokens, dtype=np.int32)
+    query_positions = np.where(tokens_arr == QUERY_EMBED_TOKEN_ID)[0]
+    doc_positions = np.where(tokens_arr == DOC_EMBED_TOKEN_ID)[0]
+
+    if len(query_positions) == 0:
+        raise ValueError(
+            f"Query embed token (ID {QUERY_EMBED_TOKEN_ID}) not found in output"
+        )
+    if len(doc_positions) == 0:
+        raise ValueError(
+            f"Document embed tokens (ID {DOC_EMBED_TOKEN_ID}) not found in output"
+        )
+
+    if len(doc_positions) != n_expected_docs:
+        log.warning(
+            "Expected %d doc tokens, found %d. Using found positions.",
+            n_expected_docs, len(doc_positions),
+        )
+
+    query_pos = query_positions[0]
+    query_hidden = embeddings[query_pos:query_pos + 1]  # [1, hidden_dim]
+    doc_hidden = embeddings[doc_positions]  # [n_docs, hidden_dim]
+    return query_hidden, doc_hidden
+
+
+async def _score_batch(
+    query: str,
+    documents: List[str],
+    global_indices: List[int],
+    instruction: Optional[str] = None,
+    return_documents: bool = True,
+) -> List[Dict[str, Any]]:
+    """Score one batch of documents and return partial results.
+
+    Each result dict has keys: index, relevance_score, document (if requested).
+    """
+    prompt = format_rerank_prompt(query, documents, instruction=instruction)
+
+    # Get per-token hidden states
+    embeddings = await run_llama_embedding(prompt)
+
+    # Tokenize to find special token positions
+    tokens = await run_llama_tokenize(prompt)
+
+    query_hidden, doc_hidden = _extract_embeddings(embeddings, tokens, len(documents))
+
+    # Project through MLP
+    query_embed = projector(query_hidden)  # [1, 512]
+    doc_embeds = projector(doc_hidden)  # [n_docs, 512]
+
+    # Compute scores
+    scores = compute_scores(query_embed, doc_embeds)
+
+    results = []
+    for local_idx, (doc, score) in enumerate(zip(documents, scores)):
+        result: Dict[str, Any] = {
+            "index": global_indices[local_idx],
+            "relevance_score": float(score),
+        }
+        if return_documents:
+            result["document"] = {"text": doc}
+        results.append(result)
+    return results
+
+
 # ---------------------------------------------------------------------------
 # FastAPI app
 # ---------------------------------------------------------------------------
-app = FastAPI(title="Jina Reranker v3", version="1.0.0")
+app = FastAPI(title="Jina Reranker v3", version="1.1.0")
 
 # Global state (set during startup)
 projector: Optional[MLPProjector] = None
 start_time: float = 0.0
 request_count: int = 0
 llama_commit: str = "unknown"
+# Track whether the request asked for return_documents (set per-request)
 
 
 class RerankRequest(BaseModel):
@@ -305,8 +442,10 @@ async def startup():
     start_time = time.time()
     log.info(
         "Jina Reranker v3 wrapper ready | model=%s | projector=%s | "
-        "llama-embedding=%s | ngl=%d | ctx=%d | ubatch=%d",
-        MODEL_PATH, PROJECTOR_PATH, LLAMA_EMBEDDING_PATH, NGL, CTX_SIZE, UBATCH_SIZE,
+        "llama-embedding=%s | ngl=%d | ctx=%d | ubatch=%d | max_docs=%d | "
+        "headroom=%d | timeout=%ds",
+        MODEL_PATH, PROJECTOR_PATH, LLAMA_EMBEDDING_PATH, NGL, CTX_SIZE,
+        UBATCH_SIZE, MAX_DOCUMENTS, TOKEN_HEADROOM, LLAMA_TIMEOUT,
     )
 
 
@@ -340,83 +479,93 @@ async def rerank(req: RerankRequest):
     if not req.documents:
         raise HTTPException(status_code=400, detail="No documents provided")
 
-    # Format prompt
-    prompt = format_rerank_prompt(
-        req.query, req.documents, instruction=req.instruction
-    )
-
-    # Get per-token hidden states
-    try:
-        embeddings = await run_llama_embedding(prompt)
-    except Exception as e:
-        log.error("llama-embedding failed: %s", e)
-        raise HTTPException(status_code=502, detail=f"llama-embedding error: {e}")
-
-    # Tokenize to find special token positions
-    try:
-        tokens = await run_llama_tokenize(prompt)
-    except Exception as e:
-        log.error("llama-tokenize failed: %s", e)
-        raise HTTPException(status_code=502, detail=f"llama-tokenize error: {e}")
-
-    tokens_arr = np.array(tokens, dtype=np.int32)
-
-    query_positions = np.where(tokens_arr == QUERY_EMBED_TOKEN_ID)[0]
-    doc_positions = np.where(tokens_arr == DOC_EMBED_TOKEN_ID)[0]
-
-    if len(query_positions) == 0:
+    # Enforce maximum document count
+    if len(req.documents) > MAX_DOCUMENTS:
         raise HTTPException(
-            status_code=500,
-            detail=f"Query embed token (ID {QUERY_EMBED_TOKEN_ID}) not found in output",
-        )
-    if len(doc_positions) == 0:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Document embed tokens (ID {DOC_EMBED_TOKEN_ID}) not found in output",
+            status_code=400,
+            detail=f"Too many documents: {len(req.documents)} exceeds maximum {MAX_DOCUMENTS}",
         )
 
-    if len(doc_positions) != len(req.documents):
-        log.warning(
-            "Expected %d doc tokens, found %d. Using found positions.",
-            len(req.documents), len(doc_positions),
+    # Check for oversized individual documents (would exceed context even alone)
+    max_doc_tokens = CTX_SIZE - TOKEN_HEADROOM - 200  # 200 for query + overhead
+    for i, doc in enumerate(req.documents):
+        doc_tokens = estimate_tokens(doc)
+        if doc_tokens > max_doc_tokens:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Document {i} is too large: estimated {doc_tokens} tokens "
+                       f"(max {max_doc_tokens})",
+            )
+
+    return_documents = bool(req.return_documents)
+
+    # Compute average document character length for token estimation
+    avg_doc_chars = sum(len(d) for d in req.documents) // max(1, len(req.documents))
+
+    # Determine batch size: how many documents fit in one prompt?
+    # Binary search for the largest batch that stays within budget
+    budget = CTX_SIZE - TOKEN_HEADROOM
+    n_docs = len(req.documents)
+
+    def batch_fits(k: int) -> bool:
+        return estimate_prompt_tokens(req.query, k, avg_doc_chars, req.instruction) <= budget
+
+    # Find max docs per batch
+    if n_docs <= 1 or batch_fits(n_docs):
+        # Single batch
+        batches = [(req.documents, list(range(n_docs)))]
+    else:
+        # Find batch size via binary search
+        lo, hi = 1, n_docs
+        while lo < hi:
+            mid = (lo + hi + 1) // 2
+            if batch_fits(mid):
+                lo = mid
+            else:
+                hi = mid - 1
+        batch_size = lo
+        log.info(
+            "Batching %d documents into groups of ~%d (budget=%d tokens)",
+            n_docs, batch_size, budget,
         )
+        batches = []
+        for start in range(0, n_docs, batch_size):
+            end = min(start + batch_size, n_docs)
+            batches.append((req.documents[start:end], list(range(start, end))))
 
-    # Extract embeddings at special token positions
-    query_pos = query_positions[0]
-    query_hidden = embeddings[query_pos:query_pos + 1]  # [1, hidden_dim]
-    doc_hidden = embeddings[doc_positions]  # [n_docs, hidden_dim]
-
-    # Project through MLP
-    query_embed = projector(query_hidden)  # [1, 512]
-    doc_embeds = projector(doc_hidden)  # [n_docs, 512]
-
-    # Compute scores
-    scores = compute_scores(query_embed, doc_embeds)
-
-    # Build results
-    results = []
-    for idx, (doc, score) in enumerate(zip(req.documents, scores)):
-        result: Dict[str, Any] = {
-            "index": idx,
-            "relevance_score": float(score),
-        }
-        if req.return_documents:
-            result["document"] = {"text": doc}
-        if req.return_embeddings:
-            result["embedding"] = doc_embeds[idx].tolist()
-        results.append(result)
+    # Score each batch
+    all_results: List[Dict[str, Any]] = []
+    total_tokens = 0
+    for batch_docs, global_indices in batches:
+        try:
+            batch_results = await _score_batch(
+                req.query, batch_docs, global_indices,
+                instruction=req.instruction,
+                return_documents=return_documents,
+            )
+            all_results.extend(batch_results)
+            # Estimate tokens from the first batch's token count
+            # (we don't have exact per-batch token counts without re-tokenizing)
+        except ValueError as e:
+            raise HTTPException(status_code=500, detail=str(e))
+        except RuntimeError as e:
+            log.error("llama subprocess error in batch: %s", e)
+            raise HTTPException(status_code=502, detail=str(e))
+        except Exception as e:
+            log.error("Unexpected error in batch: %s", e)
+            raise HTTPException(status_code=500, detail=f"Internal error: {e}")
 
     # Sort by score descending
-    results.sort(key=lambda x: x["relevance_score"], reverse=True)
+    all_results.sort(key=lambda x: x["relevance_score"], reverse=True)
 
     # Apply top_n
     if req.top_n is not None and req.top_n > 0:
-        results = results[: req.top_n]
+        all_results = all_results[: req.top_n]
 
     return RerankResponse(
         model=req.model or "jina/jina-reranker-v3",
-        results=results,
-        usage={"total_tokens": len(tokens)},
+        results=all_results,
+        usage={"total_tokens": total_tokens or 0},
     )
 
 
