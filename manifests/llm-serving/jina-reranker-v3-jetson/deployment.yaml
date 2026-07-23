@@ -82,9 +82,13 @@ spec:
             - name: PROJECTOR_PATH
               value: /models/jinaai_jina-reranker-v3-GGUF/projector.safetensors
             - name: CTX_SIZE
-              value: "8192"
+              value: "65536"
             - name: NGL
               value: "99"
+            - name: UBATCH_SIZE
+              value: "1024"
+            - name: LLAMA_TIMEOUT
+              value: "600"
             - name: HOST
               value: "0.0.0.0"
             - name: PORT
@@ -92,17 +96,17 @@ spec:
           resources:
             requests:
               cpu: 500m
-              memory: 1Gi
+              memory: 2Gi
             limits:
               cpu: "4000m"
-              memory: 4Gi
+              memory: 8Gi
           ports:
             - containerPort: 8080
           startupProbe:
             httpGet:
               path: /health
               port: 8080
-            initialDelaySeconds: 30
+            initialDelaySeconds: 120
             periodSeconds: 10
             timeoutSeconds: 5
             failureThreshold: 60
