@@ -40,7 +40,7 @@ spec:
             - |
               set -e
               DIR=tensorblock_Qwen_Qwen3-Reranker-0.6B-GGUF
-              FILE=Qwen3-Reranker-0.6B-Q4_K_M.gguf
+              FILE=Qwen3-Reranker-0.6B-Q3_K_M.gguf
               valid() { [ -f "$1/$FILE" ]; }
               promote() { src="$1"; dst="$2"; valid "$dst" && { rm -rf "$src"; return 0; }; BACKUP=; if [ -e "$dst" ] && BACKUP=$(mktemp -d "${dst}.backup.XXXXXX") && rmdir "$BACKUP" && mv "$dst" "$BACKUP"; then :; elif [ -e "$dst" ]; then valid "$dst" && { rm -rf "$src"; return 0; } || return 1; fi; if mv "$src" "$dst" 2>/dev/null && valid "$dst"; then rm -rf "$BACKUP"; BACKUP=; return 0; fi; if valid "$dst"; then rm -rf "$src" "$BACKUP"; BACKUP=; return 0; fi; [ -n "$BACKUP" ] && [ ! -e "$dst" ] && mv "$BACKUP" "$dst" 2>/dev/null && BACKUP=; return 1; }
               if valid "/models/$DIR"; then
@@ -76,7 +76,7 @@ spec:
           image: zot.ingtra.net/library/image-inference:llamacpp-b9568-9ad8669
           args:
             - -m
-            - /models/tensorblock_Qwen_Qwen3-Reranker-0.6B-GGUF/Qwen3-Reranker-0.6B-Q4_K_M.gguf
+            - /models/tensorblock_Qwen_Qwen3-Reranker-0.6B-GGUF/Qwen3-Reranker-0.6B-Q3_K_M.gguf
             - --host
             - 0.0.0.0
             - --port

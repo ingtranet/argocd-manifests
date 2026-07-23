@@ -45,7 +45,7 @@ spec:
           restartPolicy: Never
           containers:
             - name: cleanup
-              image: registry.k8s.io/kubectl:v1.31.3
+              image: alpine/k8s:1.31.3
               command:
                 - /bin/bash
                 - -c
@@ -66,8 +66,10 @@ spec:
                       continue
                     fi
                     
-                    TRANSITION_EPOCH=$(date -d "$LAST_TRANSITION" +%s 2>/dev/null || date -j -f "%Y-%m-%dT%H:%M:%SZ" "$LAST_TRANSITION" +%s)
-                    CURRENT_EPOCH=$(date +%s)
+                    TRANSITION_TIME=${LAST_TRANSITION%Z}
+                    TRANSITION_TIME=${TRANSITION_TIME/T/ }
+                    TRANSITION_EPOCH=$(date -u -d "$TRANSITION_TIME" +%s)
+                    CURRENT_EPOCH=$(date -u +%s)
                     DIFF=$((CURRENT_EPOCH - TRANSITION_EPOCH))
                     
                     echo "Node: $NODE, Not Ready for: ${DIFF}s"

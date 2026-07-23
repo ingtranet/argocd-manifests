@@ -15,3 +15,21 @@ spec:
           port: 7777
   tls:
     secretName: ig-ingtra-net-tls
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: jipler-ui
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`jipler-ui.ig.ingtra.net`)
+      services:
+        - kind: Service
+          name: jipler-ui
+          namespace: jipler
+          port: 3000
+  tls:
+    secretName: ig-ingtra-net-tls
