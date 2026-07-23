@@ -87,9 +87,11 @@ class NemotronReranker:
 
         tokenizer = Tokenizer.from_file(f"{model_dir}/tokenizer.json")
 
-        # Enable truncation to max_length for the concatenated pair.
+        # Enable truncation and padding for the concatenated pair.
         # The tokenizer handles [CLS] query [SEP] document [SEP] formatting.
         tokenizer.enable_truncation(max_length)
+        # Nemotron uses <|finetune_right_pad_id|> (id=128004) as pad token
+        tokenizer.enable_padding(pad_id=128004, pad_token="<|finetune_right_pad_id|>")
 
         print(
             f"[nemotron-rerank] loaded {model_dir} "

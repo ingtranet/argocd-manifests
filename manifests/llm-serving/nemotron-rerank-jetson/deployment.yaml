@@ -80,7 +80,7 @@ spec:
               mountPath: /nas
       containers:
         - name: server
-          image: zot.ingtra.net/library/embedding-inference:nemotron-rerank-233cef1-dirty
+          image: zot.ingtra.net/library/embedding-inference:nemotron-rerank-7f8ed56-dirty
           env:
             - name: MODEL_DIR
               value: /models/cstr-llama-nemotron-rerank-1b-v2-ONNX-int8
