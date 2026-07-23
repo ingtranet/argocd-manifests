@@ -56,13 +56,14 @@ spec:
           # LITELLM_SALT_KEY(저장 크레덴셜 암호화) 주입. gateway/backend 모두 DB 암호문을 다루므로 양쪽에.
           envSecrets:
             - litellm-env
+            - litellm-ollama-key
           config:
             create: true
             # 기존 model_list/settings 그대로 이전. api_key는 전부 dummy(내부 백엔드).
             # master key는 chart가 env로 주입하므로 general_settings.master_key 불필요.
             proxy_config:
               # 네임스페이스 규칙: local/=클러스터 내부 자체호스팅, jaeho/=jaeho 자체호스팅(외부),
-              # openrouter/·nvidia_nim/·google_ai_studio/=클라우드 provider 와일드카드.
+              # openrouter/·nvidia_nim/·google_ai_studio/·ollama_chat/=클라우드 provider 와일드카드.
               model_list:
                 # ── 로컬 임베딩 pplx-embed (Jetson primary, CPU fallback) ──
                 # 기본 출력은 L2 정규화된 float. int8/binary/ubinary는 요청 body의
@@ -101,13 +102,6 @@ spec:
                   litellm_params:
                     model: hosted_vllm/jina/jina-reranker-v3
                     api_base: http://jina-reranker-v3-jetson:8000/v1
-                    api_key: dummy
-                    mode: rerank
-                # ── 로컬 reranker Qwen3 (Jetson Orin, llama.cpp) ──
-                - model_name: local/qwen/qwen3-reranker-0.6b
-                  litellm_params:
-                    model: hosted_vllm/qwen/qwen3-reranker-0.6b
-                    api_base: http://qwen3-reranker-06b-jetson:8000/v1
                     api_key: dummy
                     mode: rerank
                 # ── 사내 Apple Silicon llama.cpp (gemma-4-26b-a4b, OpenAI 호환, 무인증) ──
@@ -161,6 +155,14 @@ spec:
                   litellm_params:
                     model: gemini/*
                     api_key: os.environ/GOOGLE_AI_STUDIO_API_KEY
+                # ── Ollama Cloud 전체(와일드카드, BYOK) ──
+                # 호출 이름 ollama_chat/*를 실제 provider ollama_chat/*에 매핑.
+                # Ollama Cloud는 OpenAI 호환 API(https://api.ollama.cloud)를 제공하며,
+                # litellm provider명은 ollama_chat을 사용한다.
+                - model_name: ollama_chat/*
+                  litellm_params:
+                    model: ollama_chat/*
+                    api_key: os.environ/OLLAMA_API_KEY
               litellm_settings:
                 # false로 잠깐 바꿨다가 되돌림(2026-07-22) — 지원 안 되는 파라미터가
                 # 에러로 드러나는 이점보다, 여러 provider 호출이 깨지는 손해가 컸다.
@@ -211,6 +213,7 @@ spec:
           enabled: true
           envSecrets:
             - litellm-env
+            - litellm-ollama-key
           service:
             port: 4001
           # gateway와 동일한 slow-startup vs liveness 레이스 방지(startupProbe 미지원 chart).
