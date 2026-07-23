@@ -84,7 +84,7 @@ spec:
             - --pooling
             - rank
             - -c
-            - "2048"
+            - "8192"
             - -ngl
             - "99"
             - --cache-ram
