@@ -144,11 +144,9 @@ class NemotronReranker:
 
             (logits,) = self._session.run(["logits"], feeds)
 
-            # logits shape: (batch, 2) — [non-relevant, relevant]
-            # Apply softmax to get probability of relevant class
-            exp = np.exp(logits - np.max(logits, axis=-1, keepdims=True))
-            probs = exp / exp.sum(axis=-1, keepdims=True)
-            scores = probs[:, 1]  # relevant class probability
+            # logits shape: (batch, 1) — single relevance logit per pair.
+            # Apply sigmoid to get relevance score in [0, 1].
+            scores = 1.0 / (1.0 + np.exp(-logits[:, 0]))
 
             for i, score in enumerate(scores):
                 results.append((batch_start + i, float(score)))
