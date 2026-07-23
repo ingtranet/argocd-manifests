@@ -31,6 +31,14 @@ spec:
           operator: Equal
           value: "true"
           effect: NoSchedule
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 300
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 300
       initContainers:
         - name: download-model
           image: python:3.11-slim
