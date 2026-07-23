@@ -186,7 +186,7 @@ def estimate_prompt_tokens(
 # llama-embedding CLI wrapper (with semaphore + timeout)
 # ---------------------------------------------------------------------------
 # Semaphore to serialize llama subprocess calls (Jetson memory contention)
-_llama_semaphore = asyncio.Semaphore(1)
+_llama_semaphore = asyncio.Semaphore(2)
 
 
 async def run_llama_embedding(prompt: str) -> np.ndarray:
