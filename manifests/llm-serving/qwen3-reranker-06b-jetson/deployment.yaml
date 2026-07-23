@@ -87,7 +87,8 @@ spec:
             - "2048"
             - -ngl
             - "99"
-            - -nkvo
+            - --cache-ram
+            - "0"
           resources:
             requests:
               cpu: 500m
