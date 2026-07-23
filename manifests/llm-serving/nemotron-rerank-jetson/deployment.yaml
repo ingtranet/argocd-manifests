@@ -85,10 +85,10 @@ spec:
           resources:
             requests:
               cpu: 500m
-              memory: 1Gi
+              memory: 2Gi
             limits:
               cpu: "1500m"
-              memory: 1500Mi
+              memory: 3Gi
               nvidia.com/gpu: "1"
           ports:
             - containerPort: 8080
