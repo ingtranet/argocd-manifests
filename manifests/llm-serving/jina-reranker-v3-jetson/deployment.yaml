@@ -73,7 +73,7 @@ spec:
               mountPath: /nas
       containers:
         - name: server
-          image: zot.ingtra.net/library/image-inference:llamacpp-b10103-c542691
+          image: zot.ingtra.net/library/image-inference:llamacpp-b10103-2496525
           command:
             - /usr/local/bin/jina-reranker-wrapper.py
           env:
