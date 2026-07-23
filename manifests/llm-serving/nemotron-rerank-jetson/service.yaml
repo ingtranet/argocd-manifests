@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nemotron-rerank-jetson
+  labels:
+    app: nemotron-rerank-jetson
+spec:
+  selector:
+    app: nemotron-rerank-jetson
+  ports:
+    - name: http
+      port: 8000
+      targetPort: 8000
+      protocol: TCP
+  type: ClusterIP

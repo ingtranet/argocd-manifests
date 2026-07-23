@@ -1,0 +1,7 @@
+# Shared dependencies (non-aarch64 excluded on Jetson via requirements-jetson.txt)
+onnxruntime>=1.23; platform_machine != "aarch64"
+tokenizers>=0.21
+numpy
+fastapi
+uvicorn[standard]
+prometheus-client
