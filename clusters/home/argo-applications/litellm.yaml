@@ -97,9 +97,9 @@ spec:
                     api_key: dummy
                     mode: image_generation
                 # ── 로컬 reranker Qwen3 (Jetson Orin, llama.cpp) ──
-                - model_name: local/Qwen/Qwen3-Reranker-0.6B
+                - model_name: local/qwen/qwen3-reranker-0.6b
                   litellm_params:
-                    model: hosted_vllm/Qwen/Qwen3-Reranker-0.6B
+                    model: hosted_vllm/qwen/qwen3-reranker-0.6b
                     api_base: http://qwen3-reranker-06b-jetson:8000/v1
                     api_key: dummy
                     mode: rerank
