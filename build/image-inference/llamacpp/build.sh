@@ -8,7 +8,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
-LLAMA_TAG="${LLAMA_TAG:-b9568}"
+LLAMA_TAG="${LLAMA_TAG:-b10103}"
 SHA="$(git rev-parse --short HEAD)"
 IMAGE="zot.ingtra.net/library/image-inference:llamacpp-${LLAMA_TAG}-${SHA}"
 

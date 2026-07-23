@@ -96,6 +96,13 @@ spec:
                     api_base: http://flux2-klein-9b:8000/v1
                     api_key: dummy
                     mode: image_generation
+                # ── 로컬 reranker Jina v3 (Jetson Orin, llama.cpp + Python wrapper) ──
+                - model_name: local/jina/jina-reranker-v3
+                  litellm_params:
+                    model: hosted_vllm/jina/jina-reranker-v3
+                    api_base: http://jina-reranker-v3-jetson:8000/v1
+                    api_key: dummy
+                    mode: rerank
                 # ── 로컬 reranker Qwen3 (Jetson Orin, llama.cpp) ──
                 - model_name: local/qwen/qwen3-reranker-0.6b
                   litellm_params:
