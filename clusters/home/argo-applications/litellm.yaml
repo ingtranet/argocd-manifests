@@ -56,14 +56,13 @@ spec:
           # LITELLM_SALT_KEY(저장 크레덴셜 암호화) 주입. gateway/backend 모두 DB 암호문을 다루므로 양쪽에.
           envSecrets:
             - litellm-env
-            - litellm-ollama-key
           config:
             create: true
             # 기존 model_list/settings 그대로 이전. api_key는 전부 dummy(내부 백엔드).
             # master key는 chart가 env로 주입하므로 general_settings.master_key 불필요.
             proxy_config:
               # 네임스페이스 규칙: local/=클러스터 내부 자체호스팅, jaeho/=jaeho 자체호스팅(외부),
-              # openrouter/·nvidia_nim/·google_ai_studio/·ollama_chat/=클라우드 provider 와일드카드.
+              # openrouter/·nvidia_nim/·google_ai_studio/·ollama_cloud/=클라우드 provider 와일드카드.
               model_list:
                 # ── 로컬 임베딩 pplx-embed (Jetson primary, CPU fallback) ──
                 # 기본 출력은 L2 정규화된 float. int8/binary/ubinary는 요청 body의
@@ -156,13 +155,15 @@ spec:
                     model: gemini/*
                     api_key: os.environ/GOOGLE_AI_STUDIO_API_KEY
                 # ── Ollama Cloud 전체(와일드카드, BYOK) ──
-                # 호출 이름 ollama_chat/*를 실제 provider ollama_chat/*에 매핑.
-                # Ollama Cloud는 OpenAI 호환 API(https://api.ollama.cloud)를 제공하며,
-                # litellm provider명은 ollama_chat을 사용한다.
-                - model_name: ollama_chat/*
+                # Ollama Cloud는 Ollama native API(/api/chat)를 사용하며
+                # 엔드포인트는 https://ollama.com 이다(기본값 http://localhost:11434 아님).
+                # litellm provider는 ollama_chat을 사용하고, 모델명에 :cloud 접미사를 붙여 호출.
+                # API key는 litellm-env Secret의 OLLAMA_API_KEY를 os.environ 참조로 사용.
+                - model_name: ollama_cloud/*
                   litellm_params:
                     model: ollama_chat/*
                     api_key: os.environ/OLLAMA_API_KEY
+                    api_base: https://ollama.com
               litellm_settings:
                 # false로 잠깐 바꿨다가 되돌림(2026-07-22) — 지원 안 되는 파라미터가
                 # 에러로 드러나는 이점보다, 여러 provider 호출이 깨지는 손해가 컸다.
@@ -213,7 +214,6 @@ spec:
           enabled: true
           envSecrets:
             - litellm-env
-            - litellm-ollama-key
           service:
             port: 4001
           # gateway와 동일한 slow-startup vs liveness 레이스 방지(startupProbe 미지원 chart).

@@ -401,7 +401,7 @@ async def rerank(req: RerankRequest):
             "relevance_score": float(score),
         }
         if req.return_documents:
-            result["document"] = doc
+            result["document"] = {"text": doc}
         if req.return_embeddings:
             result["embedding"] = doc_embeds[idx].tolist()
         results.append(result)
