@@ -73,7 +73,7 @@ def fake_reranker():
 
 @pytest.fixture
 def client(fake_reranker, monkeypatch):
-    monkeypatch.setenv("MODEL_ID", "cstr/llama-nemotron-rerank-1b-v2-ONNX")
+    monkeypatch.setenv("MODEL_ID", "nvidia/llama-nemotron-rerank-1b-v2")
     from server import app as app_module
 
     app_module.RERANKER_LOADER = lambda: fake_reranker

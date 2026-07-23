@@ -3,7 +3,7 @@ def test_health_returns_ok(client):
     assert r.status_code == 200
     body = r.json()
     assert body["status"] == "ok"
-    assert body["model"] == "cstr/llama-nemotron-rerank-1b-v2-ONNX"
+    assert body["model"] == "nvidia/llama-nemotron-rerank-1b-v2"
 
 
 def test_metrics_exposes_rerank_counter(client):

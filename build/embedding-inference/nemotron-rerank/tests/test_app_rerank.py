@@ -51,7 +51,7 @@ def test_model_name_is_echoed(client):
 
 def test_default_model_name(client):
     r = client.post("/v1/rerank", json={"query": "test", "documents": ["doc"]})
-    assert r.json()["model"] == "cstr/llama-nemotron-rerank-1b-v2-ONNX"
+    assert r.json()["model"] == "nvidia/llama-nemotron-rerank-1b-v2"
 
 
 def test_empty_query_is_rejected(client):

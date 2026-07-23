@@ -7,7 +7,7 @@ from starlette.concurrency import run_in_threadpool
 
 from server.schemas import RerankRequest, RerankResponse, RerankResult
 
-MODEL_ID = os.environ.get("MODEL_ID", "cstr/llama-nemotron-rerank-1b-v2-ONNX")
+MODEL_ID = os.environ.get("MODEL_ID", "nvidia/llama-nemotron-rerank-1b-v2")
 
 RERANK_LATENCY = Histogram(
     "nemotron_rerank_request_seconds", "End-to-end rerank request latency"
