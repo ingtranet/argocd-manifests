@@ -88,16 +88,6 @@ spec:
                     # (256을 보내도 1024 차원이 돌아옴). 이 모델에만 통과시킨다.
                     # encoding_format은 이 목록 없이도 그대로 전달된다(검증됨).
                     allowed_openai_params: ["dimensions"]
-                # ── 로컬 reranker Nemotron (Jetson only, CUDA required) ──
-                # LiteLLM rerank mode: POST /v1/rerank with query/documents/top_n.
-                # Backend is openai-compatible (same /v1/rerank endpoint).
-                - model_name: local/nvidia/llama-nemotron-rerank-1b-v2
-                  litellm_params:
-                    model: hosted_vllm/nvidia/llama-nemotron-rerank-1b-v2
-                    api_base: http://nemotron-rerank-jetson:8000/v1
-                    api_key: dummy
-                    mode: rerank
-                    max_parallel_requests: 4
                 # ── 로컬 이미지 생성 (클러스터 내부) ──
                 # 호출 이름은 소문자 통일. litellm_params.model은 백엔드가 기대하는 실제 id라 원본 케이스 유지.
                 - model_name: local/black-forest-labs/flux.2-klein-9b
