@@ -8,8 +8,9 @@ ARG BASE=dustynv/cuda:12.8-samples-r36.4.0-cu128-24.04
 
 FROM ${BASE} AS build
 
-# Pin llama.cpp to an upstream release tag. b10099 is the latest as of 2026-07-24.
-ARG LLAMA_TAG=b10103
+# Pin llama.cpp to PR #24083 (Nemotron architecture support) head commit.
+# https://github.com/ggml-org/llama.cpp/pull/24083
+ARG LLAMA_TAG=f89d448bc44216fe007b25a94f025aea2e93be7e
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         git build-essential cmake ninja-build libcurl4-openssl-dev python3-pip \
@@ -18,7 +19,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /build
 RUN git clone https://github.com/ggml-org/llama.cpp.git \
  && cd llama.cpp \
- && git checkout "tags/${LLAMA_TAG}" \
+ && git fetch --tags \
+ && git fetch origin "+refs/pull/24083/head:refs/remotes/origin/pr/24083" \
+ && if echo "${LLAMA_TAG}" | grep -qE '^[0-9a-f]{7,40}$'; then \
+      git checkout "${LLAMA_TAG}"; \
+    else \
+      git checkout "tags/${LLAMA_TAG}"; \
+    fi \
  && git submodule update --init --recursive
 
 WORKDIR /build/llama.cpp

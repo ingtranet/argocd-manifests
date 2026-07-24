@@ -81,7 +81,7 @@ spec:
               mountPath: /nas
       containers:
         - name: server
-          image: zot.ingtra.net/library/image-inference:llamacpp-b10103-2496525
+          image: zot.ingtra.net/library/image-inference:llamacpp-f89d448-69adf65
           env:
             - name: MODEL_PATH
               value: /models/kread-llama-nemotron-rerank-1b-v2-GGUF/llama-nemotron-rerank-1b-v2-q8_0.gguf
@@ -101,6 +101,8 @@ spec:
             - 0.0.0.0
             - --port
             - "8080"
+            - --parallel
+            - "2"
           resources:
             requests:
               cpu: 500m
