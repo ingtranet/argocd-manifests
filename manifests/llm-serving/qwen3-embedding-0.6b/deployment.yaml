@@ -49,7 +49,7 @@ spec:
               set -e
                DIR=Qwen-Qwen3-Embedding-0.6B-GGUF
                TMP=; BACKUP=; trap 'rc=$?; [ -n "$TMP" ] && [ -e "$TMP" ] && rm -rf "$TMP"; [ -n "$BACKUP" ] && [ ! -e "$dst" ] && mv "$BACKUP" "$dst" 2>/dev/null || true; exit $rc' 0 1 2 3 15
-               valid() { [ -f "$1/Qwen3-Embedding-0.6B-Q8_0.gguf" ] && [ -f "$1/config.json" ]; }
+               valid() { [ -f "$1/Qwen3-Embedding-0.6B-Q8_0.gguf" ]; }
                promote() { src="$1"; dst="$2"; valid "$dst" && { rm -rf "$src"; return 0; }; BACKUP=; if [ -e "$dst" ] && BACKUP=$(mktemp -d "${dst}.backup.XXXXXX") && rmdir "$BACKUP" && mv "$dst" "$BACKUP"; then :; elif [ -e "$dst" ]; then valid "$dst" && { rm -rf "$src"; return 0; } || return 1; fi; if mv "$src" "$dst" 2>/dev/null && valid "$dst"; then rm -rf "$BACKUP"; BACKUP=; return 0; fi; if valid "$dst"; then rm -rf "$src" "$BACKUP"; BACKUP=; return 0; fi; [ -n "$BACKUP" ] && [ ! -e "$dst" ] && mv "$BACKUP" "$dst" 2>/dev/null && BACKUP=; return 1; }
               if valid "/models/$DIR"; then
                 echo "local hit: $DIR"
@@ -60,7 +60,7 @@ spec:
                 mkdir -p /nas/.staging
                  TMP=$(mktemp -d "/nas/.staging/$DIR.XXXXXX")
                 pip install huggingface_hub
-                python -c "from huggingface_hub import snapshot_download; snapshot_download('Qwen/Qwen3-Embedding-0.6B-GGUF', local_dir='$TMP', allow_patterns=['*.gguf','*.json'])"
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('Qwen/Qwen3-Embedding-0.6B-GGUF', local_dir='$TMP', allow_patterns=['*.gguf'])"
                  promote "$TMP" "/nas/$DIR"; TMP=
               fi
               echo "nas -> local: $DIR"
