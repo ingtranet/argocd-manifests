@@ -1,6 +1,7 @@
 # Jetson aarch64 dependencies for nvidia/Nemotron-3-Embed-1B-BF16 server.
 # The --extra-index-url points to the Jetson AI Lab PyPI for torch.
-torch>=2.1; platform_machine == "aarch64"
+# Pin to 2.5.0 for CUDA 12.6 / L4T r36.4.0 compatibility (jp6/cu126 index).
+torch==2.5.0; platform_machine == "aarch64"
 transformers>=5.2.0
 sentencepiece
 numpy
