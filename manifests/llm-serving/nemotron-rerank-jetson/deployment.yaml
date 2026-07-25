@@ -1,0 +1,152 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nemotron-rerank-jetson
+  labels:
+    app: nemotron-rerank-jetson
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: nemotron-rerank-jetson
+  template:
+    metadata:
+      labels:
+        app: nemotron-rerank-jetson
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      runtimeClassName: nvidia
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 300
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 300
+      initContainers:
+        - name: download-model
+          image: python:3.11-slim
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+               DIR=cstr-llama-nemotron-rerank-1b-v2-ONNX-int8
+               TMP=; BACKUP=; trap 'rc=$?; [ -n "$TMP" ] && [ -e "$TMP" ] && rm -rf "$TMP"; [ -n "$BACKUP" ] && [ ! -e "$dst" ] && mv "$BACKUP" "$dst" 2>/dev/null || true; exit $rc' 0 1 2 3 15
+               valid() { [ -f "$1/model_int8.onnx" ] && [ -f "$1/tokenizer.json" ] && [ -f "$1/config.json" ]; }
+               promote() { src="$1"; dst="$2"; valid "$dst" && { rm -rf "$src"; return 0; }; BACKUP=; if [ -e "$dst" ] && BACKUP=$(mktemp -d "${dst}.backup.XXXXXX") && rmdir "$BACKUP" && mv "$dst" "$BACKUP"; then :; elif [ -e "$dst" ]; then valid "$dst" && { rm -rf "$src"; return 0; } || return 1; fi; if mv "$src" "$dst" 2>/dev/null && valid "$dst"; then rm -rf "$BACKUP"; BACKUP=; return 0; fi; if valid "$dst"; then rm -rf "$src" "$BACKUP"; BACKUP=; return 0; fi; [ -n "$BACKUP" ] && [ ! -e "$dst" ] && mv "$BACKUP" "$dst" 2>/dev/null && BACKUP=; return 1; }
+              if valid "/models/$DIR"; then
+                echo "local hit: $DIR"
+                exit 0
+              fi
+               if ! valid "/nas/$DIR"; then
+                echo "nas miss: downloading from HF"
+                mkdir -p /nas/.staging
+                 TMP=$(mktemp -d "/nas/.staging/$DIR.XXXXXX")
+                pip install huggingface_hub
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('cstr/llama-nemotron-rerank-1b-v2-ONNX', local_dir='$TMP', allow_patterns=['*.json','tokenizer.json','model_int8.onnx'])"
+                 promote "$TMP" "/nas/$DIR"; TMP=
+              fi
+              echo "nas -> local: $DIR"
+               TMP=$(mktemp -d "/models/.tmp.$DIR.XXXXXX")
+              cp -a "/nas/$DIR" "$TMP"
+               promote "$TMP/$DIR" "/models/$DIR"; TMP=
+          env:
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
+          volumeMounts:
+            - name: models
+              mountPath: /models
+            - name: model-store
+              mountPath: /nas
+      containers:
+        - name: server
+          image: zot.ingtra.net/library/embedding-inference:nemotron-rerank-dffb4fc-dirty
+          env:
+            - name: MODEL_DIR
+              value: /models/cstr-llama-nemotron-rerank-1b-v2-ONNX-int8
+            - name: MODEL_ID
+              value: nvidia/llama-nemotron-rerank-1b-v2
+            - name: MAX_LENGTH
+              value: "4096"
+            - name: BATCH_SIZE
+              value: "32"
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              cpu: "1500m"
+              memory: 4Gi
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 60
+            timeoutSeconds: 30
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: models
+              mountPath: /models
+        - name: nginx
+          image: nginx:1.27-alpine
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          ports:
+            - containerPort: 8000
+              name: http
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: models
+          hostPath:
+            path: /data/cache/hf-models
+            type: DirectoryOrCreate
+        - name: model-store
+          persistentVolumeClaim:
+            claimName: hf-model-store
+        - name: nginx-config
+          configMap:
+            name: nemotron-rerank-jetson-nginx-config

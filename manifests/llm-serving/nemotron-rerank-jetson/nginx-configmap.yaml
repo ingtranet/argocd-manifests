@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nemotron-rerank-jetson-nginx-config
+  labels:
+    app: nemotron-rerank-jetson
+data:
+  nginx.conf: |
+    worker_processes auto;
+    events {
+      worker_connections 1024;
+    }
+    http {
+      log_format main '$remote_addr "$request" $status $body_bytes_sent gzip=$gzip_ratio';
+      access_log /dev/stdout main;
+      gzip on;
+      gzip_types application/json;
+      gzip_min_length 1000;
+      gzip_proxied any;
+      gzip_vary on;
+      server {
+        listen 8000;
+        location / {
+          proxy_pass http://127.0.0.1:8080;
+          proxy_set_header Host $host;
+          proxy_read_timeout 900s;
+        }
+      }
+    }
