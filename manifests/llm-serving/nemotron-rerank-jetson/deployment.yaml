@@ -47,9 +47,7 @@ spec:
             - |
               set -e
                DIR=kread-llama-nemotron-rerank-1b-v2-GGUF
-               TMP=; BACKUP=; trap 'rc=$?; [ -n "$TMP" ] && [ -e "$TMP" ] && rm -rf "$TMP"; [ -n "$BACKUP" ] && [ ! -e "$dst" ] && mv "$BACKUP" "$dst" 2>/dev/null || true; exit $rc' 0 1 2 3 15
-               valid() { [ -f "$1/llama-nemotron-rerank-1b-v2-q8_0.gguf" ] && [ -f "$1/config.json" ]; }
-               promote() { src="$1"; dst="$2"; valid "$dst" && { rm -rf "$src"; return 0; }; BACKUP=; if [ -e "$dst" ] && BACKUP=$(mktemp -d "${dst}.backup.XXXXXX") && rmdir "$BACKUP" && mv "$dst" "$BACKUP"; then :; elif [ -e "$dst" ]; then valid "$dst" && { rm -rf "$src"; return 0; } || return 1; fi; if mv "$src" "$dst" 2>/dev/null && valid "$dst"; then rm -rf "$BACKUP"; BACKUP=; return 0; fi; if valid "$dst"; then rm -rf "$src" "$BACKUP"; BACKUP=; return 0; fi; [ -n "$BACKUP" ] && [ ! -e "$dst" ] && mv "$BACKUP" "$dst" 2>/dev/null && BACKUP=; return 1; }
+               valid() { [ -f "$1/llama-nemotron-rerank-1b-v2-q8_0.gguf" ]; }
               if valid "/models/$DIR"; then
                 echo "local hit: $DIR"
                 exit 0
@@ -60,12 +58,15 @@ spec:
                  TMP=$(mktemp -d "/nas/.staging/$DIR.XXXXXX")
                 pip install huggingface_hub
                 python -c "from huggingface_hub import snapshot_download; snapshot_download('kread/llama-nemotron-rerank-1b-v2-GGUF', local_dir='$TMP', allow_patterns=['*.gguf','*.json'])"
-                 promote "$TMP" "/nas/$DIR"; TMP=
+                echo "downloaded to $TMP: $(ls $TMP)"
+                rm -rf "/nas/$DIR" 2>/dev/null || true
+                mv "$TMP" "/nas/$DIR"
+                echo "promoted to /nas/$DIR"
               fi
               echo "nas -> local: $DIR"
-               TMP=$(mktemp -d "/models/.tmp.$DIR.XXXXXX")
-              cp -a "/nas/$DIR" "$TMP"
-               promote "$TMP/$DIR" "/models/$DIR"; TMP=
+              rm -rf "/models/$DIR" 2>/dev/null || true
+              cp -a "/nas/$DIR" "/models/$DIR"
+              echo "copied to /models/$DIR: $(ls /models/$DIR)"
           env:
             - name: HF_TOKEN
               valueFrom:
