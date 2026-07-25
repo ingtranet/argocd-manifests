@@ -79,17 +79,20 @@ class NemotronEmbedder:
         model = AutoModel.from_pretrained(
             load_path,
             torch_dtype=torch.bfloat16,
-            device_map="cuda",
             attn_implementation="sdpa",
             trust_remote_code=True,
         )
         tokenizer = AutoTokenizer.from_pretrained(load_path)
 
+        # Explicitly move to CUDA. Single-GPU server: no device_map needed
+        # (device_map triggers accelerate dependency).
+        model = model.to(torch.device("cuda"))
+
         # Verify CUDA is active
         if not next(model.parameters()).is_cuda:
             raise RuntimeError(
                 "Model is not on CUDA device. BF16 inference requires CUDA. "
-                "Check device_map and CUDA availability."
+                "Check CUDA availability."
             )
 
         print(
