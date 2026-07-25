@@ -25,7 +25,7 @@ COPY requirements.txt /tmp/requirements.txt
 # Other packages (fastapi, uvicorn, etc.) are installed from PyPI separately.
 RUN python3 -m pip install --no-cache-dir \
     --index-url "https://pypi.jetson-ai-lab.io/jp6/cu126" \
-    torch==2.5.0 \
+    torch==2.8.0 \
     && python3 -c "import torch; assert torch.version.cuda is not None, 'CUDA torch required'; print(f'torch {torch.__version__} CUDA {torch.version.cuda}')" \
     && python3 -m pip install --no-cache-dir \
     --extra-index-url "https://pypi.org/simple" \
