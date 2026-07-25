@@ -46,9 +46,9 @@ spec:
           args:
             - |
               set -e
-               DIR=cstr-llama-nemotron-rerank-1b-v2-ONNX-int8
+               DIR=kread-llama-nemotron-rerank-1b-v2-GGUF
                TMP=; BACKUP=; trap 'rc=$?; [ -n "$TMP" ] && [ -e "$TMP" ] && rm -rf "$TMP"; [ -n "$BACKUP" ] && [ ! -e "$dst" ] && mv "$BACKUP" "$dst" 2>/dev/null || true; exit $rc' 0 1 2 3 15
-               valid() { [ -f "$1/model_int8.onnx" ] && [ -f "$1/tokenizer.json" ] && [ -f "$1/config.json" ]; }
+               valid() { [ -f "$1/llama-nemotron-rerank-1b-v2-q8_0.gguf" ] && [ -f "$1/config.json" ]; }
                promote() { src="$1"; dst="$2"; valid "$dst" && { rm -rf "$src"; return 0; }; BACKUP=; if [ -e "$dst" ] && BACKUP=$(mktemp -d "${dst}.backup.XXXXXX") && rmdir "$BACKUP" && mv "$dst" "$BACKUP"; then :; elif [ -e "$dst" ]; then valid "$dst" && { rm -rf "$src"; return 0; } || return 1; fi; if mv "$src" "$dst" 2>/dev/null && valid "$dst"; then rm -rf "$BACKUP"; BACKUP=; return 0; fi; if valid "$dst"; then rm -rf "$src" "$BACKUP"; BACKUP=; return 0; fi; [ -n "$BACKUP" ] && [ ! -e "$dst" ] && mv "$BACKUP" "$dst" 2>/dev/null && BACKUP=; return 1; }
               if valid "/models/$DIR"; then
                 echo "local hit: $DIR"
@@ -59,7 +59,7 @@ spec:
                 mkdir -p /nas/.staging
                  TMP=$(mktemp -d "/nas/.staging/$DIR.XXXXXX")
                 pip install huggingface_hub
-                python -c "from huggingface_hub import snapshot_download; snapshot_download('cstr/llama-nemotron-rerank-1b-v2-ONNX', local_dir='$TMP', allow_patterns=['*.json','tokenizer.json','model_int8.onnx'])"
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('kread/llama-nemotron-rerank-1b-v2-GGUF', local_dir='$TMP', allow_patterns=['*.gguf','*.json'])"
                  promote "$TMP" "/nas/$DIR"; TMP=
               fi
               echo "nas -> local: $DIR"
@@ -80,16 +80,26 @@ spec:
               mountPath: /nas
       containers:
         - name: server
-          image: zot.ingtra.net/library/embedding-inference:nemotron-rerank-dffb4fc-dirty
+          image: zot.ingtra.net/library/image-inference:llamacpp-b10103-2496525
           env:
-            - name: MODEL_DIR
-              value: /models/cstr-llama-nemotron-rerank-1b-v2-ONNX-int8
-            - name: MODEL_ID
-              value: nvidia/llama-nemotron-rerank-1b-v2
-            - name: MAX_LENGTH
-              value: "4096"
-            - name: BATCH_SIZE
-              value: "32"
+            - name: MODEL_PATH
+              value: /models/kread-llama-nemotron-rerank-1b-v2-GGUF/llama-nemotron-rerank-1b-v2-q8_0.gguf
+          command:
+            - /usr/local/bin/llama-server
+          args:
+            - -m
+            - /models/kread-llama-nemotron-rerank-1b-v2-GGUF/llama-nemotron-rerank-1b-v2-q8_0.gguf
+            - --rerank
+            - --pooling
+            - rank
+            - -c
+            - "8192"
+            - -ngl
+            - "99"
+            - --host
+            - 0.0.0.0
+            - --port
+            - "8080"
           resources:
             requests:
               cpu: 500m
