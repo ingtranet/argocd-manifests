@@ -81,7 +81,7 @@ spec:
               mountPath: /nas
       containers:
         - name: server
-          image: zot.ingtra.net/library/embedding-inference:nemotron-embed-bf16-69adf65-dirty
+          image: zot.ingtra.net/library/embedding-inference:nemotron-embed-bf16-845d9e5
           env:
             - name: MODEL_ID
               value: nvidia/Nemotron-3-Embed-1B-BF16
