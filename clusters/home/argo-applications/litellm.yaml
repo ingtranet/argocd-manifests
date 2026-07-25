@@ -88,6 +88,18 @@ spec:
                     # (256을 보내도 1024 차원이 돌아옴). 이 모델에만 통과시킨다.
                     # encoding_format은 이 목록 없이도 그대로 전달된다(검증됨).
                     allowed_openai_params: ["dimensions"]
+                # ── 로컬 임베딩 Nemotron-3-Embed-1B BF16 (Jetson only, CUDA required) ──
+                # BF16 가중치 모델. INT8 ONNX 파이프라인(pplx-embed)과 다른 포맷.
+                # 기본 출력은 L2 정규화된 float. dimensions 파라미터 지원(MRL).
+                # ⚠  drop_params: true 상태에서 dimensions가 드롭되는 것을 방지하기 위해
+                #    allowed_openai_params에 dimensions를 명시. pplx-embed와 동일 패턴.
+                - model_name: local/nvidia/Nemotron-3-Embed-1B-BF16
+                  litellm_params:
+                    model: openai/nvidia/Nemotron-3-Embed-1B-BF16
+                    api_base: http://nemotron-embed-bf16-jetson:8000/v1
+                    api_key: dummy
+                    max_parallel_requests: 4
+                    allowed_openai_params: ["dimensions"]
                 # ── 로컬 reranker Nemotron (Jetson only, CUDA required) ──
                 # LiteLLM rerank mode: POST /v1/rerank with query/documents/top_n.
                 # Backend is openai-compatible (same /v1/rerank endpoint).

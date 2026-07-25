@@ -1,0 +1,153 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nemotron-embed-bf16-jetson
+  labels:
+    app: nemotron-embed-bf16-jetson
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: nemotron-embed-bf16-jetson
+  template:
+    metadata:
+      labels:
+        app: nemotron-embed-bf16-jetson
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      nodeSelector:
+        nvidia.com/gpu.product: Orin
+      runtimeClassName: nvidia
+      tolerations:
+        - key: nvidia.com/gpu
+          operator: Equal
+          value: "true"
+          effect: NoSchedule
+        - effect: NoExecute
+          key: node.kubernetes.io/not-ready
+          operator: Exists
+          tolerationSeconds: 300
+        - effect: NoExecute
+          key: node.kubernetes.io/unreachable
+          operator: Exists
+          tolerationSeconds: 300
+      initContainers:
+        - name: download-model
+          image: python:3.11-slim
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+               DIR=nvidia-Nemotron-3-Embed-1B-BF16
+               valid() { [ -f "$1/config.json" ] && [ -f "$1/tokenizer.json" ]; }
+              if valid "/models/$DIR"; then
+                echo "local hit: $DIR"
+                exit 0
+              fi
+               if ! valid "/nas/$DIR"; then
+                echo "nas miss: downloading from HF"
+                mkdir -p /nas/.staging
+                 TMP=$(mktemp -d "/nas/.staging/$DIR.XXXXXX")
+                pip install huggingface_hub
+                python -c "from huggingface_hub import snapshot_download; snapshot_download('nvidia/Nemotron-3-Embed-1B-BF16', local_dir='$TMP', allow_patterns=['*.json','*.txt','*.safetensors','tokenizer*','*.model','modules.json','sentence_bert_config.json','config_sentence_transformers.json'])"
+                echo "downloaded to $TMP: $(ls $TMP)"
+                rm -rf "/nas/$DIR" 2>/dev/null || true
+                mv "$TMP" "/nas/$DIR"
+                echo "promoted to /nas/$DIR"
+              fi
+              echo "nas -> local: $DIR"
+              rm -rf "/models/$DIR" 2>/dev/null || true
+              cp -a "/nas/$DIR" "/models/$DIR"
+              echo "copied to /models/$DIR: $(ls /models/$DIR)"
+          env:
+            - name: HF_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: hf-token
+                  key: token
+                  optional: true
+          volumeMounts:
+            - name: models
+              mountPath: /models
+            - name: model-store
+              mountPath: /nas
+      containers:
+        - name: server
+          image: zot.ingtra.net/library/embedding-inference:nemotron-embed-bf16-69adf65-dirty
+          env:
+            - name: MODEL_ID
+              value: nvidia/Nemotron-3-Embed-1B-BF16
+            - name: MODEL_DIR
+              value: /models/nvidia-Nemotron-3-Embed-1B-BF16
+            - name: MAX_LENGTH
+              value: "32768"
+            - name: BATCH_SIZE
+              value: "32"
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              cpu: "1500m"
+              memory: 4Gi
+          ports:
+            - containerPort: 8080
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 60
+            timeoutSeconds: 30
+            failureThreshold: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          volumeMounts:
+            - name: models
+              mountPath: /models
+        - name: nginx
+          image: nginx:1.27-alpine
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 128Mi
+          ports:
+            - containerPort: 8000
+              name: http
+          volumeMounts:
+            - name: nginx-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: models
+          hostPath:
+            path: /data/cache/hf-models
+            type: DirectoryOrCreate
+        - name: model-store
+          persistentVolumeClaim:
+            claimName: hf-model-store
+        - name: nginx-config
+          configMap:
+            name: nemotron-embed-bf16-jetson-nginx-config

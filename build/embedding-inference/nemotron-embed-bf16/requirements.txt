@@ -1,0 +1,13 @@
+# Shared dependencies for nvidia/Nemotron-3-Embed-1B-BF16 server.
+# CUDA-only — BF16 inference requires CUDA.
+#
+# transformers>=5.2.0: required for Ministral3Model support.
+# sentence-transformers>=5.4.1: optional, for reference only.
+#   The server uses raw transformers, not sentence-transformers.
+torch>=2.1; platform_machine != "aarch64"
+transformers>=5.2.0
+sentencepiece
+numpy
+fastapi
+uvicorn[standard]
+prometheus-client
