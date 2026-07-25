@@ -93,7 +93,7 @@ spec:
                 # 기본 출력은 L2 정규화된 float. dimensions 파라미터 지원(MRL).
                 # ⚠  drop_params: true 상태에서 dimensions가 드롭되는 것을 방지하기 위해
                 #    allowed_openai_params에 dimensions를 명시. pplx-embed와 동일 패턴.
-                - model_name: local/nvidia/Nemotron-3-Embed-1B-BF16
+                - model_name: local/nvidia/nemotron-3-embed-1b
                   litellm_params:
                     model: openai/nvidia/Nemotron-3-Embed-1B-BF16
                     api_base: http://nemotron-embed-bf16-jetson:8000/v1
