@@ -100,6 +100,15 @@ spec:
                     api_key: dummy
                     max_parallel_requests: 4
                     allowed_openai_params: ["dimensions"]
+                # ── 로컬 임베딩 Qwen3-Embedding-0.6B (Jetson, llama.cpp GGUF Q8) ──
+                # Q8_0 GGUF, 0.6B 파라미터. llama-server --embedding --pooling last.
+                # 1792차원 출력. dimensions 파라미터 미지원(고정 차원).
+                - model_name: local/qwen/qwen3-embedding-0.6b
+                  litellm_params:
+                    model: openai/Qwen/Qwen3-Embedding-0.6B-GGUF
+                    api_base: http://qwen3-embedding-0.6b:8000/v1
+                    api_key: dummy
+                    max_parallel_requests: 2
                 # ── 로컬 이미지 생성 (클러스터 내부) ──
                 # 호출 이름은 소문자 통일. litellm_params.model은 백엔드가 기대하는 실제 id라 원본 케이스 유지.
                 - model_name: local/black-forest-labs/flux.2-klein-9b
