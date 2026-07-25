@@ -108,7 +108,7 @@ spec:
             - --port
             - "8080"
             - --parallel
-            - "2"
+            - "8"
           resources:
             requests:
               cpu: 500m
