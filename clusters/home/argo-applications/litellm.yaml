@@ -102,7 +102,7 @@ spec:
                     allowed_openai_params: ["dimensions"]
                 # ── 로컬 임베딩 Qwen3-Embedding-0.6B (Jetson, llama.cpp GGUF Q8) ──
                 # Q8_0 GGUF, 0.6B 파라미터. llama-server --embedding --pooling last.
-                # 1792차원 출력. dimensions 파라미터 미지원(고정 차원).
+                # 1024차원 출력. dimensions 파라미터 미지원(고정 차원).
                 - model_name: local/qwen/qwen3-embedding-0.6b
                   litellm_params:
                     model: openai/Qwen/Qwen3-Embedding-0.6B-GGUF
