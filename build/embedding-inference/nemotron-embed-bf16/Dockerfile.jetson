@@ -24,10 +24,11 @@ COPY requirements.txt /tmp/requirements.txt
 # Install torch from the Jetson AI Lab index (CUDA 12.6 wheels for aarch64).
 # PyPI's aarch64 torch is CPU-only, so the Jetson index must be primary.
 # Other packages (fastapi, uvicorn, etc.) are installed from PyPI separately.
+# torch CUDA version is verified at runtime (server startup fails if CUDA unavailable).
+# Build-time import of Jetson CUDA torch is not possible on non-Jetson hosts.
 RUN python3 -m pip install --no-cache-dir \
     --index-url "https://pypi.jetson-ai-lab.io/jp6/cu126" \
     torch==2.8.0 \
-    && python3 -c "import torch; assert torch.version.cuda is not None, 'CUDA torch required'; print(f'torch {torch.__version__} CUDA {torch.version.cuda}')" \
     && python3 -m pip install --no-cache-dir \
     --extra-index-url "https://pypi.org/simple" \
     -r /tmp/requirements.txt
