@@ -11,7 +11,7 @@ spec:
       services:
         - kind: Service
           name: ledger-api
-          namespace: ledger-api
+          namespace: sadang2house
           port: 80
   tls:
     secretName: ig-ingtra-net-tls
