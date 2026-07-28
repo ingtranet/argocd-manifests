@@ -80,11 +80,8 @@ spec:
                 - "https_proxy=http://http-proxy-1.vd.ingtra.net:8290"
                 - "no_proxy=.ingtra.net,ingtra.net,.svc,.cluster.local,localhost,127.0.0.1"
         # findata는 유니버스를 ~128 버킷으로 나눠 버킷마다 별도 run pod(K8sRunLauncher)로 실행한다.
-        # KIS 토큰 발급이 분당 1회 레이트리밋이라 다수 pod가 동시에 재인증하면 한도를 초과하므로,
-        # QueuedRunCoordinator로 run 시작을 직렬화한다.
-        # tagConcurrencyLimits는 dagster-pipelines 쪽에서 findata job/op에
-        # tags={"dagster/concurrency_key": "kis_api"}를 달아야 실제로 적용된다(코드 작업 필요, TODO).
-        # 그 전까지는 maxConcurrentRuns(클러스터 전체 run pod 동시 실행 수 제한)가 안전망 역할을 한다.
+        # 전체 run 수는 10개까지 허용하되, 외부 API별 concurrency pool로 실제 요청 동시성을 제한한다.
+        # dagster-pipelines의 각 job/op가 아래 dagster/concurrency_key tag를 사용한다.
         dagsterDaemon:
           # 백필 런파드(kis_api)를 1개로 직렬화 — findata run pod가 단일 노드에 고정돼
           # 동시 실행 시 노드 압박/토큰 경합이 생긴다. 일시적 실패는 runRetries로 자동 복구.
@@ -93,8 +90,14 @@ spec:
             type: QueuedRunCoordinator
             config:
               queuedRunCoordinator:
-                maxConcurrentRuns: 5
+                maxConcurrentRuns: 10
                 tagConcurrencyLimits:
+                  - key: "dagster/concurrency_key"
+                    value: "naver_http"
+                    limit: 2
+                  - key: "dagster/concurrency_key"
+                    value: "hn_ingest"
+                    limit: 1
                   - key: "dagster/concurrency_key"
                     value: "kis_api"
                     limit: 1
