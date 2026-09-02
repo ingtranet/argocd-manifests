@@ -14,7 +14,7 @@ spec:
   source:
     repoURL: https://dagster-io.github.io/helm
     chart: dagster
-    targetRevision: 1.13.15
+    targetRevision: 1.13.16
     helm:
       releaseName: dagster
       valuesObject:
@@ -53,6 +53,10 @@ spec:
           env:
             - name: AWS_DEFAULT_REGION
               value: "us-east-1"
+          # 공식 이미지(dagster/dagster-celery-k8s)는 amd64 전용 — arm64 Jetson 노드로
+          # 스케줄되면 ImagePull 실패. webserver와 db-migrate job이 함께 상속.
+          nodeSelector:
+            kubernetes.io/arch: amd64
         runLauncher:
           type: K8sRunLauncher
           config:
@@ -83,6 +87,9 @@ spec:
         # 전체 run 수는 10개까지 허용한다. 외부 API별 op concurrency pool은
         # Dagster instance DB에 저장되며 `dagster instance concurrency set`으로 관리한다.
         dagsterDaemon:
+          # 공식 이미지(dagster/dagster-celery-k8s)가 amd64 전용이라 amd64 노드로 고정.
+          nodeSelector:
+            kubernetes.io/arch: amd64
           # 백필 런파드(kis_api)를 1개로 직렬화 — findata run pod가 단일 노드에 고정돼
           # 동시 실행 시 노드 압박/토큰 경합이 생긴다. 일시적 실패는 runRetries로 자동 복구.
           runCoordinator:
@@ -141,6 +148,10 @@ spec:
                   value: "https://s3.ingtra.net"
                 - name: S3_BUCKET
                   value: "dagster"
+              # harvest run pod도 이 nodeSelector를 상속(차트가 deployment.nodeSelector를
+              # container context의 pod_spec_config.node_selector로 전파).
+              nodeSelector:
+                kubernetes.io/arch: amd64
               # Hacker News 수집은 PostgreSQL(dwh-postgres/harvest DB)에 적재한다.
               # HARVEST_PG_DSN을 통째로 env 주입(naver는 S3라 이 DSN 불필요).
               #
