@@ -28,6 +28,12 @@ spec:
         # binaries.prisma.sh는 엔진이 이미지 번들이라 불필요.
         migrationJob:
           enabled: true
+          # Postgres TLS 비활성화: chart 1.92.0은 DATABASE_URL을 조립하지 않고(sslmode env도 없음)
+          # entrypoint가 operator-pinned DATABASE_URL을 그대로 존중하므로 extraEnv pin이 유일한 수단.
+          # $(VAR) 확장은 password를 percent-encode하지 않음 — 예약문자(@/?/%) 포함 시 URL 깨짐.
+          extraEnv:
+            - name: DATABASE_URL
+              value: "postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)?sslmode=disable"
         # master key(=API 인증 토큰). 클러스터에 사전 주입한 Secret 재사용. chart가 gateway/backend에
         # LITELLM_MASTER_KEY로 주입하며, 이 chart는 lookup 없이 재생성하지 않고 Secret 참조만 하므로
         # 별도 ignoreDifferences 불필요(구 chart의 randAlphaNum 재생성 함정 없음).
@@ -53,6 +59,11 @@ spec:
         gateway:
           enabled: true
           numWorkers: 1
+          # migrationJob과 동일한 DATABASE_URL pin(sslmode=disable). serverEnv가 DATABASE_*를
+          # 먼저 emit하므로 $(VAR) 확장이 유효. raw password 인코딩 안 됨 — 예약문자 주의.
+          extraEnv:
+            - name: DATABASE_URL
+              value: "postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)?sslmode=disable"
           # LITELLM_SALT_KEY(저장 크레덴셜 암호화) 주입. gateway/backend 모두 DB 암호문을 다루므로 양쪽에.
           envSecrets:
             - litellm-env
@@ -205,6 +216,10 @@ spec:
         # ---------- backend: 관리 API(/key,/user,/team,...) ----------
         backend:
           enabled: true
+          # migrationJob/gateway와 동일한 DATABASE_URL pin(sslmode=disable).
+          extraEnv:
+            - name: DATABASE_URL
+              value: "postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)?sslmode=disable"
           envSecrets:
             - litellm-env
           service:
