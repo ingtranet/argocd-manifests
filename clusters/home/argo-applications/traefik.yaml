@@ -20,6 +20,9 @@ spec:
       values: |
         deployment:
           replicas: 2
+        service:
+          spec:
+            externalTrafficPolicy: Cluster
         topologySpreadConstraints:
           - labelSelector:
               matchLabels:
