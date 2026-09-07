@@ -1,8 +1,12 @@
-ARG AIRFLOW_TAG
+ARG AIRFLOW_VERSION
+ARG PYTHON_VERSION
 
-FROM apache/airflow:${AIRFLOW_TAG}
+FROM apache/airflow:${AIRFLOW_VERSION}-python${PYTHON_VERSION}
 
-RUN pip install --no-cache-dir --upgrade \
+ARG AIRFLOW_VERSION
+
+RUN pip install --no-cache-dir \
+    "apache-airflow==${AIRFLOW_VERSION}" \
     apache-airflow-providers-airbyte \
     apache-airflow-providers-apprise \
     apache-airflow-providers-amazon[s3fs] \
@@ -18,4 +22,5 @@ RUN pip install --no-cache-dir --upgrade \
     apache-airflow-providers-openai \
     apache-airflow-providers-postgres \
     apache-airflow-providers-redis \
-    apache-airflow-providers-trino
+    apache-airflow-providers-trino \
+    --constraint "${HOME}/constraints.txt"

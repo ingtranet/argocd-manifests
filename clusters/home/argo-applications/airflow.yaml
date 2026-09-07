@@ -18,10 +18,11 @@ spec:
     helm:
       releaseName: airflow
       valuesObject:
+        airflowVersion: "3.3.1"
         images:
           airflow:
             repository: cookieshake/airflow
-            tag: 3.2.2-260623-yg7
+            tag: 3.3.1-260909-yb8
         executor: "KubernetesExecutor"
         allowPodLaunching: true
         allowJobLaunching: true
@@ -29,6 +30,8 @@ spec:
           metadataSecretName: "secrets"
         createUserJob:
           enabled: false
+          useHelmHooks: false
+          applyCustomEnv: false
         triggerer:
           persistence:
             enabled: false
@@ -36,6 +39,9 @@ spec:
         apiSecretKeySecretName: "secrets"
         migrateDatabaseJob:
           useHelmHooks: false
+          applyCustomEnv: false
+          jobAnnotations:
+            "argocd.argoproj.io/hook": Sync
         jwtSecretName: "secrets"
         postgresql:
           enabled: false
