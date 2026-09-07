@@ -64,6 +64,13 @@ spec:
             timeoutSeconds: 30
             periodSeconds: 30
             failureThreshold: 5
+          # 3.3.1은 uvicorn worker 초기화가 기본 60초 startup budget을 초과한다.
+          startupProbe:
+            failureThreshold: 30
+        scheduler:
+          # 3.3.1의 jobs check 초기화가 기본 20초 timeout을 초과한다.
+          startupProbe:
+            timeoutSeconds: 120
         config:
           api:
             # uvicorn 워커 프로세스 수 (기본 1 → 동시 요청 처리량 분산)
