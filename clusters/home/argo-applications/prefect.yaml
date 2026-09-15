@@ -25,7 +25,7 @@ spec:
         externalDatabase:
           existingSecret: prefect-database
           connectionStringSecretKey: connection-string
-          host: postgres.vd.ingtra.net
+          host: postgresql.vd.ingtra.net
           port: 5432
           name: prefect
           username: system
