@@ -20,6 +20,8 @@ spec:
       valuesObject:
         server:
           automountServiceAccountToken: false
+          uiConfig:
+            prefectUiApiUrl: https://prefect.ig.ingtra.net/api
         ingress:
           enabled: false
         externalDatabase:
