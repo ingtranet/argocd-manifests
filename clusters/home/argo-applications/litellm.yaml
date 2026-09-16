@@ -109,10 +109,10 @@ spec:
                     mode: image_generation
                 # ── 사내 Mac Studio llama.cpp (OpenAI 호환, 무인증) ──
                 # 10.2.0.x LAN 박스. 클러스터(10.3.x)에서 방화벽 개방 후 도달.
-                # 장비별 고정 alias이며, 실제 모델과 /v1/models id는 모델 교체 때 갱신한다.
+                # 장비별 고정 alias. llama.cpp 단일 모델 서버이므로 upstream model 값은 고정한다.
                 - model_name: local/mac-studio/active
                   litellm_params:
-                    model: openai/swift-qwen3.8-27b
+                    model: openai/llama-server
                     api_base: http://10.2.0.49:38001/v1
                     api_key: dummy
                 # ── jaeho 자체호스팅 llama.cpp (Qwen3.6-27B, OpenAI 호환, 무인증, 외부 public) ──
