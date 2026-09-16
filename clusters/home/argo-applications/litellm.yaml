@@ -113,7 +113,7 @@ spec:
                 - model_name: local/mac-studio/active
                   litellm_params:
                     model: openai/swift-qwen3.8-27b
-                    api_base: http://10.0.2.49:38001/v1
+                    api_base: http://10.2.0.49:38001/v1
                     api_key: dummy
                 # ── jaeho 자체호스팅 llama.cpp (Qwen3.6-27B, OpenAI 호환, 무인증, 외부 public) ──
                 # 서버 슬러그는 바뀔 수 있음(naraninyeo 참고) — 현재 unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q4_K_XL.
