@@ -174,6 +174,18 @@ spec:
                     model: ollama_chat/*
                     api_key: os.environ/OLLAMA_API_KEY
                     api_base: https://ollama.com
+                # Explicit custom pricing metadata; this is not Ollama billing.
+                - model_name: ollama_cloud/deepseek-v4-pro-0813-priced
+                  litellm_params:
+                    model: ollama_chat/deepseek-v4-pro:0813
+                    api_key: os.environ/OLLAMA_API_KEY
+                    api_base: https://ollama.com
+                  model_info:
+                    input_cost_per_token: 0.000000462
+                    output_cost_per_token: 0.000001386
+                    cache_read_input_token_cost: 0.0000000154
+                    pricing_is_custom: true
+                    pricing_source: openrouter-equivalent
               litellm_settings:
                 # false로 잠깐 바꿨다가 되돌림(2026-07-22) — 지원 안 되는 파라미터가
                 # 에러로 드러나는 이점보다, 여러 provider 호출이 깨지는 손해가 컸다.
