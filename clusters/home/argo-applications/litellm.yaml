@@ -177,9 +177,9 @@ spec:
                 # Explicit custom pricing metadata; this is not Ollama billing.
                 - model_name: ollama_cloud/deepseek-v4-pro-0813-priced
                   litellm_params:
-                    model: ollama_chat/deepseek-v4-pro:0813
+                    model: openai/deepseek-v4-pro:0813
                     api_key: os.environ/OLLAMA_API_KEY
-                    api_base: https://ollama.com
+                    api_base: https://ollama.com/v1
                   model_info:
                     input_cost_per_token: 0.000000462
                     output_cost_per_token: 0.000001386
