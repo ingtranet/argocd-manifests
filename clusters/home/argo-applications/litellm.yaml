@@ -174,7 +174,32 @@ spec:
                     model: openai/*
                     api_key: os.environ/OLLAMA_API_KEY
                     api_base: https://ollama.com/v1
-                # Explicit custom pricing metadata; this is not Ollama billing.
+                # Explicit aliases retain the Ollama Cloud upstream IDs while making
+                # LiteLLM spend accounting deterministic. Prices are synthetic
+                # OpenRouter-equivalent snapshots from 2026-09-25, not Ollama billing.
+                - model_name: ollama_cloud/glm-5.3-flash-priced
+                  litellm_params:
+                    model: openai/glm-5.3-flash
+                    api_key: os.environ/OLLAMA_API_KEY
+                    api_base: https://ollama.com/v1
+                  model_info:
+                    input_cost_per_token: 0.000000045
+                    output_cost_per_token: 0.00000014
+                    cache_read_input_token_cost: 0.00000001
+                    pricing_is_custom: true
+                    pricing_source: openrouter-equivalent-snapshot-2026-09-25
+                - model_name: ollama_cloud/deepseek-v4.1-flash-priced
+                  litellm_params:
+                    model: openai/deepseek-v4.1-flash
+                    api_key: os.environ/OLLAMA_API_KEY
+                    api_base: https://ollama.com/v1
+                  model_info:
+                    input_cost_per_token: 0.00000015
+                    output_cost_per_token: 0.0000006
+                    cache_read_input_token_cost: 0.000000003
+                    pricing_is_custom: true
+                    pricing_source: openrouter-equivalent-snapshot-2026-09-25
+                # Existing explicit custom pricing metadata; this is not Ollama billing.
                 - model_name: ollama_cloud/deepseek-v4-pro-0813-priced
                   litellm_params:
                     model: openai/deepseek-v4-pro:0813
