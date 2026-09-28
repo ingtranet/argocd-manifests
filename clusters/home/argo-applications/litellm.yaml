@@ -274,10 +274,10 @@ spec:
           service:
             port: 4001
           # gateway와 동일한 slow-startup vs liveness 레이스 방지(startupProbe 미지원 chart).
-          # backend도 :4001 바인딩까지 오래 걸려 chart 기본 liveness(10s)에 crash-loop → 120s로.
+          # replacement pod가 startup 중 liveness에 의해 exit 137로 종료됨(OOMKilled 아님) → 5분 유예.
           livenessProbe:
             httpGet: {path: /health/liveliness, port: http}
-            initialDelaySeconds: 120
+            initialDelaySeconds: 300
             periodSeconds: 15
           readinessProbe:
             httpGet: {path: /health/readiness, port: http}
