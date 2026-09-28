@@ -7,6 +7,9 @@ metadata:
     {{- include "litellm.commonLabels" . | nindent 4 }}
     app.kubernetes.io/component: backend
 spec:
+  {{- if hasKey .Values.backend "replicas" }}
+  replicas: {{ .Values.backend.replicas }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "litellm.backend.selectorLabels" . | nindent 6 }}

@@ -153,6 +153,8 @@ gateway:
 # ---------- backend (UI / management API) ----------
 backend:
   enabled: true
+  # Optional explicit replica count; omit when backend HPA should control scale.
+  # Set to zero only while another tracked backend Deployment serves the Service.
   logLevel: INFO
   extraEnv: []
   envConfigMaps: []
