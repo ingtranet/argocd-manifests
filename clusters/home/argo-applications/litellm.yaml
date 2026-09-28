@@ -10,12 +10,11 @@ spec:
   # 이미지가 docker.io에서 삭제(2025-08)돼 실행 불가라 이 chart로 이전.
   # gateway(LLM 데이터플레인)/backend(관리 API)/ui(대시보드) 3개 서비스로 분리된다.
   source:
-    path: .
-    # 이 클러스터는 인터넷 egress가 없어 repo-server가 ghcr.io를 직접 못 끈다(매니페스트
-    # 생성 시 DeadlineExceeded). 컨테이너 이미지처럼 chart도 내부 미러 zot.ingtra.net(ghcr proxy)
-    # 경유로 pull. digest는 ghcr 원본과 동일(sha256:8c2848...). 2026-07-21.
-    repoURL: oci://zot.ingtra.net/ghcr.io/berriai/litellm/chart/litellm
-    targetRevision: 1.92.0
+    # 1.92.0 chart pinned locally (upstream OCI digest sha256:8c2848bf145af849bb8a778b3c4a14dedc7329b19055721e50d7cf94630cc52e).
+    # Only gateway deployment has a local extension for the native OAuth token volume.
+    repoURL: https://github.com/ingtranet/argocd-manifests.git
+    path: litellm
+    targetRevision: HEAD
     helm:
       releaseName: litellm
       valuesObject:
@@ -59,11 +58,16 @@ spec:
         gateway:
           enabled: true
           numWorkers: 1
+          tokenVolume:
+            claimName: litellm-chatgpt-tokens
+            mountPath: /var/lib/litellm/chatgpt
           # migrationJob과 동일한 DATABASE_URL pin(sslmode=disable). serverEnv가 DATABASE_*를
           # 먼저 emit하므로 $(VAR) 확장이 유효. raw password 인코딩 안 됨 — 예약문자 주의.
           extraEnv:
             - name: DATABASE_URL
               value: "postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)?sslmode=disable"
+            - name: CHATGPT_TOKEN_DIR
+              value: /var/lib/litellm/chatgpt
           # LITELLM_SALT_KEY(저장 크레덴셜 암호화) 주입. gateway/backend 모두 DB 암호문을 다루므로 양쪽에.
           envSecrets:
             - litellm-env
@@ -146,6 +150,13 @@ spec:
                     api_base: http://10.3.64.21:10531/v1
                     api_key: dummy
                     mode: image_generation
+                # Do NOT register the native shadow model yet. In v1.92.0,
+                # Router init calls ChatGPTConfig.get_access_token() while
+                # registering chatgpt/*; without auth.openai.com egress this
+                # prevents the entire gateway from starting. After egress and
+                # approved device login, add a dedicated shadow alias using
+                # model: chatgpt/gpt-5.6-luna; keep wildcard/image/fallback
+                # on the existing proxy until native chat is proven end to end.
                 # ── OpenRouter 전체(와일드카드, BYOK) ──
                 - model_name: openrouter/*
                   litellm_params:

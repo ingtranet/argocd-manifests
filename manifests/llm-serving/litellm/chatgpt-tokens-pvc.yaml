@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: litellm-chatgpt-tokens
+  namespace: llm-serving
+  annotations:
+    # OAuth refresh tokens must survive GitOps prune and rollback. NFS CSI's
+    # StorageClass has reclaimPolicy Delete; never delete this claim casually.
+    argocd.argoproj.io/sync-options: Delete=false,Prune=false
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: burrow-hot-nfs
+  resources:
+    requests:
+      storage: 1Gi

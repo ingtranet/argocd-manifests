@@ -1,0 +1,8 @@
+annotations:
+  org.opencontainers.image.source: https://github.com/BerriAI/litellm
+apiVersion: v2
+appVersion: v1.92.0
+description: LiteLLM componentized — gateway, UI backend, and UI as separate services
+name: litellm
+type: application
+version: 1.92.0
