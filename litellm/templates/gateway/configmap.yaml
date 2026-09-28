@@ -5,5 +5,8 @@ metadata:
   name: {{ include "litellm.gateway.fullname" . }}-config
 data:
   config.yaml: |
-{{ .Values.gateway.config.proxy_config | toYaml | indent 6 }}
+{{- $proxyConfig := .Values.gateway.config.proxy_config | toYaml -}}
+{{- /* PyYAML treats exponent scalars without a decimal mantissa (e.g. 1e-07) as strings. Keep token rates numeric in LiteLLM's YAML parser. */ -}}
+{{- $proxyConfig = regexReplaceAll "(?m)^([[:space:]]*(input_cost_per_token|output_cost_per_token|cache_read_input_token_cost|cache_creation_input_token_cost):[[:space:]]*)([0-9]+)(e-[0-9]+)$" $proxyConfig "${1}${3}.0${4}" -}}
+{{ printf "\n%s" ($proxyConfig | indent 6) }}
 {{- end }}

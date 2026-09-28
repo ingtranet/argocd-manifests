@@ -176,6 +176,28 @@ spec:
                     output_cost_per_token: 0
                     pricing_is_custom: true
                     pricing_source: chatgpt-subscription-incremental-token-cost
+                # Hypothetical OpenAI API-equivalent accounting only; these
+                # rates are NOT the actual ChatGPT OAuth/subscription bill.
+                - model_name: chatgpt/gpt-6-luna-priced
+                  litellm_params:
+                    model: chatgpt/gpt-6-luna
+                  model_info:
+                    input_cost_per_token: 0.0000001
+                    cache_read_input_token_cost: 0.00000001
+                    cache_creation_input_token_cost: 0.000000125
+                    output_cost_per_token: 0.0000005
+                    pricing_is_custom: true
+                    pricing_source: openai-api-equivalent
+                - model_name: chatgpt/gpt-6-sol-priced
+                  litellm_params:
+                    model: chatgpt/gpt-6-sol
+                  model_info:
+                    input_cost_per_token: 0.000002
+                    cache_read_input_token_cost: 0.0000002
+                    cache_creation_input_token_cost: 0.0000025
+                    output_cost_per_token: 0.00001
+                    pricing_is_custom: true
+                    pricing_source: openai-api-equivalent
                 # ── OpenRouter 전체(와일드카드, BYOK) ──
                 - model_name: openrouter/*
                   litellm_params:
