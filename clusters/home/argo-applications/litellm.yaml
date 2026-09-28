@@ -150,13 +150,12 @@ spec:
                     api_base: http://10.3.64.21:10531/v1
                     api_key: dummy
                     mode: image_generation
-                # Do NOT register the native shadow model yet. In v1.92.0,
-                # Router init calls ChatGPTConfig.get_access_token() while
-                # registering chatgpt/*; without auth.openai.com egress this
-                # prevents the entire gateway from starting. After egress and
-                # approved device login, add a dedicated shadow alias using
-                # model: chatgpt/gpt-5.6-luna; keep wildcard/image/fallback
-                # on the existing proxy until native chat is proven end to end.
+                # Native ChatGPT OAuth shadow route. Keep the existing proxy
+                # wildcard, image entry, and fallback unchanged while validating
+                # the native Responses API path.
+                - model_name: chatgpt/gpt-5.5
+                  litellm_params:
+                    model: chatgpt/gpt-5.5
                 # ── OpenRouter 전체(와일드카드, BYOK) ──
                 - model_name: openrouter/*
                   litellm_params:
