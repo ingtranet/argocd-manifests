@@ -150,18 +150,32 @@ spec:
                     api_base: http://10.3.64.21:10531/v1
                     api_key: dummy
                     mode: image_generation
-                # Native ChatGPT OAuth shadow route. Keep the existing proxy
-                # wildcard, image entry, and fallback unchanged while validating
-                # the native Responses API path.
+                # Native ChatGPT OAuth routes are included in the subscription;
+                # zero is incremental token pricing only, not the subscription fee.
                 - model_name: chatgpt/gpt-5.5
                   litellm_params:
                     model: chatgpt/gpt-5.5
+                  model_info:
+                    input_cost_per_token: 0
+                    output_cost_per_token: 0
+                    pricing_is_custom: true
+                    pricing_source: chatgpt-subscription-incremental-token-cost
                 - model_name: chatgpt/gpt-6-luna
                   litellm_params:
                     model: chatgpt/gpt-6-luna
+                  model_info:
+                    input_cost_per_token: 0
+                    output_cost_per_token: 0
+                    pricing_is_custom: true
+                    pricing_source: chatgpt-subscription-incremental-token-cost
                 - model_name: chatgpt/gpt-6-sol
                   litellm_params:
                     model: chatgpt/gpt-6-sol
+                  model_info:
+                    input_cost_per_token: 0
+                    output_cost_per_token: 0
+                    pricing_is_custom: true
+                    pricing_source: chatgpt-subscription-incremental-token-cost
                 # ── OpenRouter 전체(와일드카드, BYOK) ──
                 - model_name: openrouter/*
                   litellm_params:
