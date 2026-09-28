@@ -156,6 +156,12 @@ spec:
                 - model_name: chatgpt/gpt-5.5
                   litellm_params:
                     model: chatgpt/gpt-5.5
+                - model_name: chatgpt/gpt-6-luna
+                  litellm_params:
+                    model: chatgpt/gpt-6-luna
+                - model_name: chatgpt/gpt-6-sol
+                  litellm_params:
+                    model: chatgpt/gpt-6-sol
                 # ── OpenRouter 전체(와일드카드, BYOK) ──
                 - model_name: openrouter/*
                   litellm_params:
