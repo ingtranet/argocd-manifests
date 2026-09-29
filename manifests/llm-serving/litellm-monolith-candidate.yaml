@@ -1,0 +1,386 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: litellm-chatgpt-tokens-monolith
+  namespace: llm-serving
+  labels:
+    app.kubernetes.io/name: litellm
+    app.kubernetes.io/instance: llm-serving
+    app.kubernetes.io/component: monolith-candidate
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: burrow-hot-nfs
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: litellm-monolith-candidate-config
+  namespace: llm-serving
+  labels:
+    app.kubernetes.io/name: litellm
+    app.kubernetes.io/instance: llm-serving
+    app.kubernetes.io/component: monolith-candidate
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+data:
+  config.yaml: |
+    general_settings:
+      store_prompts_in_spend_logs: true
+    litellm_settings:
+      drop_params: true
+      set_verbose: false
+    model_list:
+    - litellm_params:
+        allowed_openai_params:
+        - dimensions
+        api_base: http://pplx-embed-v1-06b-jetson:8000/v1
+        api_key: dummy
+        max_parallel_requests: 8
+        model: openai/perplexity-ai/pplx-embed-v1-0.6b
+      model_name: local/perplexity-ai/pplx-embed-v1-0.6b
+    - litellm_params:
+        allowed_openai_params:
+        - dimensions
+        api_base: http://pplx-embed-v1-06b-cpu:8000/v1
+        api_key: dummy
+        max_parallel_requests: 8
+        model: openai/perplexity-ai/pplx-embed-v1-0.6b
+      model_name: local/perplexity-ai/pplx-embed-v1-0.6b-cpu
+    - litellm_params:
+        api_base: http://flux2-klein-9b:8000/v1
+        api_key: dummy
+        mode: image_generation
+        model: openai/black-forest-labs/FLUX.2-klein-9B
+      model_name: local/black-forest-labs/flux.2-klein-9b
+    - litellm_params:
+        api_base: http://10.2.0.49:38001/v1
+        api_key: dummy
+        model: openai/llama-server
+      model_name: local/mac-studio/active
+    - litellm_params:
+        api_base: http://10.2.0.49:38001/v1
+        api_key: dummy
+        model: openai/llama-server
+      model_name: auto/economy
+    - litellm_params:
+        api_base: https://llm.jaehojang.cc/v1
+        api_key: dummy
+        model: openai/unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q4_K_XL
+      model_name: jaeho/qwen/qwen3.6-27b
+    - litellm_params:
+        api_base: http://10.3.64.21:10531/v1
+        api_key: dummy
+        model: openai/*
+      model_name: openai_oauth/openai/*
+    - litellm_params:
+        api_base: http://10.3.64.21:10531/v1
+        api_key: dummy
+        mode: image_generation
+        model: openai/gpt-image-2
+      model_name: openai_oauth/openai/gpt-image-2
+    - litellm_params:
+        model: chatgpt/gpt-5.5
+      model_info:
+        input_cost_per_token: 0
+        output_cost_per_token: 0
+        pricing_is_custom: true
+        pricing_source: chatgpt-subscription-incremental-token-cost
+      model_name: chatgpt/gpt-5.5
+    - litellm_params:
+        model: chatgpt/gpt-6-luna
+      model_info:
+        input_cost_per_token: 0
+        output_cost_per_token: 0
+        pricing_is_custom: true
+        pricing_source: chatgpt-subscription-incremental-token-cost
+      model_name: chatgpt/gpt-6-luna
+    - litellm_params:
+        model: chatgpt/gpt-6-sol
+      model_info:
+        input_cost_per_token: 0
+        output_cost_per_token: 0
+        pricing_is_custom: true
+        pricing_source: chatgpt-subscription-incremental-token-cost
+      model_name: chatgpt/gpt-6-sol
+    - litellm_params:
+        model: chatgpt/gpt-6-luna
+      model_info:
+        cache_creation_input_token_cost: 1.25e-07
+        cache_read_input_token_cost: 1.0e-08
+        input_cost_per_token: 1.0e-07
+        output_cost_per_token: 5.0e-07
+        pricing_is_custom: true
+        pricing_source: openai-api-equivalent
+      model_name: chatgpt/gpt-6-luna-priced
+    - litellm_params:
+        model: chatgpt/gpt-6-sol
+      model_info:
+        cache_creation_input_token_cost: 2.5e-06
+        cache_read_input_token_cost: 2.0e-07
+        input_cost_per_token: 2.0e-06
+        output_cost_per_token: 1.0e-05
+        pricing_is_custom: true
+        pricing_source: openai-api-equivalent
+      model_name: chatgpt/gpt-6-sol-priced
+    - litellm_params:
+        api_key: os.environ/OPENROUTER_API_KEY
+        model: openrouter/*
+      model_name: openrouter/*
+    - litellm_params:
+        api_key: os.environ/NVIDIA_API_KEY
+        model: nvidia_nim/*
+      model_name: nvidia_nim/*
+    - litellm_params:
+        api_key: os.environ/GOOGLE_AI_STUDIO_API_KEY
+        model: gemini/*
+      model_name: google_ai_studio/*
+    router_settings:
+      fallbacks:
+      - local/perplexity-ai/pplx-embed-v1-0.6b:
+        - local/perplexity-ai/pplx-embed-v1-0.6b-cpu
+      - auto/economy:
+        - openai_oauth/openai/gpt-5.6-luna
+      num_retries: 0
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: litellm-monolith
+  namespace: llm-serving
+  labels:
+    app.kubernetes.io/name: litellm
+    app.kubernetes.io/instance: llm-serving
+    app.kubernetes.io/component: monolith-candidate
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 4000
+      targetPort: http
+      protocol: TCP
+  selector:
+    app.kubernetes.io/name: litellm
+    app.kubernetes.io/instance: llm-serving
+    app.kubernetes.io/component: monolith-candidate
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: litellm-monolith
+  namespace: llm-serving
+  labels:
+    app.kubernetes.io/name: litellm
+    app.kubernetes.io/instance: llm-serving
+    app.kubernetes.io/component: monolith-candidate
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: litellm
+      app.kubernetes.io/instance: llm-serving
+      app.kubernetes.io/component: monolith-candidate
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: litellm
+        app.kubernetes.io/instance: llm-serving
+        app.kubernetes.io/component: monolith-candidate
+      annotations:
+        checksum/config: "4cad488464587eed92666a2eae341f03a9e874326259d17666634528559f8181"
+    spec:
+      serviceAccountName: default
+      automountServiceAccountToken: false
+      nodeSelector:
+        kubernetes.io/arch: amd64
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+      initContainers:
+        - name: copy-chatgpt-auth
+          image: ghcr.io/berriai/litellm-gateway:v1.92.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - python3
+            - -c
+            - |
+              import base64, json, os, pathlib, tempfile, time
+              src = pathlib.Path("/source/auth.json")
+              target_dir = pathlib.Path("/target")
+              target = target_dir / "auth.json"
+              target_dir.mkdir(mode=0o700, parents=True, exist_ok=True)
+              os.chmod(target_dir, 0o700)
+              def validate(data, require_fresh=False):
+                  access = data.get("access_token")
+                  refresh = data.get("refresh_token")
+                  if not access or not refresh:
+                      raise SystemExit("OAuth cache missing; candidate stopped without device login")
+                  expiry = data.get("expires_at")
+                  if expiry is None:
+                      try:
+                          payload = access.split(".")[1]
+                          payload += "=" * (-len(payload) % 4)
+                          expiry = json.loads(base64.urlsafe_b64decode(payload.encode())).get("exp")
+                      except Exception:
+                          expiry = None
+                  if require_fresh and (not isinstance(expiry, (int, float)) or expiry - time.time() < 1800):
+                      raise SystemExit("OAuth cache too close to expiry; candidate stopped without refresh/device login")
+              if target.exists():
+                  try:
+                      validate(json.loads(target.read_text()))
+                  except Exception:
+                      raise SystemExit("candidate OAuth cache is invalid; no contents emitted")
+                  os.chmod(target, 0o600)
+              else:
+                  copied = False
+                  for _ in range(5):
+                      try:
+                          before = src.stat()
+                          raw = src.read_bytes()
+                          after = src.stat()
+                          if before.st_size != after.st_size or before.st_mtime_ns != after.st_mtime_ns:
+                              time.sleep(0.2)
+                              continue
+                          data = json.loads(raw)
+                          validate(data, require_fresh=True)
+                          fd, temp_name = tempfile.mkstemp(prefix=".auth-", dir=str(target_dir))
+                          with os.fdopen(fd, "wb") as f:
+                              f.write(raw)
+                              f.flush()
+                              os.fsync(f.fileno())
+                          os.chmod(temp_name, 0o600)
+                          os.replace(temp_name, target)
+                          copied = True
+                          break
+                      except FileNotFoundError:
+                          time.sleep(0.2)
+                  if not copied:
+                      raise SystemExit("stable OAuth cache unavailable; no device login attempted")
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: source-chatgpt-tokens
+              mountPath: /source
+              readOnly: true
+            - name: candidate-chatgpt-tokens
+              mountPath: /target
+      containers:
+        - name: litellm
+          image: zot.ingtra.net/ghcr.io/berriai/litellm:v1.92.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 4000
+              protocol: TCP
+          env:
+            - name: HOME
+              value: /tmp
+            - name: TMPDIR
+              value: /tmp
+            - name: LITELLM_MASTER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: litellm-masterkey
+                  key: masterkey
+            - name: LITELLM_LOG
+              value: INFO
+            - name: DATABASE_HOST
+              value: postgresql.vd.ingtra.net
+            - name: DATABASE_PORT
+              value: "5432"
+            - name: DATABASE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: litellm-dbcreds
+                  key: username
+            - name: DATABASE_NAME
+              value: litellm
+            - name: DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: litellm-dbcreds
+                  key: password
+            - name: DISABLE_SCHEMA_UPDATE
+              value: "true"
+            - name: DATABASE_URL
+              value: postgresql://$(DATABASE_USER):$(DATABASE_PASSWORD)@$(DATABASE_HOST):$(DATABASE_PORT)/$(DATABASE_NAME)?sslmode=disable
+            - name: CONFIG_FILE_PATH
+              value: /app/config/config.yaml
+            - name: CHATGPT_TOKEN_DIR
+              value: /var/lib/litellm/chatgpt
+            - name: NUM_WORKERS
+              value: "1"
+          envFrom:
+            - secretRef:
+                name: litellm-env
+          volumeMounts:
+            - name: candidate-chatgpt-tokens
+              mountPath: /var/lib/litellm/chatgpt
+            - name: candidate-config
+              mountPath: /app/config/config.yaml
+              subPath: config.yaml
+          startupProbe:
+            httpGet:
+              path: /health/liveliness
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 60
+          livenessProbe:
+            httpGet:
+              path: /health/liveliness
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 3
+          readinessProbe:
+            httpGet:
+              path: /health/readiness
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 500m
+              memory: 2Gi
+            limits:
+              cpu: "2"
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 65532
+            runAsGroup: 65532
+            capabilities:
+              drop: ["ALL"]
+      volumes:
+        - name: source-chatgpt-tokens
+          persistentVolumeClaim:
+            claimName: litellm-chatgpt-tokens
+        - name: candidate-chatgpt-tokens
+          persistentVolumeClaim:
+            claimName: litellm-chatgpt-tokens-monolith
+        - name: candidate-config
+          configMap:
+            name: litellm-monolith-candidate-config
