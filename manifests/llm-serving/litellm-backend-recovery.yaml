@@ -5,8 +5,6 @@ metadata:
   namespace: llm-serving
   labels:
     app.kubernetes.io/instance: llm-serving
-  annotations:
-    argocd.argoproj.io/sync-options: Prune=false
 data:
   config.yaml: |
     general_settings:
@@ -93,10 +91,8 @@ metadata:
     app.kubernetes.io/instance: llm-serving
     app.kubernetes.io/name: litellm
     emergency-recovery: "true"
-  annotations:
-    argocd.argoproj.io/sync-options: Prune=false
 spec:
-  replicas: 1
+  replicas: 0
   revisionHistoryLimit: 10
   progressDeadlineSeconds: 600
   selector:

@@ -8,10 +8,11 @@ spec:
   # 공식 litellm helm chart(componentized). OCI 레지스트리 최신 배포판.
   # 구 litellm-helm(0.1.100)은 db-ready init 이미지가 템플릿에 하드코딩돼 있고 그 bitnami
   # 이미지가 docker.io에서 삭제(2025-08)돼 실행 불가라 이 chart로 이전.
-  # gateway(LLM 데이터플레인)/backend(관리 API)/ui(대시보드) 3개 서비스로 분리된다.
+  # LiteLLM API/관리 기능은 llm-serving의 단일 프로세스 monolith가 담당한다.
+  # 이 chart는 UI와 기존 DB migration Job만 제공한다.
   source:
     # 1.92.0 chart pinned locally (upstream OCI digest sha256:8c2848bf145af849bb8a778b3c4a14dedc7329b19055721e50d7cf94630cc52e).
-    # Only gateway deployment has a local extension for the native OAuth token volume.
+    # 단일 프로세스와 토큰 PVC는 manifests/llm-serving/litellm-monolith-candidate.yaml에서 관리.
     repoURL: https://github.com/ingtranet/argocd-manifests.git
     path: litellm
     targetRevision: HEAD
@@ -54,9 +55,9 @@ spec:
         # cross-pod 코디네이션이 실제 필요해지면(virtual key rate limit) 공식 redis를 따로 띄워 host 지정.
         redis:
           host: ""
-        # ---------- gateway: LLM 데이터플레인(/v1/*) ----------
+        # ---------- 이전 gateway: monolith 전환 후 비활성 ----------
         gateway:
-          enabled: true
+          enabled: false
           numWorkers: 1
           tokenVolume:
             claimName: litellm-chatgpt-tokens
@@ -262,11 +263,10 @@ spec:
             maxReplicas: 1
             targetCPUUtilizationPercentage: 70
             targetMemoryUtilizationPercentage: 80
-        # ---------- backend: 관리 API(/key,/user,/team,...) ----------
+        # ---------- 이전 backend: monolith 전환 후 비활성 ----------
         backend:
-          enabled: true
-          # The tracked recovery Deployment currently serves litellm-backend.
-          # Quiesce only the failing chart-managed backend while it is repaired.
+          enabled: false
+          # 재활성화 전에는 native OAuth 기동 문제를 해결해야 한다.
           replicas: 0
           # migrationJob/gateway와 동일한 DATABASE_URL pin(sslmode=disable).
           extraEnv:
@@ -301,9 +301,9 @@ spec:
             maxReplicas: 2
             targetCPUUtilizationPercentage: 70
         # ---------- ui: Next.js 대시보드 ----------
-        # 브라우저가 backend를 같은 호스트(catch-all→backend)로 호출하도록 backendUrl 지정.
+        # 브라우저가 monolith를 같은 호스트(catch-all)로 호출하도록 backendUrl 지정.
         # chart 내장 ingress는 AWS ALB 전용이라 미사용(ingress.enabled=false 기본) — 노출은
-        # Traefik IngressRoute(manifests/traefik-configs/litellm.yaml)로 gateway/ui/backend 경로 분기.
+        # Traefik IngressRoute(manifests/traefik-configs/litellm.yaml)에서 UI/API 경로 분기.
         ui:
           enabled: true
           backendUrl: https://litellm.ig.ingtra.net
