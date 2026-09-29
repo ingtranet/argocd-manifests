@@ -208,8 +208,9 @@ spec:
       nodeSelector:
         kubernetes.io/arch: amd64
       securityContext:
-        runAsUser: 0
-        runAsGroup: 0
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
       initContainers:
         - name: copy-chatgpt-auth
           image: ghcr.io/berriai/litellm-gateway:v1.92.0
@@ -283,6 +284,34 @@ spec:
               readOnly: true
             - name: candidate-chatgpt-tokens
               mountPath: /target
+        # The generated Prisma client in the official image checks this engine
+        # under /root/.cache, which is not traversable by a nonroot UID. Stage
+        # only that image-bundled binary into a read-only volume for the app.
+        - name: stage-prisma-engine
+          image: zot.ingtra.net/ghcr.io/berriai/litellm:v1.92.0
+          imagePullPolicy: IfNotPresent
+          command:
+            - python3
+            - -c
+            - |
+              import os, pathlib, shutil, sys
+              source_root = pathlib.Path("/root/.cache/prisma-python/binaries/5.4.2")
+              matches = list(source_root.glob("*/node_modules/prisma/query-engine-debian-openssl-3.0.x"))
+              if len(matches) != 1 or not matches[0].is_file():
+                  raise SystemExit("official image Prisma query engine missing or ambiguous")
+              target = pathlib.Path("/engine/query-engine-debian-openssl-3.0.x")
+              shutil.copyfile(matches[0], target)
+              os.chmod(target, 0o555)
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: prisma-engine
+              mountPath: /engine
       containers:
         - name: litellm
           image: zot.ingtra.net/ghcr.io/berriai/litellm:v1.92.0
@@ -296,6 +325,10 @@ spec:
               value: /tmp
             - name: TMPDIR
               value: /tmp
+            - name: PRISMA_BINARY_PLATFORM
+              value: debian-openssl-3.0.x
+            - name: PRISMA_QUERY_ENGINE_BINARY
+              value: /engine/query-engine-debian-openssl-3.0.x
             - name: LITELLM_MASTER_KEY
               valueFrom:
                 secretKeyRef:
@@ -335,6 +368,9 @@ spec:
           volumeMounts:
             - name: candidate-chatgpt-tokens
               mountPath: /var/lib/litellm/chatgpt
+            - name: prisma-engine
+              mountPath: /engine
+              readOnly: true
             - name: candidate-config
               mountPath: /app/config/config.yaml
               subPath: config.yaml
@@ -368,9 +404,9 @@ spec:
               memory: 4Gi
           securityContext:
             allowPrivilegeEscalation: false
-            runAsNonRoot: false
-            runAsUser: 0
-            runAsGroup: 0
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
             capabilities:
               drop: ["ALL"]
       volumes:
@@ -383,3 +419,5 @@ spec:
         - name: candidate-config
           configMap:
             name: litellm-monolith-candidate-config
+        - name: prisma-engine
+          emptyDir: {}
