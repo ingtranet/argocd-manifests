@@ -104,14 +104,6 @@ spec:
                     # (256을 보내도 1024 차원이 돌아옴). 이 모델에만 통과시킨다.
                     # encoding_format은 이 목록 없이도 그대로 전달된다(검증됨).
                     allowed_openai_params: ["dimensions"]
-                # ── 로컬 이미지 생성 (클러스터 내부) ──
-                # 호출 이름은 소문자 통일. litellm_params.model은 백엔드가 기대하는 실제 id라 원본 케이스 유지.
-                - model_name: local/black-forest-labs/flux.2-klein-9b
-                  litellm_params:
-                    model: openai/black-forest-labs/FLUX.2-klein-9B
-                    api_base: http://flux2-klein-9b:8000/v1
-                    api_key: dummy
-                    mode: image_generation
                 # ── 사내 Mac Studio llama.cpp (OpenAI 호환, 무인증) ──
                 # 10.2.0.x LAN 박스. 클러스터(10.3.x)에서 방화벽 개방 후 도달.
                 # 장비별 고정 alias. llama.cpp 단일 모델 서버이므로 upstream model 값은 고정한다.
@@ -120,7 +112,7 @@ spec:
                     model: openai/llama-server
                     api_base: http://10.2.0.49:38001/v1
                     api_key: dummy
-                # 자동 비용 절감 라우팅: Mac Studio primary, OAuth fallback은 router_settings에서 지정.
+                # 자동 비용 절감 라우팅: Mac Studio primary (retired OAuth fallback 없음).
                 - model_name: auto/economy
                   litellm_params:
                     model: openai/llama-server
@@ -133,24 +125,6 @@ spec:
                     model: openai/unsloth/Qwen3.6-27B-MTP-GGUF:UD-Q4_K_XL
                     api_base: https://llm.jaehojang.cc/v1
                     api_key: dummy
-                # ── ChatGPT 계정 OAuth 프록시 (openai-oauth, 내 Apple Silicon 박스) ──
-                # 10.3.64.21 박스에서 `openai-oauth` LaunchAgent가 도는 무인증 프록시
-                # (127.0.0.1→--host 0.0.0.0, :10531). ChatGPT 구독 계정으로 codex 프런티어 모델 접근.
-                # ★프록시 자체는 무인증이므로 LAN 노출임 — 접근 통제는 litellm master/virtual key에 의존.
-                # 방화벽: 10.3.64.21:10531이 클러스터에서 도달 가능해야 함.
-                # 채팅은 와일드카드로 신규 gpt-5.6-* 변형 자동 대응. /v1/models id 예: gpt-5.6-sol/terra/luna, gpt-5.5.
-                - model_name: openai_oauth/openai/*
-                  litellm_params:
-                    model: openai/*
-                    api_base: http://10.3.64.21:10531/v1
-                    api_key: dummy
-                # 이미지 생성은 mode 지정이 필요해 명시 엔트리로 분리(와일드카드보다 exact match 우선).
-                - model_name: openai_oauth/openai/gpt-image-2
-                  litellm_params:
-                    model: openai/gpt-image-2
-                    api_base: http://10.3.64.21:10531/v1
-                    api_key: dummy
-                    mode: image_generation
                 # Native ChatGPT OAuth routes are included in the subscription;
                 # zero is incremental token pricing only, not the subscription fee.
                 - model_name: chatgpt/gpt-5.5
@@ -228,7 +202,6 @@ spec:
                 num_retries: 0
                 fallbacks:
                   - local/perplexity-ai/pplx-embed-v1-0.6b: ["local/perplexity-ai/pplx-embed-v1-0.6b-cpu"]
-                  - auto/economy: ["openai_oauth/openai/gpt-5.6-luna"]
               # 프롬프트 로깅: 각 요청의 프롬프트+응답을 DB(LiteLLM_SpendLogs)에 저장 → admin UI Logs에서 조회.
               # spend logs 자체는 DB 연결 시 기본 ON, 이 옵션이 메시지 본문까지 저장. 민감정보 로깅 유의.
               general_settings:
