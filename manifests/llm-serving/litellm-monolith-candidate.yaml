@@ -208,9 +208,8 @@ spec:
       nodeSelector:
         kubernetes.io/arch: amd64
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 65532
-        runAsGroup: 65532
+        runAsUser: 0
+        runAsGroup: 0
       initContainers:
         - name: copy-chatgpt-auth
           image: ghcr.io/berriai/litellm-gateway:v1.92.0
@@ -273,9 +272,9 @@ spec:
                       raise SystemExit("stable OAuth cache unavailable; no device login attempted")
           securityContext:
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            runAsUser: 65532
-            runAsGroup: 65532
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
             capabilities:
               drop: ["ALL"]
           volumeMounts:
@@ -369,9 +368,9 @@ spec:
               memory: 4Gi
           securityContext:
             allowPrivilegeEscalation: false
-            runAsNonRoot: true
-            runAsUser: 65532
-            runAsGroup: 65532
+            runAsNonRoot: false
+            runAsUser: 0
+            runAsGroup: 0
             capabilities:
               drop: ["ALL"]
       volumes:
