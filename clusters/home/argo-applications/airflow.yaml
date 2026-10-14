@@ -55,6 +55,10 @@ spec:
                 name: secrets
                 key: ingtranet-s3-conn
         apiServer:
+          # Component-scoped override avoids changing the shared Airflow config checksum.
+          env:
+            - name: AIRFLOW__API__WORKERS
+              value: "1"
           # 단일 uvicorn 워커가 UI 요청 폭주 시 헬스 프로브(5s)를 못 받아 CrashLoop → 프로브 완화
           livenessProbe:
             timeoutSeconds: 30
@@ -73,7 +77,8 @@ spec:
             timeoutSeconds: 120
         config:
           api:
-            # uvicorn 워커 프로세스 수 (기본 1 → 동시 요청 처리량 분산)
+            # Shared-config fallback retained at 2; apiServer.env overrides the API server to 1
+            # without changing the shared ConfigMap checksum (and restarting other components).
             workers: "2"
           core:
             auth_manager: "airflow.api_fastapi.auth.managers.simple.simple_auth_manager.SimpleAuthManager"
@@ -89,6 +94,10 @@ spec:
             remote_log_conn_id: "ingtranet_s3"
             encrypt_s3_logs: "False"
         dagProcessor:
+          # Component-scoped override avoids changing the shared Airflow config checksum.
+          env:
+            - name: AIRFLOW__DAG_PROCESSOR__PARSING_PROCESSES
+              value: "1"
           dagBundleConfigList:
             - name: general_airflow_dags
               classpath: airflow.providers.git.bundles.git.GitDagBundle
