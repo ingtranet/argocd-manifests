@@ -184,6 +184,11 @@ spec:
                 - "-m"
                 - "findata.definitions"
               port: 4000
+              env:
+                # KIS master ZIP downloads alone use the existing outbound proxy;
+                # the worker applies this only to the five public master URLs.
+                - name: PIPELINE_KIS_MASTER_PROXY_URL
+                  value: "http://http-proxy-1.vd.ingtra.net:8290"
               envSecrets:
                 - name: dagster-findata-secret
               # KIS 토큰 캐시 공유(PVC 미사용). KIS 토큰 발급은 분당 1회 제한이라
