@@ -137,7 +137,7 @@ spec:
             - name: harvest
               image:
                 repository: zot.ingtra.net/library/harvest-dagster
-                tag: "latest"
+                tag: "4c56078@sha256:b0e7a2fc36852430af9c1d805a1a55dcab2cfe65522ea8be1fcf8394212deb69"
                 pullPolicy: Always
               dagsterApiGrpcArgs:
                 - "-m"
